@@ -113,12 +113,20 @@
 #define SIGNAL_STRING  "signal "
 #define STD_LOGIC      "std_logic;"
 
+//Structure that will store the connection information of a component
+//Right now it has only one element, but it may be extended as and when needed
 struct connection{
 	//Assuming that two different blocks have only one unique connection between them
+	//Then connection is vector containing all the connections that component has with other components
+	//The vector contains pairs. The first element of that pair is the name of the component that is connected to this component
+	//The second element of the pair is the input-output mapping of this component and the connected component
 	std::vector<std::pair<std::string, std::pair<std::string, std::string>>> io;
 };
 
 
+//Stores all the information about a component
+//If the component does not support any parameter,
+//it is assigned the default value
 struct component{
 	std::string name = DEFAULT_NAME;
 	std::string type = DEFAULT_TYPE;

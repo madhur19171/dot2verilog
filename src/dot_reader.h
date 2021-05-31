@@ -8,7 +8,6 @@
 #define DOT_READER_H_
 
 #pragma once
-//#define _GLIBCXX_USE_CXX11_ABI 0
 #include <fstream>
 #include <iostream>
 #include <cstdint>
@@ -24,15 +23,12 @@ private:
 	std::string fileName;
 	int numberOfBlocks;
 	std::vector<std::string> lines;//Stores the lines of dot file
-	std::vector<std::string> componentDeclaration;//Global Declaration of design components.
-	std::vector<std::string> globalComponentConnection;
-	std::vector<std::string> intraBlockConnection;
-	std::vector<std::string> interBlockConnection;
-	std::vector<component> componentList;
-	std::map<std::string, component> componentMap;
-//	//A map to index by <name> and access <vector of <pair of <input> and <output>>>
-//	std::unordered_map<std::string, std::vector<std::pair<std::string, std::string>>> connectionMap;
-
+	std::vector<std::string> componentDeclaration;//Global Declaration line of design components.
+	std::vector<std::string> globalComponentConnection;//Connection line of global components
+	std::vector<std::string> intraBlockConnection;//Connection line of components that are within some block
+	std::vector<std::string> interBlockConnection;//Connection line of components that are in two different blocks
+	std::vector<component> componentList;//List of all the components present in the design
+	std::map<std::string, component> componentMap;//List of all the components indexed by their names(string)
 
 
 public:
@@ -41,9 +37,9 @@ public:
 
 
 	int lineReader();//Reads the Dot file line by line and stores each line in lines vector
-	void printComponent(struct component s);
+	void printComponent(struct component s);//Prints all the information about a component
 
-	//getter for lines
+	//getters
 	const std::vector<std::string>& getLines() const {
 		return lines;
 	}
@@ -76,22 +72,18 @@ public:
 		return intraBlockConnection;
 	}
 
-//	const std::unordered_map<std::string,
-//			std::vector<std::pair<std::string, std::string> > >& getConnectionMap() const {
-//		return connectionMap;
-//	}
 
 private:
 	void removeTabs();//Removes tab from starting of a line
 	void removeComments();//Removes comments
-	void readComponentDeclarations();
-	void readGlobalComponentConnections();
-	int readIntraBlockConnections();
-	int readInterBlockConnections();
-	void generateComponentList();
-	void generateConnectionMap();
-	std::string substring(std::string __str, int start, int stop);
-	std::string trim(std::string __str);
+	void readComponentDeclarations();//Reads the component information lines(just following splines=spline line)
+	void readGlobalComponentConnections();//Reads global component connection lines
+	int readIntraBlockConnections();//Reads intra-block connection lines
+	int readInterBlockConnections();//Reads inter-block connection lines
+	void generateComponentList();//Populates componentList and componentMap vector and map respectively by reading componentDeclarations
+	void generateConnectionMap();//Populates the connection element of component by reading BlockConnections
+	std::string substring(std::string __str, int start, int stop);//Java like substring method
+	std::string trim(std::string __str);//Trim the trailing spaces
 };
 
 

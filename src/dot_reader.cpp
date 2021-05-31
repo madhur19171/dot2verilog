@@ -39,10 +39,13 @@ int DotReader::lineReader(){
 
 	inputFile.close();
 
+	//Function calls to generate a Component Graph
 	removeTabs();
 	removeComments();
 	readComponentDeclarations();
 	readGlobalComponentConnections();
+	//readIntraBlockConnections has to be called before readInterBlockConnections
+	//Because the first InterBlockConnection follows the first intraBlockConnection block
 	while(readIntraBlockConnections() || readInterBlockConnections());
 	generateComponentList();
 	generateConnectionMap();
@@ -52,6 +55,9 @@ int DotReader::lineReader(){
 }
 
 
+//Puts the ComponentConnection data into the component connection io element in the structure
+//The globalCompoentConnections, intraBlockConnection, interBlockConnection are read to get the
+//component connection informations and using that info, it is determined which component is connected to which other component
 void DotReader::generateConnectionMap(){
 	std::vector<std::string>::iterator it;
 	std::string line;
@@ -73,7 +79,7 @@ void DotReader::generateConnectionMap(){
 		std::pair<std::string, std::string> pair;
 		std::pair<std::string, std::pair<std::string, std::string>> connection;
 		std::string name = substring(line, 1, line.find('"', 1));
-		std::cout << name << " ----> ";
+//		std::cout << name << " ----> ";
 		connection.first = substring(line, line.find('>') + 3, line.find('"', line.find('>') + 3));
 		pair.first = substring(line, line.find("from = ") + 8, line.find('"', line.find("from = ") + 8));
 		pair.second = substring(line, line.find("to = ") + 6, line.find('"', line.find("to = ") + 6));
@@ -95,7 +101,9 @@ void DotReader::generateConnectionMap(){
 	}
 }
 
-
+//This function reads the conponentDeclaration list and initializes the various elements of component structure
+//based on the information present in the componentDeclaration lines
+//Then pushes the components into componentList and componentMap indexed by their names
 void DotReader::generateComponentList(){
 	std::vector<std::string>::iterator it;
 	struct component component;
@@ -120,21 +128,53 @@ void DotReader::generateComponentList(){
 	}
 }
 
-int DotReader::readIntraBlockConnections(){
+
+//Reads inter-block connections
+//This portion just follows the inter-block connection
+int DotReader::readInterBlockConnections(){
 	std::vector<std::string>::iterator it;
-	std::vector<std::string> blockConnection;
-	int retVal = 0;
+	int retVal = 0;//If 0, this means that no more inter-block connections, if 1 then more inter-block connection
 
 	it = lines.begin();
 
+	//Following the }, if there is "->" in the following line, this means that line has
+	//Inter-Block connection information
+	if((*it).find('>') != std::string::npos
+			&& it != lines.end()){
+		retVal = 1;
+		//When we encounter our first { or EOF, this means that we have encountered a new subgraph
+		//and the inter-block connections data is over
+		//Or reached EOF
+		while(!((*it).find('{') != std::string::npos
+				|| it == lines.end())){
+			interBlockConnection.push_back(*it);
+			it = lines.erase(it);
+		}
+	}
+
+	return retVal;
+}
+
+//Reads intra-block Connections
+//This section is encountered when we enter a subgraph block
+int DotReader::readIntraBlockConnections(){
+	std::vector<std::string>::iterator it;
+	int retVal = 0;//If 0, this means that no more subgraphs, if 1 then more subgraphs
+
+	it = lines.begin();
+
+	//If we find a {, this means we have encountered a subgraph
+	//So we go further to read the component connections in that subgraph
 	if((*it).find('{') != std::string::npos
 			&& it != lines.end()){
-		numberOfBlocks++;
+		numberOfBlocks++;//increment the number of blocks by 1
 		retVal = 1;
 		it = lines.erase(it);//Delete the line with {
 		it = lines.erase(it);//Delete the line with color info;
 		it = lines.erase(it);//Delete the line with label info;
 
+		//The first } encounter means that we encounter the end of intra-block connections
+		//Otherwise just push the line containing block connection data into intraBlockConnection
 		while(!((*it).find('}') != std::string::npos
 				|| it == lines.end())){
 			intraBlockConnection.push_back(*it);
@@ -143,53 +183,12 @@ int DotReader::readIntraBlockConnections(){
 		}
 		it = lines.erase(it);
 	}
-	//	intraBlockConnection.push_back(blockConnection);
 
 	return retVal;
 }
 
-int DotReader::readInterBlockConnections(){
-	std::vector<std::string>::iterator it;
-	std::vector<std::string> blockConnection;
-	int retVal = 0;
-
-	it = lines.begin();
-
-	if((*it).find('>') != std::string::npos
-			&& it != lines.end()){
-		retVal = 1;
-		//When we encounter our first { or EOF, this means that we have encountered a subgraph
-		//Or reached EOF
-		while(!((*it).find('{') != std::string::npos
-				|| it == lines.end())){
-			interBlockConnection.push_back(*it);
-			it = lines.erase(it);
-		}
-	}
-	//	interBlockConnection.push_back(blockConnection);
-
-	return retVal;
-}
-
-//Reads component Declaration Blocks
-void DotReader::readComponentDeclarations(){
-	std::vector<std::string>::iterator it;
-	it = lines.begin();
-	it = lines.erase(it);//Delete the line Digraph G{
-	it = lines.erase(it);//Delete the line splines=spline;
-
-	//While we do not encounter any >, or { or EOF this means that we are still in global component
-	//Declaration section. The first > will be encountered when there are global component connections
-	//First { will be encountered when there are subgraphs(blocks)
-	while(!((*it).find('>') != std::string::npos
-			|| (*it).find('{') != std::string::npos
-			|| it == lines.end())){
-		componentDeclaration.push_back(*it);
-		it = lines.erase(it);
-	}
-}
-
-//Reads component Declaration Blocks
+//Reads component Connections Blocks
+//This portion just follows the Component declarations
 void DotReader::readGlobalComponentConnections(){
 	std::vector<std::string>::iterator it;
 	it = lines.begin();
@@ -199,6 +198,25 @@ void DotReader::readGlobalComponentConnections(){
 	while(!((*it).find('{') != std::string::npos
 			|| it == lines.end())){
 		globalComponentConnection.push_back(*it);
+		it = lines.erase(it);
+	}
+}
+
+
+//Reads component Declaration Blocks
+void DotReader::readComponentDeclarations(){
+	std::vector<std::string>::iterator it;
+	it = lines.begin();
+	it = lines.erase(it);//Delete the line Digraph G{
+	it = lines.erase(it);//Delete the line splines=spline;
+
+	//While we do not encounter any >, or { or EOF this means that we are still in global component
+	//Declaration section. The first > will be encountered when there are *global component connections*
+	//First { will be encountered when there are *subgraphs(blocks)*
+	while(!((*it).find('>') != std::string::npos
+			|| (*it).find('{') != std::string::npos
+			|| it == lines.end())){
+		componentDeclaration.push_back(*it);
 		it = lines.erase(it);
 	}
 }
@@ -266,11 +284,6 @@ void DotReader::printComponent(struct component s){
 
 
 std::string DotReader::trim(std::string __str){
-	//	std::string newString = std::string(__str);
-	//	std::string::iterator it;
-	//	for(it = newString.end(); it != newString.begin() && *it == ' '; it--)
-	//		newString.erase(it);
-	//	return newString;
 	if(*__str.end() == ' '){
 		return substring(__str, 0, __str.size() - 1);
 	}

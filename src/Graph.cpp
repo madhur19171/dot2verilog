@@ -14,13 +14,18 @@ Graph::Graph(DotReader dotReader) {
 
 
 void Graph::startDFS(){
+
+	initializeDFS();//populates the visited map, otherwise it throws error
+
+	//Starts DFS from the "start_0" component
 	component root = findRoot();
 	DFS(&root);
 
 	std::map<std::string, bool>::iterator it;
 	for(it = visited.begin(); it != visited.end(); it++){
-		if(!it->second){
-			root = dotReader.getComponentMap().at(it->first);
+		component comp = dotReader.getComponentMap().at(it->first);
+		if(comp.in == DEFAULT_IN && !visited[comp.name]){
+			root = comp;
 			DFS(&root);
 		}
 	}
@@ -28,6 +33,7 @@ void Graph::startDFS(){
 
 
 void Graph::DFS(struct component *v){
+	//CurrentDFSDepth keeps track of current DFS Level. For debugging purposes only
 	if(currentDFSDepth++ < maxDFSDepth){
 		visited[v->name] = true;
 		std::cout << v->name << " -> ";
@@ -41,6 +47,7 @@ void Graph::DFS(struct component *v){
 				nextComponent = (dotReader.getComponentMap().at(name));
 				if(!visited[name]){
 					DFS(&nextComponent);
+					currentDFSDepth--;
 				}else{
 					std::cout << std::endl;
 				}
@@ -57,6 +64,7 @@ component Graph::findRoot(){
 	return dotReader.getComponentMap().at("start_0");
 }
 
+//Initialize visited map.
 void Graph::initializeDFS(){
 	std::vector<component>::const_iterator it;
 	for(it = dotReader.getComponentList().begin(); it != dotReader.getComponentList().end(); it++){

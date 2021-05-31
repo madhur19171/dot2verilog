@@ -54,7 +54,6 @@ int main() {
 
 	Graph graph(dotReader);
 
-	graph.initializeDFS();
 	graph.startDFS();
 
 	return 0;
