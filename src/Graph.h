@@ -17,7 +17,7 @@ public:
 //	Graph();
 	Graph(DotReader dotReader);
 	void startDFS();
-	component findRoot();
+	Component findRoot();
 	void initializeDFS();
 
 private:
@@ -25,7 +25,7 @@ private:
 	int maxDFSDepth = 500, currentDFSDepth = 0;
 	std::map<std::string, bool> visited;
 
-	void DFS(struct component *v);
+	void DFS(Component *v);
 };
 
 #endif /* GRAPH_H_ */

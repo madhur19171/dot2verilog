@@ -10,30 +10,37 @@
 
 #pragma once
 
-#include "dot_reader.h"
 #include "Graph.h"
 
 class GraphToVerilog{
 public:
 	GraphToVerilog(DotReader dotReader);
 
-	const std::string& getVerilogCode() const {
+	void writeVerilogCode();
+
+	std::string& getVerilogCode() {
 		return verilogCode;
 	}
 
 private:
 	DotReader dotReader;
-	std::string tabs;
-	std::string verilogCode;
-	std::vector<component> modulePortComponents;
+	std::string tabs = "";
+	std::string verilogCode = "";
+	std::vector<Component> topModulePortComponents;
 
 	void insertTab();
 	void removeTab();
 	void insertVerilogCode(std::string& str);
-	void declareModulePorts();
-	void generateModulePortComponents();
-	std::string generateVector(int from, int to);
-	int getVectorLength(std::string str);
+	//writes wires that interconnects various modules inside top module
+	std::string writeModulePortWires();
+	//Writes port list for top module
+	std::string writeTopModulePorts();
+	//Generates a list of components which interface with top module port list
+	void generateTopModulePortComponents();
+	//Writes "module <name>("
+	std::string writeModuleName();
+	//Writes "endmodule;"
+	std::string writeEndModule();
 };
 
 #endif /* GRAPHTOVERILOG_H_ */

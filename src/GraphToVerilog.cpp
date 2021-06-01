@@ -13,6 +13,20 @@ GraphToVerilog::GraphToVerilog(DotReader dotReader){
 	tabs = "";
 }
 
+void GraphToVerilog::writeVerilogCode(){
+	verilogCode += writeModuleName();
+
+	insertTab();
+	verilogCode += writeTopModulePorts();
+	removeTab();
+
+	insertTab();
+	verilogCode += writeModulePortWires();
+	removeTab();
+
+	verilogCode += writeEndModule();
+}
+
 //IO Ports are declared for components which are directly interfacing
 //with the outside world.
 //The following component types are to be provided IO Ports:
@@ -21,41 +35,75 @@ GraphToVerilog::GraphToVerilog(DotReader dotReader){
 //3. LSQ
 //4. MC
 
-void GraphToVerilog::declareModulePorts(){
-	std::string modulePortList;
-	generateModulePortComponents();
+std::string GraphToVerilog::writeTopModulePorts(){
+	std::string topModulePortList;
+	generateTopModulePortComponents();
 
 	//Clock and Reset signal are always present in the design ports
-	modulePortList += "\tinput clk;\n\tinput rst;\n";
-	//Start ports:
-	modulePortList += "\tinput start_in;\n\tinput start_valid;\n\toutput start_ready;\n";
-	//End Ports:
-	modulePortList += "\toutput end_out;\n\toutput end_valid;\n\tinput end_ready;\n";
+	topModulePortList += tabs + "input clk;\n" + tabs + "input rst;\n\n";
 
-	//Remaining IO Ports:
-	std::vector<component>::iterator it;
+	//Writing IO Ports:
+	std::vector<Component>::iterator it;
 
-	for(it = modulePortComponents.begin(); it != modulePortComponents.end(); it++){
-		if((*it).name.find("start_") == std::string::npos && (*it).name.find("end_") == std::string::npos){
-			if((*it).type == COMPONENT_START){
-
-			}
+	for(it = topModulePortComponents.begin(); it != topModulePortComponents.end(); it++){
+		if((*it).type == COMPONENT_START){
+			StartComponent startComponent = (StartComponent)(*it);
+			topModulePortList += startComponent.getModuleIODeclaration(tabs);
+		} else if((*it).type == COMPONENT_END){
+			EndComponent endComponent = (EndComponent)(*it);
+			topModulePortList += endComponent.getModuleIODeclaration(tabs);
+		} else if((*it).type == COMPONENT_MC){
+			MemoryContentComponent memoryContentComponent = (MemoryContentComponent)(*it);
+			topModulePortList += memoryContentComponent.getModuleIODeclaration(tabs);
 		}
 	}
 
+	//Erasing this necessary to get rid of an extra "," just before closing top module port declarations
+	topModulePortList = topModulePortList.erase(topModulePortList.size() - 3, 1);
+
+	topModulePortList += ");\n\n";
+
+	return topModulePortList;
 }
 
-void GraphToVerilog::generateModulePortComponents(){
-	std::vector<component>::const_iterator it;
+void GraphToVerilog::generateTopModulePortComponents(){
+	std::vector<Component>::const_iterator it;
 
 	for(it = dotReader.getComponentList().begin(); it != dotReader.getComponentList().end(); it++){
 		if((*it).type == COMPONENT_START ||
 				(*it).type == COMPONENT_END ||
 				(*it).type == COMPONENT_MC ||
 				(*it).type == COMPONENT_LSQ){
-			modulePortComponents.push_back((*it));
+			topModulePortComponents.push_back((*it));
 		}
 	}
+}
+
+std::string GraphToVerilog::writeModulePortWires(){
+	std::string modulePortWires;
+	std::vector<Component>::iterator it;
+
+	for(it = dotReader.getComponentList().begin(); it != dotReader.getComponentList().end(); it++){
+		modulePortWires += (*it).getModulePortDeclarations(tabs);
+		modulePortWires += "\n";
+	}
+
+	return modulePortWires;
+}
+
+std::string GraphToVerilog::writeModuleName(){
+	std::string moduleName;
+
+	std::string& file_n = dotReader.getFileName();
+	file_n = substring(file_n, 0, file_n.find('.'));
+
+	moduleName = "module " + file_n + "(\n";
+
+	return moduleName;
+}
+
+std::string GraphToVerilog::writeEndModule(){
+	return "endmodule";
 }
 
 void GraphToVerilog::insertVerilogCode(std::string& str){
@@ -63,29 +111,13 @@ void GraphToVerilog::insertVerilogCode(std::string& str){
 	verilogCode += str;
 }
 
-//std::string GraphToVerilog::generateVector(int from, int to){
-//	return ("[" + from + " : " + to + "]");
-//}
-
-int GraphToVerilog::getVectorLength(std::string str){
-	unsigned int colon_pos = str.find(':');
-	std::string length = "";
-
-	for(unsigned int i = colon_pos + 1; i < str.size(); i++){
-		if(str[i] >= '0' && str[i] <= '9')
-			length += str[i];
-		else
-			break;
-	}
-
-	return stoi(length);
-}
 
 void GraphToVerilog::insertTab(){
 	tabs += "\t";
 }
 
 void GraphToVerilog::removeTab(){
-	tabs += "\b";
+	if(tabs.size() != 0)
+		tabs = tabs.erase(0, 1);
 }
 

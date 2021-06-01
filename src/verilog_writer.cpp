@@ -7,8 +7,7 @@
 //============================================================================
 
 #include <iostream>
-#include "dot_reader.h"
-#include "Graph.h"
+#include "GraphToVerilog.h"
 
 using namespace std;
 
@@ -16,7 +15,7 @@ int main() {
 	cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
 
 
-	std::string fileName = "/media/madhur/CommonSpace/Work/Dynamatic/Installation/etc/dynamatic/dot2verilog/dot2verilog/src/fir.dot";
+	std::string fileName = "/media/madhur/CommonSpace/Work/Dynamatic/Installation/etc/dynamatic/dot2verilog/dot2verilog/src/histogram.dot";
 
 	DotReader dotReader = DotReader(fileName);
 
@@ -48,13 +47,28 @@ int main() {
 
 	std::cout << "Component List:" << std::endl;
 	for(unsigned int i = 0; i < dotReader.getComponentList().size(); i++){
-		dotReader.printComponent(dotReader.getComponentList().at(i));
+		(dotReader.getComponentList().at(i)).printComponent();
 	}
 	std::cout << std::endl << std::endl;
 
 	Graph graph(dotReader);
 
 	graph.startDFS();
+	std::cout << std::endl << std::endl;
+
+	GraphToVerilog graphToVerilog(dotReader);
+	graphToVerilog.writeVerilogCode();
+	std::cout << graphToVerilog.getVerilogCode() << std::endl;
 
 	return 0;
 }
+
+
+
+
+
+
+
+
+
+

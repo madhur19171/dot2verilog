@@ -106,7 +106,7 @@ void DotReader::generateConnectionMap(){
 //Then pushes the components into componentList and componentMap indexed by their names
 void DotReader::generateComponentList(){
 	std::vector<std::string>::iterator it;
-	struct component component;
+	Component component;
 	std::string line;
 
 	for(it = componentDeclaration.begin(); it != componentDeclaration.end(); it++){
@@ -122,6 +122,8 @@ void DotReader::generateComponentList(){
 		component.slots = line.find("slots=") == std::string::npos ? DEFAULT_SLOTS : std::stoi(substring(line, line.find("slots=") + 6, std::min(line.find(',', line.find("slots=") + 6), line.find(']', line.find("slots=") + 6))));
 		component.op = line.find("op = ") == std::string::npos ? DEFAULT_OP : substring(line, line.find("op = ") + 6, line.find('"', line.find("op = ") + 6));
 		component.value = line.find("value = ") == std::string::npos ? DEFAULT_VALUE : (unsigned long) std::stol(substring(line, line.find("value = ") + 9, line.find('"', line.find("value = ") + 9)), NULL, 16);
+
+		component = component.castToSubClass();//This will cast the created object to the respective Type Class like start,, end, fork, join etc
 		componentList.push_back(component);
 		componentMap[component.name] = component;
 		//		std::cout << "done" << std::endl;
@@ -267,36 +269,7 @@ void DotReader::removeComments(){
 //			<< "value: " << s.value << std::endl;
 //}
 
-void DotReader::printComponent(struct component s){
-	std::cout << "name: " << s.name << "\t"
-			<< "type: " << s.type << "\t"
-			<< "bbID: " << s.bbID << "\t"
-			<< "op: " << s.op << "\t"
-			<< "in: " << s.in << "\t"
-			<< "out: " << s.out << "\t"
-			<< "delay: " << s.delay << "\t"
-			<< "latency" << s.latency << "\t"
-			<< "II: " << s.II << "\t"
-			<< "slots: " << s.slots << "\t"
-			<< "transparent: " << s.transparent << "\t"
-			<< "value: " << s.value << std::endl;
-}
 
-
-std::string DotReader::trim(std::string __str){
-	if(*__str.end() == ' '){
-		return substring(__str, 0, __str.size() - 1);
-	}
-	else
-		return __str;
-}
-
-
-
-std::string DotReader::substring(std::string __str, int start, int stop){
-	const std::string& ret = __str.substr(start, stop - start);
-	return ret;
-}
 
 
 

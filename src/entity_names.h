@@ -8,10 +8,13 @@
 
 //#define _GLIBCXX_USE_CXX11_ABI 0
 #include <string>
+#include "string_utility.h"
 #include <cstdint>
 #include <iostream>
 #include <vector>
 #include <utility>
+#include <map>
+#include <sstream>
 
 #ifndef ENTITY_NAMES_H_
 #define ENTITY_NAMES_H_
@@ -113,32 +116,8 @@
 #define SIGNAL_STRING  "signal "
 #define STD_LOGIC      "std_logic;"
 
-//Structure that will store the connection information of a component
-//Right now it has only one element, but it may be extended as and when needed
-struct connection{
-	//Assuming that two different blocks have only one unique connection between them
-	//Then connection is vector containing all the connections that component has with other components
-	//The vector contains pairs. The first element of that pair is the name of the component that is connected to this component
-	//The second element of the pair is the input-output mapping of this component and the connected component
-	std::vector<std::pair<std::string, std::pair<std::string, std::string>>> io;
-};
 
 
-//Stores all the information about a component
-//If the component does not support any parameter,
-//it is assigned the default value
-struct component{
-	std::string name = DEFAULT_NAME;
-	std::string type = DEFAULT_TYPE;
-	int bbID = DEFAULT_BBID;
-	std::string in = DEFAULT_IN, out = DEFAULT_OUT;
-	float delay = DEFAULT_DELAY, latency = DEFAULT_LATENCY;
-	int II = DEFAULT_II;
-	int slots = DEFAULT_SLOTS;
-	bool transparent = DEFAULT_TRANSPARENT;
-	std::string op = DEFAULT_OP;
-	uint64_t value = DEFAULT_VALUE;
-	connection connections;
-};
 
-#endif /* ENTITY_NAMES_H_ */
+
+#endif
