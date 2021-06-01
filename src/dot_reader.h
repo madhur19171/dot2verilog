@@ -72,6 +72,9 @@ public:
 		return intraBlockConnection;
 	}
 
+	const std::string& getFileName() const {
+		return fileName;
+	}
 
 private:
 	void removeTabs();//Removes tab from starting of a line
