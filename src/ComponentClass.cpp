@@ -7,6 +7,7 @@
 
 #include "ComponentClass.h"
 
+//Default constructor to set every data item a default value
 Component::Component(){
 	name = DEFAULT_NAME;
 	type = DEFAULT_TYPE;
@@ -20,6 +21,7 @@ Component::Component(){
 	value = DEFAULT_VALUE;
 }
 
+//Prints data about a component
 void Component::printComponent(){
 	std::cout << "name: " << name << "\t"
 			<< "type: " << type << "\t"
@@ -35,6 +37,8 @@ void Component::printComponent(){
 			<< "value: " << value << std::endl;
 }
 
+//Takes a string as input(string containing an input/output eg: in1:+32)
+//then returns the length of the input/output port(in above example: 32)
 int Component::getVectorLength(std::string str){
 	unsigned int colon_pos = str.find(':');
 	std::string length = "";
@@ -49,6 +53,8 @@ int Component::getVectorLength(std::string str){
 	return stoi(length);
 }
 
+//Takes a string as input(string containing an input/output eg: in1:+32)
+//then returns a string containing a verilog vector [<vectorLength - 1> : 0]
 std::string Component::generateVector(std::string str){
 	//Because indexing is done till 0 not 1
 	int from = getVectorLength(str) - 1;
@@ -57,21 +63,27 @@ std::string Component::generateVector(std::string str){
 	return generateVector(from, 0);
 }
 
+//Returns a verilog vector: "[<from> : <to>]"
 std::string Component::generateVector(int from, int to){
 	from = from < 0 ? 0 : from;
 	return ("[" + std::to_string(from) + " : " + std::to_string(to) + "]");
 }
 
 //This function is created just for easier understanding of code
+//It generates an address port verilog vector for MC
 std::string Component::getAddressPortVector(std::string _str){
 	return (generateVector(_str));
 }
 
 //This function is created just for easier understanding of code
+//It generates a data port verilog vector for MC
 std::string Component::getDataPortVector(std::string _str){
 	return (generateVector(_str));
 }
 
+//Returns the name of input/output port for that particular component.
+//Eg: if str = "in2:+32" then it returns "in2"
+//This function gets rid of :+32 and similar things
 std::string Component::getIOName(std::string str){
 	if(str.find("in") != std::string::npos){
 		return ("in" + std::to_string(getIONumber(str)));
@@ -82,6 +94,8 @@ std::string Component::getIOName(std::string str){
 	return "";
 }
 
+//Takes an input/output port for a particular component then returns the port number
+//Eg. if str = "in3:-16" then it returns 3 as 3 is  the input number
 int Component::getIONumber(std::string str){
 	std::string number;
 	int num = 9;
@@ -107,7 +121,8 @@ int Component::getIONumber(std::string str){
 	return num;
 }
 
-
+//This function is supposed to cast the Component Class object to their corresponding
+//Entity classes and return those casted objects.
 Component Component::castToSubClass(){
 	if(type == COMPONENT_START){
 		StartComponent obj(*this);
@@ -123,6 +138,10 @@ Component Component::castToSubClass(){
 	return *this;
 }
 
+//Populates the inputConnection map and sets the string(name) for each port of each input
+//Eg. it gives unique names to data, ready and valid ports of a particular input
+//The name will follow the convention:
+//<Component name>_<input name>_data/ready/valid
 void Component::setInputConnections(){
 	std::string input;
 	std::istringstream ss(in);
@@ -138,6 +157,7 @@ void Component::setInputConnections(){
 	}
 }
 
+//Same as setInputConnections(), but for outputs
 void Component::setOutputConnections(){
 	std::string output;
 	std::istringstream ss(out);
@@ -155,6 +175,9 @@ void Component::setOutputConnections(){
 }
 
 //This returns the wires of an entity which connect it to other modules
+//**This function also calls setInputConnections and setOutputConnections
+//So, input Connections and outputConnections vectors of a component
+//can be accessed only after this function has been called!
 std::string Component::getModulePortDeclarations(std::string tabs){
 	std::string ret = "";
 
@@ -163,6 +186,8 @@ std::string Component::getModulePortDeclarations(std::string tabs){
 	//Just in case this is required before this function.
 	//A potential location for this snippet is the castToSubClass function as it is called as soon as
 	//the component is created in dot_reader.
+	//This could be moved to the respective entity subclass constructors
+	//Just like port_din, port_valid and port_ready are moved in start, end and MC
 	clk = name + "_" + "clk";
 	rst = name + "_" + "rst";
 
@@ -197,7 +222,7 @@ std::string Component::getModulePortDeclarations(std::string tabs){
 	return ret;
 }
 
-
+//Subclass for Entry type component
 StartComponent::StartComponent(Component& c){
 	name = c.name;
 	type = c.type;
@@ -225,6 +250,7 @@ StartComponent::StartComponent(Component& c){
 	port_ready = name + "_" + "pready";
 }
 
+//Returns the input/output declarations for top-module
 std::string StartComponent::getModuleIODeclaration(std::string tabs){
 	std::string ret = "";
 	ret += tabs + "input " + generateVector(in) + port_din + ",\n";
@@ -263,6 +289,7 @@ EndComponent::EndComponent(Component& c){
 	port_ready = name + "_" + "pready";
 }
 
+//Returns the input/output declarations for top-module
 std::string EndComponent::getModuleIODeclaration(std::string tabs){
 	std::string ret = "";
 	ret += tabs + "output " + generateVector(out) + port_dout + ",\n";
@@ -306,6 +333,7 @@ MemoryContentComponent::MemoryContentComponent(Component& c){
 
 }
 
+//Returns the input/output declarations for top-module
 std::string MemoryContentComponent::getModuleIODeclaration(std::string tabs){
 	std::string ret = "";
 	//Since getVectorLength function only counts from : till it reads numbers,

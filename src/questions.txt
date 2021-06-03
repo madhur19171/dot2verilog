@@ -1,0 +1,15 @@
+Information about LSQ ports. What are in1:32*l0a kind of things?
+Is join ever used? If yes then how is it any different from Merge?
+What are TEHB and OEHB?
+Can Branch have more than two Output ports? If it does, then what will + and - in output be replaced with?
+Dores + mean that the input data will be sent to this output port if the condition is 1?
+
+Verilog does not support arrays in port list. VHDL components are written with arrays in port list.
+So currently, the VHDL components can not be connected to the Verilog top file.
+So the best we can do is to pack all the Inputs/Outputs into respective Input Bus or Output Bus
+then pass connect the bus to various components. Still we won't be able to connect it to the VHDL
+file for now. This workaround will work only when all the code is written purely in Verilog!
+
+Another solution might be to use SystemVerilog but I would frown upon that thought.
+
+Input always comes at diffenert times in merge but can arrive at the same time in mux

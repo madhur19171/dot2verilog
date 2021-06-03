@@ -21,10 +21,16 @@ void Graph::startDFS(){
 	Component root = findRoot();
 	DFS(&root);
 
+	//This loop will make sure that all those components that have not yet been visited
+	//will also be traversed. Components which have no input will never be reached
+	//Eg. "const" has no input, so it has to be traversed separately.
+	//Additionally, the entry points are also one of the roots of the graph, so all the entry points
+	//Other than "start" are also traversed here
 	std::map<std::string, bool>::iterator it;
 	for(it = visited.begin(); it != visited.end(); it++){
 		Component comp = dotReader.getComponentMap().at(it->first);
-		if(comp.in == DEFAULT_IN && !visited[comp.name]){
+		//If a component has no input or component is an entry point, and not visited yet.
+		if((comp.in == DEFAULT_IN || comp.type == COMPONENT_START) && !visited[comp.name]){
 			root = comp;
 			DFS(&root);
 		}

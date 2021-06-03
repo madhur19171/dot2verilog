@@ -1,0 +1,27 @@
+Add:
+	Add will always have only 2 inputs and 1 output as per the vhd file.
+	Add uses join internally to make sure that it has both the operands ready before adding.
+	So for implementing And, Join has to be implemented.
+	
+Ret:
+	1 input and 1 output always
+	Internally, it is exactly same as TEHB
+	
+TEHB:
+	N inputs 1 output
+
+Since verilog does not support passing of arrays as arguments, so the program will be written such that
+there will be an Input Bus for input to a component and an Output Bus for output from a component.
+The Input and Output bus will pack all the ports that are are connected to the input and output side of a component.
+Eg.
+if input has following ports:
+	data_in[0], valid_in[0], ready_in[0]
+	data_in[1], valid_in[1], ready_in[1]
+	data_in[2], valid_in[2], ready_in[2]
+	
+then the input port will have the following input buses:
+	data_in_bus -> {data_in[2], data_in[1], data_in[0]}
+	valid_in_bus -> {valid_in[2], valid_in[1], valid_in[0]}
+	ready_in_bus -> {ready_in[2], ready_in[1], ready_in[0]}
+	
+Similarly output buses will be created

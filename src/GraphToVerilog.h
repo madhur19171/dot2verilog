@@ -38,7 +38,7 @@ private:
 	//Generates a list of components which interface with top module port list
 	void generateTopModulePortComponents();
 	//Writes "module <name>("
-	std::string writeModuleName();
+	std::string writeTopModuleName();
 	//Writes "endmodule;"
 	std::string writeEndModule();
 };

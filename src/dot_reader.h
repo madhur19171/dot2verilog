@@ -39,16 +39,25 @@ public:
 	int lineReader();//Reads the Dot file line by line and stores each line in lines vector
 
 	//getters
-	 std::vector<std::string>& getLines()  {
+	std::vector<std::string>& getLines()  {
 		return lines;
 	}
 
-	 std::vector<std::string>& getComponentDeclaration()  {
+	std::vector<std::string>& getComponentDeclaration()  {
 		return componentDeclaration;
 	}
 
-	 std::vector<std::string>& getGlobalComponentConnection()  {
+	//Returns lines with info about global component connections
+	std::vector<std::string>& getGlobalComponentConnection()  {
 		return globalComponentConnection;
+	}
+	//Returns lines with info about component connections between two blocks
+	std::vector<std::string>& getInterBlockConnection() {
+		return interBlockConnection;
+	}
+	//Returns lines with info about component connections inside respective blocks
+	std::vector<std::string>& getIntraBlockConnection() {
+		return intraBlockConnection;
 	}
 
 	int getNumberOfBlocks() {
@@ -61,14 +70,6 @@ public:
 
 	std::map<std::string, Component>& getComponentMap(){
 		return componentMap;
-	}
-
-	std::vector<std::string>& getInterBlockConnection() {
-		return interBlockConnection;
-	}
-
-	std::vector<std::string>& getIntraBlockConnection() {
-		return intraBlockConnection;
 	}
 
 	std::string& getFileName() {

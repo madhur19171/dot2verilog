@@ -22,6 +22,10 @@ struct connection{
 	std::vector<std::pair<std::string, std::pair<std::string, std::string>>> io;
 };
 
+//Input/Output Connections have the name as follows:
+//<name>_data
+//<name>_valid
+//<name>_ready
 struct InputConnection{
 	int vectorLength;
 	std::string data;
@@ -58,7 +62,9 @@ public:
 	std::string clk, rst;
 	//Stores the module port input and output connections, using which
 	//modules are connected to outside world
+	std::string inputPortBus;
 	std::map<std::string, InputConnection> inputConnections;
+	std::string outputPortBus;
 	std::map<std:: string, OutputConnection> outputConnections;
 
 
@@ -76,7 +82,9 @@ protected:
 	std::string getDataPortVector(std::string _str);
 	std::string getAddressPortVector(std::string _str);
 	//Fills the inputConnections and outputConnections vectors with input and output ports
+	void setInputPortBus();
 	void setInputConnections();
+	void setOutputPortBus();
 	void setOutputConnections();
 	//Finds the name of io port based on input.
 	//Eg. input->in2-:32; output->in2

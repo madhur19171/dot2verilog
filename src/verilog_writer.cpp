@@ -15,7 +15,7 @@ int main() {
 	cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
 
 
-	std::string fileName = "/media/madhur/CommonSpace/Work/Dynamatic/Installation/etc/dynamatic/dot2verilog/dot2verilog/src/histogram.dot";
+	std::string fileName = "/media/madhur/CommonSpace/Work/Dynamatic/Installation/etc/dynamatic/dot2verilog/dot2verilog/src/HelloWorld.dot";
 
 	DotReader dotReader = DotReader(fileName);
 
@@ -25,14 +25,23 @@ int main() {
 	else
 		std::cout << "Failure" << std::endl;
 
-	for(unsigned int i = 0; i < dotReader.getLines().size(); i++){
-		std::cout << dotReader.getLines().at(i) << std::endl;
-	}
-	std::cout << std::endl << std::endl;
+	//	for(unsigned int i = 0; i < dotReader.getLines().size(); i++){
+	//		std::cout << dotReader.getLines().at(i) << std::endl;
+	//	}
+	//	std::cout << std::endl << std::endl;
 
 	std::cout << "Component Declarations:" << std::endl;
 	for(unsigned int i = 0; i < dotReader.getComponentDeclaration().size(); i++){
 		std::cout << dotReader.getComponentDeclaration().at(i) << std::endl;
+	}
+	std::cout << std::endl << std::endl;
+
+	std::cout << "Number of Blocks: " << dotReader.getNumberOfBlocks() << std::endl;
+	std::cout << std::endl << std::endl;
+
+	std::cout << "Component List:" << std::endl;
+	for(unsigned int i = 0; i < dotReader.getComponentList().size(); i++){
+		(dotReader.getComponentList().at(i)).printComponent();
 	}
 	std::cout << std::endl << std::endl;
 
@@ -42,12 +51,15 @@ int main() {
 	}
 	std::cout << std::endl << std::endl;
 
-	std::cout << dotReader.getNumberOfBlocks() << std::endl;
+	std::cout << "Inter-Block Connections:" << std::endl;
+	for(unsigned int i = 0; i < dotReader.getInterBlockConnection().size(); i++){
+		std::cout << dotReader.getInterBlockConnection().at(i) << std::endl;
+	}
 	std::cout << std::endl << std::endl;
 
-	std::cout << "Component List:" << std::endl;
-	for(unsigned int i = 0; i < dotReader.getComponentList().size(); i++){
-		(dotReader.getComponentList().at(i)).printComponent();
+	std::cout << "Intra-Block Connections:" << std::endl;
+	for(unsigned int i = 0; i < dotReader.getIntraBlockConnection().size(); i++){
+		std::cout << dotReader.getIntraBlockConnection().at(i) << std::endl;
 	}
 	std::cout << std::endl << std::endl;
 

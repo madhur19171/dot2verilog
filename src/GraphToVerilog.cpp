@@ -7,14 +7,21 @@
 
 #include "GraphToVerilog.h"
 
+//Constructor
 GraphToVerilog::GraphToVerilog(DotReader dotReader){
 	this->dotReader = dotReader;
 	verilogCode = "";
 	tabs = "";
 }
 
+//Function that calls other functions to append their generated verilog code snippet
+//The sequence in which the sub-functions are called determines in which sequence the snippet
+//will appear in the final code.
+//Eg. Module Name is the first thing of a verilog code
+//Followed by Top Module Ports Input output declarations
+//Followed by declaring wires that connect various sub components in the top module
 void GraphToVerilog::writeVerilogCode(){
-	verilogCode += writeModuleName();
+	verilogCode += writeTopModuleName();
 
 	insertTab();
 	verilogCode += writeTopModulePorts();
@@ -66,6 +73,9 @@ std::string GraphToVerilog::writeTopModulePorts(){
 	return topModulePortList;
 }
 
+//This function populates the topModulePortComponents which will contain
+//All the components that need to have input output declarations in the top module
+//port list
 void GraphToVerilog::generateTopModulePortComponents(){
 	std::vector<Component>::const_iterator it;
 
@@ -79,6 +89,11 @@ void GraphToVerilog::generateTopModulePortComponents(){
 	}
 }
 
+//This function accesses the getModulePortDeclarations function of each component to generate
+//a declaration of all wires of input/output connections of the sub modules
+//They include the data, valid and ready signal for all input and outputs of that component
+//Additional ports can be added if needed for a particular component by overriding getModulePortDeclarations
+//function in a sub class
 std::string GraphToVerilog::writeModulePortWires(){
 	std::string modulePortWires;
 	std::vector<Component>::iterator it;
@@ -91,7 +106,8 @@ std::string GraphToVerilog::writeModulePortWires(){
 	return modulePortWires;
 }
 
-std::string GraphToVerilog::writeModuleName(){
+//Declares the top module.
+std::string GraphToVerilog::writeTopModuleName(){
 	std::string moduleName;
 
 	std::string& file_n = dotReader.getFileName();
@@ -106,6 +122,7 @@ std::string GraphToVerilog::writeEndModule(){
 	return "endmodule";
 }
 
+//Till now, a useless function
 void GraphToVerilog::insertVerilogCode(std::string& str){
 	str = tabs + str + '\n';
 	verilogCode += str;
