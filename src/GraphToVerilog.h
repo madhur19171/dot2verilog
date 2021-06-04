@@ -31,12 +31,14 @@ private:
 	void insertTab();
 	void removeTab();
 	void insertVerilogCode(std::string& str);
-	//writes wires that interconnects various modules inside top module
-	std::string writeModulePortWires();
 	//Writes port list for top module
 	std::string writeTopModulePorts();
 	//Generates a list of components which interface with top module port list
 	void generateTopModulePortComponents();
+	//writes wires that interconnect various modules inside top module
+	std::string writeModulePortWires();
+	//returns Instantiation all the modules present in the Design
+	std::string writeModuleInstantiation();
 	//Writes "module <name>("
 	std::string writeTopModuleName();
 	//Writes "endmodule;"

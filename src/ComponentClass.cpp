@@ -9,6 +9,8 @@
 
 //Default constructor to set every data item a default value
 Component::Component(){
+	moduleName = DEFAULT_MODULE_NAME;
+	instanceName = DEFAULT_INSTANCE_NAME;
 	name = DEFAULT_NAME;
 	type = DEFAULT_TYPE;
 	bbID = DEFAULT_BBID;
@@ -174,6 +176,74 @@ void Component::setOutputConnections(){
 	}
 }
 
+void Component::setInputPortBus(){
+	struct InputConnection inConn;
+
+	//First create data_in bus
+	inputPortBus = ".data_in_bus({";
+	//The bus will be assigned from highest input to lowest input. eg {in3, in2, in1}
+	for(int i = inputConnections.size(); i > 0; i--){
+		inConn = inputConnections["in" + std::to_string(i)];
+		inputPortBus += inConn.data + ", ";
+	}
+	inputPortBus = inputPortBus.erase(inputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
+	inputPortBus += "}), ";
+
+	//Now create valid_in bus
+	inputPortBus += ".valid_in_bus({";
+	//The bus will be assigned from highest input to lowest input. eg {in3, in2, in1}
+	for(int i = inputConnections.size(); i > 0; i--){
+		inConn = inputConnections["in" + std::to_string(i)];
+		inputPortBus += inConn.valid + ", ";
+	}
+	inputPortBus = inputPortBus.erase(inputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
+	inputPortBus += "}), ";
+
+	//Now create ready_in bus
+	inputPortBus += ".ready_in_bus({";
+	//The bus will be assigned from highest input to lowest input. eg {in3, in2, in1}
+	for(int i = inputConnections.size(); i > 0; i--){
+		inConn = inputConnections["in" + std::to_string(i)];
+		inputPortBus += inConn.ready + ", ";
+	}
+	inputPortBus = inputPortBus.erase(inputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
+	inputPortBus += "})";
+}
+
+void Component::setOutputPortBus(){
+	struct OutputConnection outConn;
+
+	//First create data_in bus
+	outputPortBus = ".data_out_bus({";
+	//The bus will be assigned from highest output to lowest output. eg {out3, out2, out1}
+	for(int i = outputConnections.size(); i > 0; i--){
+		outConn = outputConnections["out" + std::to_string(i)];
+		outputPortBus += outConn.data + ", ";
+	}
+	outputPortBus = outputPortBus.erase(outputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
+	outputPortBus += "}), ";
+
+	//Now create valid_in bus
+	outputPortBus += ".valid_out_bus({";
+	//The bus will be assigned from highest output to lowest output. eg {out3, out2, out1}
+	for(int i = outputConnections.size(); i > 0; i--){
+		outConn = outputConnections["out" + std::to_string(i)];
+		outputPortBus += outConn.valid + ", ";
+	}
+	outputPortBus = outputPortBus.erase(outputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
+	outputPortBus += "}), ";
+
+	//Now create ready_in bus
+	outputPortBus += ".ready_out_bus({";
+	//The bus will be assigned from highest output to lowest output. eg {out3, out2, out1}
+	for(int i = outputConnections.size(); i > 0; i--){
+		outConn = outputConnections["out" + std::to_string(i)];
+		outputPortBus += outConn.ready + ", ";
+	}
+	outputPortBus = outputPortBus.erase(outputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
+	outputPortBus += "})";
+}
+
 //This returns the wires of an entity which connect it to other modules
 //**This function also calls setInputConnections and setOutputConnections
 //So, input Connections and outputConnections vectors of a component
@@ -222,141 +292,27 @@ std::string Component::getModulePortDeclarations(std::string tabs){
 	return ret;
 }
 
-//Subclass for Entry type component
-StartComponent::StartComponent(Component& c){
-	name = c.name;
-	type = c.type;
-	bbID = c.bbID;
-	op = c.op;
-	in = c.in;
-	out = c.out;
-	delay = c.delay;
-	latency = c.latency;
-	II = c.II;
-	slots = c.slots;
-	transparent = c.transparent;
-	value = c.value;
-	connections = c.connections;
-	inputConnections = c.inputConnections;
-	outputConnections = c.outputConnections;
 
-	//here pvalid and pready are to distinguish these TopModule IO ports from(p stands for port)
-	//local entity valid and ready signals
-	//	port_din = substring(name, 0, name.find('_')) + "_" + "din";
-	//	port_valid = substring(name, 0, name.find('_')) + "_" + "pvalid";
-	//	port_ready = substring(name, 0, name.find('_')) + "_" + "pready";
-	port_din = name + "_" + "din";
-	port_valid = name + "_" + "pvalid";
-	port_ready = name + "_" + "pready";
+//These two functions will be defined individually for each component subclass
+std::string Component::getModuleInstantiation(std::string tabs){
+	return "";
 }
 
-//Returns the input/output declarations for top-module
-std::string StartComponent::getModuleIODeclaration(std::string tabs){
-	std::string ret = "";
-	ret += tabs + "input " + generateVector(in) + port_din + ",\n";
-	ret += tabs + "input " + port_valid + ",\n";
-	ret += tabs + "output " + port_ready + ",\n";
-	ret += "\n";
-
-	return ret;
+std::string Component::getVerilogParameters(){
+	return "";
 }
 
 
-EndComponent::EndComponent(Component& c){
-	name = c.name;
-	type = c.type;
-	bbID = c.bbID;
-	op = c.op;
-	in = c.in;
-	out = c.out;
-	delay = c.delay;
-	latency = c.latency;
-	II = c.II;
-	slots = c.slots;
-	transparent = c.transparent;
-	value = c.value;
-	connections = c.connections;
-	inputConnections = c.inputConnections;
-	outputConnections = c.outputConnections;
-
-	//here pvalid and pready are to distinguish these TopModule IO ports from(p stands for port)
-	//local entity valid and ready signals
-	//	port_dout = substring(name, 0, name.find('_')) + "_" + "dout";
-	//	port_valid = substring(name, 0, name.find('_')) + "_" + "pvalid";
-	//	port_ready = substring(name, 0, name.find('_')) + "_" + "pready";
-	port_dout = name + "_" + "dout";
-	port_valid = name + "_" + "pvalid";
-	port_ready = name + "_" + "pready";
-}
-
-//Returns the input/output declarations for top-module
-std::string EndComponent::getModuleIODeclaration(std::string tabs){
-	std::string ret = "";
-	ret += tabs + "output " + generateVector(out) + port_dout + ",\n";
-	ret += tabs + "output " + port_valid + ",\n";
-	ret += tabs + "input " + port_ready + ",\n";
-	ret += "\n";
-
-	return ret;
-}
 
 
-MemoryContentComponent::MemoryContentComponent(Component& c){
-	name = c.name;
-	type = c.type;
-	bbID = c.bbID;
-	op = c.op;
-	in = c.in;
-	out = c.out;
-	delay = c.delay;
-	latency = c.latency;
-	II = c.II;
-	slots = c.slots;
-	transparent = c.transparent;
-	value = c.value;
-	connections = c.connections;
-	inputConnections = c.inputConnections;
-	outputConnections = c.outputConnections;
 
-	//MC_ is removed from the name to specify that it is Top Module IO port connection
-	port_address_0 = substring(name, name.find('_') + 1, name.size()) + "_" + "address_0";
-	port_ce_0 = substring(name, name.find('_') + 1, name.size()) + "_" + "ce_0";
-	port_we_0 = substring(name, name.find('_') + 1, name.size()) + "_" + "we_0";
-	port_din_0 = substring(name, name.find('_') + 1, name.size()) + "_" + "din_0";
-	port_dout_0 = substring(name, name.find('_') + 1, name.size()) + "_" + "dout_0";
 
-	port_address_1 = substring(name, name.find('_') + 1, name.size()) + "_" + "address_1";
-	port_ce_1 = substring(name, name.find('_') + 1, name.size()) + "_" + "ce_1";
-	port_we_1 = substring(name, name.find('_') + 1, name.size()) + "_" + "we_1";
-	port_din_1 = substring(name, name.find('_') + 1, name.size()) + "_" + "din_1";
-	port_dout_1 = substring(name, name.find('_') + 1, name.size()) + "_" + "dout_1";
 
-}
 
-//Returns the input/output declarations for top-module
-std::string MemoryContentComponent::getModuleIODeclaration(std::string tabs){
-	std::string ret = "";
-	//Since getVectorLength function only counts from : till it reads numbers,
-	//In this case it works
-	//**However finding this is weakly implemented as of now
-	ret += tabs + "output " + getAddressPortVector(out) + port_address_0 + ",\n";
-	ret += tabs + "output " + port_ce_0 + ",\n";
-	ret += tabs + "output " + port_we_0 + ",\n";
-	ret += tabs + "output " + getDataPortVector(out) + port_dout_0 + ",\n";
-	ret += tabs + "input " + getDataPortVector(in) + port_din_0 + ",\n";
 
-	//Since getVectorLength function only counts from : till it reads numbers,
-	//In this case it will works as out2 will never be reached
-	//**However finding this is weakly implemented as of now
-	ret += tabs + "output " + getAddressPortVector(out) + port_address_1 + ",\n";
-	ret += tabs + "output " + port_ce_1 + ",\n";
-	ret += tabs + "output " + port_we_1 + ",\n";
-	ret += tabs + "output " + getDataPortVector(out) + port_dout_1 + ",\n";
-	ret += tabs + "input " + getDataPortVector(in) + port_din_1 + ",\n";
-	ret += "\n";
 
-	return ret;
-}
+
+
 
 
 

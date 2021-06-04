@@ -46,6 +46,8 @@ struct OutputConnection{
 //it is assigned the default value
 class Component{
 public:
+	std::string moduleName;
+	std::string instanceName;
 	std::string name;
 	std::string type;
 	int bbID;
@@ -77,21 +79,30 @@ public:
 	Component castToSubClass();
 	//Creates the port connections for individual modules like fork, join, merge...
 	std::string getModulePortDeclarations(std::string tabs);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
 
 protected:
 	std::string getDataPortVector(std::string _str);
 	std::string getAddressPortVector(std::string _str);
+
+
 	//Fills the inputConnections and outputConnections vectors with input and output ports
-	void setInputPortBus();
+	void setInputPortBus();//Connects Component Wires with component module inputs. This is called inside getModuleInstantiation
 	void setInputConnections();
-	void setOutputPortBus();
+	void setOutputPortBus();//Connects Component Wires with component module outputs. This is called inside getModuleInstantiation
 	void setOutputConnections();
+
+
 	//Finds the name of io port based on input.
 	//Eg. input->in2-:32; output->in2
 	std::string getIOName(std::string _str);
 	//Finds the number of io port based on input.
 	//Eg. input->out3?:32; output->3
 	int getIONumber(std::string _str);
+
+	std::string getVerilogParameters();
 private:
 };
 
@@ -105,8 +116,11 @@ public:
 
 	StartComponent(Component& c);
 	std::string getModuleIODeclaration(std::string tabs);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
 
 private:
+	std::string getVerilogParameters();
 };
 
 class EndComponent : public Component{
@@ -117,8 +131,11 @@ public:
 
 	EndComponent(Component& c);
 	std::string getModuleIODeclaration(std::string tabs);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
 
 private:
+	std::string getVerilogParameters();
 };
 
 //This interfaces with a BRAM

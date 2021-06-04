@@ -99,6 +99,8 @@
 #define TAB "\t"
 #define BACK "\b"
 
+#define DEFAULT_MODULE_NAME "nomodulename"
+#define DEFAULT_INSTANCE_NAME "noinstancename"
 #define DEFAULT_NAME "noname"
 #define DEFAULT_TYPE "notype"
 #define DEFAULT_BBID -1
@@ -111,6 +113,7 @@
 #define DEFAULT_TRANSPARENT false
 #define DEFAULT_OP "nop"
 #define DEFAULT_VALUE 0
+
 
 
 #define SIGNAL_STRING  "signal "

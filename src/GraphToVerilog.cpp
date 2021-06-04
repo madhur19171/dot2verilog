@@ -31,7 +31,40 @@ void GraphToVerilog::writeVerilogCode(){
 	verilogCode += writeModulePortWires();
 	removeTab();
 
+	insertTab();
+	verilogCode += writeModuleInstantiation();
+	removeTab();
+
 	verilogCode += writeEndModule();
+}
+
+
+//Declares the top module.
+std::string GraphToVerilog::writeTopModuleName(){
+	std::string moduleName;
+
+	std::string& file_n = dotReader.getFileName();
+	file_n = substring(file_n, 0, file_n.find('.'));
+
+	moduleName = "module " + file_n + "(\n";
+
+	return moduleName;
+}
+
+//This function populates the topModulePortComponents which will contain
+//All the components that need to have input output declarations in the top module
+//port list
+void GraphToVerilog::generateTopModulePortComponents(){
+	std::vector<Component>::const_iterator it;
+
+	for(it = dotReader.getComponentList().begin(); it != dotReader.getComponentList().end(); it++){
+		if((*it).type == COMPONENT_START ||
+				(*it).type == COMPONENT_END ||
+				(*it).type == COMPONENT_MC ||
+				(*it).type == COMPONENT_LSQ){
+			topModulePortComponents.push_back((*it));
+		}
+	}
 }
 
 //IO Ports are declared for components which are directly interfacing
@@ -73,21 +106,7 @@ std::string GraphToVerilog::writeTopModulePorts(){
 	return topModulePortList;
 }
 
-//This function populates the topModulePortComponents which will contain
-//All the components that need to have input output declarations in the top module
-//port list
-void GraphToVerilog::generateTopModulePortComponents(){
-	std::vector<Component>::const_iterator it;
 
-	for(it = dotReader.getComponentList().begin(); it != dotReader.getComponentList().end(); it++){
-		if((*it).type == COMPONENT_START ||
-				(*it).type == COMPONENT_END ||
-				(*it).type == COMPONENT_MC ||
-				(*it).type == COMPONENT_LSQ){
-			topModulePortComponents.push_back((*it));
-		}
-	}
-}
 
 //This function accesses the getModulePortDeclarations function of each component to generate
 //a declaration of all wires of input/output connections of the sub modules
@@ -106,17 +125,24 @@ std::string GraphToVerilog::writeModulePortWires(){
 	return modulePortWires;
 }
 
-//Declares the top module.
-std::string GraphToVerilog::writeTopModuleName(){
-	std::string moduleName;
 
-	std::string& file_n = dotReader.getFileName();
-	file_n = substring(file_n, 0, file_n.find('.'));
+std::string GraphToVerilog::writeModuleInstantiation(){
+	std::string moduleInstances = "";
 
-	moduleName = "module " + file_n + "(\n";
+	std::vector<Component>::iterator it;
+	for(it = dotReader.getComponentList().begin(); it != dotReader.getComponentList().end(); it++){
+		if((*it).type == COMPONENT_START){
+			moduleInstances += ((StartComponent)(*it)).getModuleInstantiation(tabs);
+			moduleInstances += "\n\n";
+		} else if((*it).type == COMPONENT_END){
+			moduleInstances += ((EndComponent)(*it)).getModuleInstantiation(tabs);
+			moduleInstances += "\n\n";
+		}
+	}
 
-	return moduleName;
+	return moduleInstances;
 }
+
 
 std::string GraphToVerilog::writeEndModule(){
 	return "endmodule";

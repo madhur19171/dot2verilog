@@ -1,3 +1,13 @@
+Start:
+	1 Input and 1 Output
+	Internally it is pretty much an Elastic Buffer with a few additional controls
+	It probably acts as a unit for capturing only one input data for an entire process
+	
+Sink:
+	1 Input and no Output.
+	It only sends a HIGH ready_in signal to its previous component. 
+	It will do nothing with the source data. 
+
 Add:
 	Add will always have only 2 inputs and 1 output as per the vhd file.
 	Add uses join internally to make sure that it has both the operands ready before adding.
@@ -8,7 +18,25 @@ Ret:
 	Internally, it is exactly same as TEHB
 	
 TEHB:
-	N inputs 1 output
+	N inputs 1 output, but buffers only the 0th input
+	
+OEHB:
+	N inputs 1 output, but buffers only the 0th input
+	
+Elastic Buffer:
+	1 input and 1 output
+	It cascades a TEHB followed by an OEHB
+	
+End:
+	End can have multiple inputs but only one output.
+	End also takes the valid and ready of all the memory components(if any).
+	The working of end is such that the inputs to end are a list of data input ports and
+	memory inputs. The end outputs a single data. That data is one of the input data provided in inputs.
+	At the core of this end component is a join component which waits for all memory components to send a valid
+	signal and any one of the inputs to end to become valid. As soon as all the memory are valid and any one of
+	the input signals are valid, the end component sends that valid input signal to its output and makes its
+	valid signal 1.
+	*e in input ports of dot file refers to memory inputs
 
 Since verilog does not support passing of arrays as arguments, so the program will be written such that
 there will be an Input Bus for input to a component and an Output Bus for output from a component.
