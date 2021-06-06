@@ -9,8 +9,10 @@
 #define STRING_UTILITY_H_
 
 #include <string>
+#include <cstring>
 
 std::string substring(std::string __str, int start, int stop);
+//std::string substring(char* __str, int start, int stop);
 std::string trim(std::string __str);
 
 

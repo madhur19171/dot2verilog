@@ -1,3 +1,14 @@
+Whenever a new sub class is added, castToSubclass function of ComponentClass and 
+writeModuleInstantiation of GraphToVerilog class have to integrate that calss as well. 
+When the added class is of type OPERATOR, additional entity names for each Operator need to be added in entity_names header file
+
+Whenever a new subclass which has to have io ports in top module port list is added, that sub class needs to have 
+getModuleIODeclaration in its subclass. Additionally it also needs to have port_din/port_dout, port_valid and port_ready 
+in its class members. writeTopModulePorts and generateTopModulePortComponents in the GraphToVerilog also have to integrate these components
+
+
+
+
 Start:
 	1 Input and 1 Output
 	Internally it is pretty much an Elastic Buffer with a few additional controls

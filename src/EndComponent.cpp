@@ -23,7 +23,7 @@ EndComponent::EndComponent(Component& c){
 	slots = c.slots;
 	transparent = c.transparent;
 	value = c.value;
-	connections = c.connections;
+	io = c.io;
 	inputConnections = c.inputConnections;
 	outputConnections = c.outputConnections;
 
@@ -79,5 +79,23 @@ std::string EndComponent::getVerilogParameters(){
 	ret += ".DATA_IN_SIZE(" + std::to_string(getVectorLength(in) == 0 ? 1 : getVectorLength(in)) + "), ";
 	ret += ".DATA_OUT_SIZE(" + std::to_string(getVectorLength(out) == 0 ? 1 : getVectorLength(out)) + ")) ";
 	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
+	return ret;
+}
+
+
+std::string EndComponent::getInputOutputConnections(){
+	std::string ret;
+
+	ret += "\tassign " + clk + " = clk;\n";
+	ret += "\tassign " + rst + " = rst;\n";
+
+	//**Not Complete Implementation. Need to integrate  emory Ports when memory is included**//
+	//First one output of end component is connected to top module IO port
+	//Which one is connected to top module is decided by the output list. The one which does not have
+	//e as a suffix in output name is the one connected to top module
+	ret += "\tassign " + port_dout + " = " + outputConnections.at("out1").data + ";\n";
+	ret += "\tassign " + outputConnections.at("out1").ready + " = " + port_ready + ";\n";
+	ret += "\tassign " + port_valid + " = " + outputConnections.at("out1").valid + ";\n";
+
 	return ret;
 }

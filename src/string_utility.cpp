@@ -10,7 +10,7 @@
 //String Utility Functions
 //Similar to java substring function
 std::string substring(std::string __str, int start, int stop){
-	const std::string& ret = __str.substr(start, stop - start);
+	std::string ret(&__str[0] + start, stop - start);
 	return ret;
 }
 

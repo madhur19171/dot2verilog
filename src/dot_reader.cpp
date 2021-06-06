@@ -59,45 +59,45 @@ int DotReader::lineReader(){
 //The globalCompoentConnections, intraBlockConnection, interBlockConnection are read to get the
 //component connection informations and using that info, it is determined which component is connected to which other component
 void DotReader::generateConnectionMap(){
-	std::vector<std::string>::iterator it;
 	std::string line;
 
-	for(it = globalComponentConnection.begin(); it != globalComponentConnection.end(); it++){
+	for(auto it = globalComponentConnection.begin(); it != globalComponentConnection.end(); it++){
 		line = *it;
 		std::pair<std::string, std::string> pair;
-		std::pair<std::string, std::pair<std::string, std::string>> connection;
+		std::pair<Component*, std::pair<std::string, std::string>> connection;
 		std::string name = substring(line, 1, line.find('"', 1));
-		connection.first = substring(line, line.find('>') + 3, line.find('"', line.find('>') + 3));
+		connection.first = componentMap[substring(line, line.find('>') + 3, line.find('"', line.find('>') + 3))];
 		pair.first = substring(line, line.find("from = ") + 8, line.find('"', line.find("from = ") + 8));
 		pair.second = substring(line, line.find("to = ") + 6, line.find('"', line.find("to = ") + 6));
 		connection.second = pair;
-		componentMap[name].connections.io.push_back(connection);
+		componentMap[name]->io.push_back(connection);
 	}
 
-	for(it = intraBlockConnection.begin(); it != intraBlockConnection.end(); it++){
+	for(auto it = intraBlockConnection.begin(); it != intraBlockConnection.end(); it++){
 		line = *it;
 		std::pair<std::string, std::string> pair;
-		std::pair<std::string, std::pair<std::string, std::string>> connection;
+		std::pair<Component*, std::pair<std::string, std::string>> connection;
 		std::string name = substring(line, 1, line.find('"', 1));
-//		std::cout << name << " ----> ";
-		connection.first = substring(line, line.find('>') + 3, line.find('"', line.find('>') + 3));
+		//		std::cout << name << " ----> ";
+		connection.first = componentMap[substring(line, line.find('>') + 3, line.find('"', line.find('>') + 3))];
+		//		std::cout << name << std::endl;
 		pair.first = substring(line, line.find("from = ") + 8, line.find('"', line.find("from = ") + 8));
 		pair.second = substring(line, line.find("to = ") + 6, line.find('"', line.find("to = ") + 6));
 		connection.second = pair;
-		componentMap[name].connections.io.push_back(connection);
-		//		std::cout << componentMap[name].connections.io[0].first << std::endl;
+		componentMap[name]->io.push_back(connection);
+		//		std::cout << name << " " << componentMap[name].io[0].first.name << std::endl;
 	}
 
-	for(it = interBlockConnection.begin(); it != interBlockConnection.end(); it++){
+	for(auto it = interBlockConnection.begin(); it != interBlockConnection.end(); it++){
 		line = *it;
 		std::pair<std::string, std::string> pair;
-		std::pair<std::string, std::pair<std::string, std::string>> connection;
+		std::pair<Component*, std::pair<std::string, std::string>> connection;
 		std::string name = substring(line, 1, line.find('"', 1));
-		connection.first = substring(line, line.find('>') + 3, line.find('"', line.find('>') + 3));
+		connection.first = componentMap[substring(line, line.find('>') + 3, line.find('"', line.find('>') + 3))];
 		pair.first = substring(line, line.find("from = ") + 8, line.find('"', line.find("from = ") + 8));
 		pair.second = substring(line, line.find("to = ") + 6, line.find('"', line.find("to = ") + 6));
 		connection.second = pair;
-		componentMap[name].connections.io.push_back(connection);
+		componentMap[name]->io.push_back(connection);
 	}
 }
 
@@ -105,28 +105,50 @@ void DotReader::generateConnectionMap(){
 //based on the information present in the componentDeclaration lines
 //Then pushes the components into componentList and componentMap indexed by their names
 void DotReader::generateComponentList(){
-	std::vector<std::string>::iterator it;
-	Component component;
-	std::string line;
-
-	for(it = componentDeclaration.begin(); it != componentDeclaration.end(); it++){
+	int i = 0;
+	for(auto it = componentDeclaration.begin(); it != componentDeclaration.end(); it++, i++){
+		std::cout << "HI5" << std::endl;
+		Component *component = new Component();
+		std::string line;
+		std::string strr;
 		line = *it;
-		component.name = substring(line, line.find('"') + 1, line.find('"', line.find('"') + 1));
-		component.type = line.find("type = ") == std::string::npos ? DEFAULT_TYPE : substring(line, line.find("type = ") + 8, line.find('"', line.find("type = ") + 8));
-		component.bbID = line.find("bbID= ") == std::string::npos ? DEFAULT_BBID : std::stoi(substring(line, line.find("bbID= ") + 6, line.find(',', line.find("bbID= ") + 6)));
-		component.in = line.find("in = ") == std::string::npos ? DEFAULT_IN : trim(substring(line, line.find("in = ") + 6, line.find('"', line.find("in = ") + 6)));
-		component.out = line.find("out = ") == std::string::npos ? DEFAULT_OUT : trim(substring(line, line.find("out = ") + 7, line.find('"', line.find("out = ") + 7)));
-		component.delay = line.find("delay=") == std::string::npos ? DEFAULT_DELAY : std::stof(substring(line, line.find("delay=") + 6, std::min(line.find(',', line.find("delay=") + 6), line.find(']', line.find("delay=") + 6))));
-		component.latency = line.find("latency=") == std::string::npos ? DEFAULT_LATENCY : std::stof(substring(line, line.find("latency=") + 8, std::min(line.find(',', line.find("latency=") + 8), line.find(']', line.find("latency=") + 8))));
-		component.II = line.find("II=") == std::string::npos ? DEFAULT_II : std::stoi(substring(line, line.find("II=") + 3, std::min(line.find(',', line.find("II=") + 3), line.find(']', line.find("II=") + 3))));
-		component.slots = line.find("slots=") == std::string::npos ? DEFAULT_SLOTS : std::stoi(substring(line, line.find("slots=") + 6, std::min(line.find(',', line.find("slots=") + 6), line.find(']', line.find("slots=") + 6))));
-		component.op = line.find("op = ") == std::string::npos ? DEFAULT_OP : substring(line, line.find("op = ") + 6, line.find('"', line.find("op = ") + 6));
-		component.value = line.find("value = ") == std::string::npos ? DEFAULT_VALUE : (unsigned long) std::stol(substring(line, line.find("value = ") + 9, line.find('"', line.find("value = ") + 9)), NULL, 16);
 
-		component = component.castToSubClass();//This will cast the created object to the respective Type Class like start,, end, fork, join etc
+
+		strr = substring(line, line.find('"') + 1, line.find('"', line.find('"') + 1));
+		component->name = strr;
+
+		strr = substring(line, line.find("type = ") + 8, line.find('"', line.find("type = ") + 8));
+		component->type = line.find("type = ") == std::string::npos ? DEFAULT_TYPE : strr;
+
+		strr = substring(line, line.find("bbID= ") + 6, line.find(',', line.find("bbID= ") + 6));
+		component->bbID = line.find("bbID= ") == std::string::npos ? DEFAULT_BBID : std::stoi(strr);
+
+		strr = substring(line, line.find("delay=") + 6, std::min(line.find(',', line.find("delay=") + 6), line.find(']', line.find("delay=") + 6)));
+		component->delay = line.find("delay=") == std::string::npos ? DEFAULT_DELAY : std::stof(strr);
+
+		strr = substring(line, line.find("latency=") + 8, std::min(line.find(',', line.find("latency=") + 8), line.find(']', line.find("latency=") + 8)));
+		component->latency = line.find("latency=") == std::string::npos ? DEFAULT_LATENCY : std::stof(strr);
+
+		component->II = line.find("II=") == std::string::npos ? DEFAULT_II : std::stoi(substring(line, line.find("II=") + 3, std::min(line.find(',', line.find("II=") + 3), line.find(']', line.find("II=") + 3))));
+
+		component->slots = line.find("slots=") == std::string::npos ? DEFAULT_SLOTS : std::stoi(substring(line, line.find("slots=") + 6, std::min(line.find(',', line.find("slots=") + 6), line.find(']', line.find("slots=") + 6))));
+
+		strr = substring(line, line.find("op = ") + 6, line.find('"', line.find("op = ") + 6));
+		component->op = line.find("op = ") == std::string::npos ? DEFAULT_OP : strr;
+
+		component->value = line.find("value = ") == std::string::npos ? DEFAULT_VALUE : (unsigned long) std::stol(substring(line, line.find("value = ") + 9, line.find('"', line.find("value = ") + 9)), NULL, 16);
+
+		strr = substring(line, line.find("in = ") + 6, line.find('"', line.find("in = ") + 6));
+		strr = trim(strr);
+		component->in = line.find("in = ") == std::string::npos ? DEFAULT_IN : strr;
+
+		strr = substring(line, line.find("out = ") + 7, line.find('"', line.find("out = ") + 7));
+		component->out = line.find("out = ") == std::string::npos ? DEFAULT_OUT : trim(strr);
+
+		component = component->castToSubClass(component);//This will cast the created object to the respective Type Class like start,, end, fork, join etc
 		componentList.push_back(component);
-		componentMap[component.name] = component;
-		//		std::cout << "done" << std::endl;
+		componentMap[component->name] = component;
+
 	}
 }
 
@@ -180,7 +202,6 @@ int DotReader::readIntraBlockConnections(){
 		while(!((*it).find('}') != std::string::npos
 				|| it == lines.end())){
 			intraBlockConnection.push_back(*it);
-			std::cout << *it << std::endl;
 			it = lines.erase(it);
 		}
 		it = lines.erase(it);
@@ -254,21 +275,12 @@ void DotReader::removeComments(){
 	std::cout << "Comments Removed" << std::endl;
 }
 
-//void DotReader::printComponent(struct component s){
-//	std::cout << "name: " << s.name << ", "
-//			<< "type: " << s.type << ", "
-//			<< "bbID: " << s.bbID << ", "
-//			<< "op: " << s.op << ", "
-//			<< "in: " << s.in << ", "
-//			<< "out: " << s.out << ", "
-//			<< "delay: " << s.delay << ", "
-//			<< "latency" << s.latency << ", "
-//			<< "II: " << s.II << ", "
-//			<< "slots: " << s.slots << ", "
-//			<< "transparent: " << s.transparent << ", "
-//			<< "value: " << s.value << std::endl;
-//}
 
+void DotReader::destroyObjects(){
+	for(auto it = componentList.begin(); it != componentList.end(); it++){
+		delete (*it);
+	}
+}
 
 
 

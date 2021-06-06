@@ -27,13 +27,15 @@ private:
 	std::vector<std::string> globalComponentConnection;//Connection line of global Components
 	std::vector<std::string> intraBlockConnection;//Connection line of Components that are within some block
 	std::vector<std::string> interBlockConnection;//Connection line of Components that are in two different blocks
-	std::vector<Component> componentList;//List of all the Components present in the design
-	std::map<std::string, Component> componentMap;//List of all the Components indexed by their names(string)
+	std::vector<Component*> componentList;//List of all the Components present in the design
+	std::map<std::string, Component*> componentMap;//List of all the Components indexed by their names(string)
 
 
 public:
 	DotReader();//Default Constructor
 	DotReader(std::string file_name);//Parameterized constructor
+
+	void destroyObjects();
 
 
 	int lineReader();//Reads the Dot file line by line and stores each line in lines vector
@@ -64,11 +66,11 @@ public:
 		return numberOfBlocks;
 	}
 
-	std::vector<Component>& getComponentList() {
+	std::vector<Component*>& getComponentList() {
 		return componentList;
 	}
 
-	std::map<std::string, Component>& getComponentMap(){
+	std::map<std::string, Component*>& getComponentMap(){
 		return componentMap;
 	}
 

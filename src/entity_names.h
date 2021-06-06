@@ -91,6 +91,10 @@
 #define COMPONENT_SEL			"SEL"
 #define COMPONENT_DISTRIBUTOR   "Distributor"
 #define COMPONENT_SELECTOR		"Selector"
+#define COMPONENT_OPERATOR		"Operator"
+
+#define OPERATOR_ADD			"add_op"
+#define OPERATOR_RET			"ret_op"
 
 #define UNDERSCORE  "_"
 #define COLON ":"

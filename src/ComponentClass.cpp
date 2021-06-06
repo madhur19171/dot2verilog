@@ -36,7 +36,8 @@ void Component::printComponent(){
 			<< "II: " << II << "\t"
 			<< "slots: " << slots << "\t"
 			<< "transparent: " << transparent << "\t"
-			<< "value: " << value << std::endl;
+			<< "value: " << value << "\t"
+			<< "IO Size: " << io.size() << std::endl;
 }
 
 //Takes a string as input(string containing an input/output eg: in1:+32)
@@ -125,19 +126,36 @@ int Component::getIONumber(std::string str){
 
 //This function is supposed to cast the Component Class object to their corresponding
 //Entity classes and return those casted objects.
-Component Component::castToSubClass(){
+Component* Component::castToSubClass(Component* component){
 	if(type == COMPONENT_START){
-		StartComponent obj(*this);
-		return obj;
+		StartComponent* obj = new StartComponent(*this);
+		component = (Component *)obj;
+		return component;
 	} else if(type == COMPONENT_END){
-		EndComponent obj(*this);
-		return obj;
-	} else if(type == COMPONENT_MC){
-		MemoryContentComponent obj(*this);
-		return obj;
+		EndComponent* obj = new EndComponent(*this);
+		component = (Component *)obj;
+		return component;
+	} else if(type == COMPONENT_OPERATOR){
+		if(op == OPERATOR_ADD){
+			AddComponent* obj = new AddComponent(*this);
+			component = (Component *)obj;
+			return component;
+		} else if(op == OPERATOR_RET){
+			RetComponent* obj = new RetComponent(*this);
+			component = (Component *)obj;
+			return component;
+		}
+	}else if(type == COMPONENT_MC){
+		MemoryContentComponent* obj = new MemoryContentComponent(*this);
+		component = (Component *)obj;
+		return component;
+	} else if(type == COMPONENT_SINK){
+		SinkComponent* obj = new SinkComponent(*this);
+		component = (Component *)obj;
+		return component;
 	}
 
-	return *this;
+	return this;
 }
 
 //Populates the inputConnection map and sets the string(name) for each port of each input
@@ -176,8 +194,57 @@ void Component::setOutputConnections(){
 	}
 }
 
+
+//This returns the wires of an entity which connect it to other modules
+//**This function also calls setInputConnections and setOutputConnections
+//So, input Connections and outputConnections vectors of a component
+//can be accessed only after this function has been called!
+std::string Component::getModulePortDeclarations(std::string tabs){
+	std::string ret = "";
+
+	//**Clock and Reset signals are finally initialized here.
+	//This should be moved to a function that is definitely called before this function.
+	//Just in case this is required before this function.
+	//A potential location for this snippet is the castToSubClass function as it is called as soon as
+	//the component is created in dot_reader.
+	//This could be moved to the respective entity subclass constructors
+	//Just like port_din, port_valid and port_ready are moved in start, end and MC
+	clk = name + "_" + "clk";
+	rst = name + "_" + "rst";
+
+	ret += tabs + "wire " + clk + ";\n";
+	ret += tabs + "wire " + rst + ";\n";
+
+	//If this Entity has any inputs:
+	if(in != DEFAULT_IN){
+		//set inputConnections and fill it with all the available inputs
+		setInputConnections();
+		//Iterate over the inputConnections and add a wire for each connection
+		for(auto it = inputConnections.begin(); it != inputConnections.end(); it++){
+			ret += tabs + "wire " + generateVector((*it).second.vectorLength - 1, 0) + (*it).second.data + ";\n";
+			ret += tabs + "wire " + (*it).second.ready + ";\n";
+			ret += tabs + "wire " + (*it).second.valid + ";\n";
+		}
+	}
+	//If this entity has any outputs:
+	if(out != DEFAULT_OUT){
+		//set outputConnections and fill it with all the available outputs
+		setOutputConnections();
+		//Iterate over the inputConnections and add a wire for each connection
+		for(auto it = outputConnections.begin(); it != outputConnections.end(); it++){
+			ret += tabs + "wire " + generateVector((*it).second.vectorLength - 1, 0) + (*it).second.data + ";\n";
+			ret += tabs + "wire " + (*it).second.ready + ";\n";
+			ret += tabs + "wire " + (*it).second.valid + ";\n";
+		}
+	}
+
+	return ret;
+}
+
+
+
 void Component::setInputPortBus(){
-	struct InputConnection inConn;
+	InputConnection inConn;
 
 	//First create data_in bus
 	inputPortBus = ".data_in_bus({";
@@ -211,7 +278,7 @@ void Component::setInputPortBus(){
 }
 
 void Component::setOutputPortBus(){
-	struct OutputConnection outConn;
+	OutputConnection outConn;
 
 	//First create data_in bus
 	outputPortBus = ".data_out_bus({";
@@ -244,53 +311,6 @@ void Component::setOutputPortBus(){
 	outputPortBus += "})";
 }
 
-//This returns the wires of an entity which connect it to other modules
-//**This function also calls setInputConnections and setOutputConnections
-//So, input Connections and outputConnections vectors of a component
-//can be accessed only after this function has been called!
-std::string Component::getModulePortDeclarations(std::string tabs){
-	std::string ret = "";
-
-	//**Clock and Reset signals are finally initialized here.
-	//This should be moved to a function that is definitely called before this function.
-	//Just in case this is required before this function.
-	//A potential location for this snippet is the castToSubClass function as it is called as soon as
-	//the component is created in dot_reader.
-	//This could be moved to the respective entity subclass constructors
-	//Just like port_din, port_valid and port_ready are moved in start, end and MC
-	clk = name + "_" + "clk";
-	rst = name + "_" + "rst";
-
-	ret += tabs + "wire " + clk + ";\n";
-	ret += tabs + "wire " + rst + ";\n";
-
-	//If this Entity has any inputs:
-	if(in != DEFAULT_IN){
-		//set inputConnections and fill it with all the available inputs
-		setInputConnections();
-		std::map<std::string, InputConnection>::iterator it;
-		//Iterate over the inputConnections and add a wire for each connection
-		for(it = inputConnections.begin(); it != inputConnections.end(); it++){
-			ret += tabs + "wire " + generateVector((*it).second.vectorLength - 1, 0) + (*it).second.data + ";\n";
-			ret += tabs + "wire " + (*it).second.ready + ";\n";
-			ret += tabs + "wire " + (*it).second.valid + ";\n";
-		}
-	}
-	//If this entity has any outputs:
-	if(out != DEFAULT_OUT){
-		//set outputConnections and fill it with all the available outputs
-		setOutputConnections();
-		std::map<std::string, OutputConnection>::iterator it;
-		//Iterate over the inputConnections and add a wire for each connection
-		for(it = outputConnections.begin(); it != outputConnections.end(); it++){
-			ret += tabs + "wire " + generateVector((*it).second.vectorLength - 1, 0) + (*it).second.data + ";\n";
-			ret += tabs + "wire " + (*it).second.ready + ";\n";
-			ret += tabs + "wire " + (*it).second.valid + ";\n";
-		}
-	}
-
-	return ret;
-}
 
 
 //These two functions will be defined individually for each component subclass
@@ -302,6 +322,16 @@ std::string Component::getVerilogParameters(){
 	return "";
 }
 
+
+std::string Component::connectInputOutput(InputConnection inConn, OutputConnection outConn){
+	std::string ret;
+
+	ret += "\tassign " + inConn.data + " = " + outConn.data + ";\n";
+	ret += "\tassign " + inConn.valid + " = " + outConn.valid + ";\n";
+	ret += "\tassign " + outConn.ready + " = " + inConn.ready + ";\n";
+
+	return ret;
+}
 
 
 

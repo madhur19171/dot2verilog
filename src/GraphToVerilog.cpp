@@ -35,6 +35,10 @@ void GraphToVerilog::writeVerilogCode(){
 	verilogCode += writeModuleInstantiation();
 	removeTab();
 
+	insertTab();
+	verilogCode += writeInputOutputConnections();
+	removeTab();
+
 	verilogCode += writeEndModule();
 }
 
@@ -55,13 +59,12 @@ std::string GraphToVerilog::writeTopModuleName(){
 //All the components that need to have input output declarations in the top module
 //port list
 void GraphToVerilog::generateTopModulePortComponents(){
-	std::vector<Component>::const_iterator it;
 
-	for(it = dotReader.getComponentList().begin(); it != dotReader.getComponentList().end(); it++){
-		if((*it).type == COMPONENT_START ||
-				(*it).type == COMPONENT_END ||
-				(*it).type == COMPONENT_MC ||
-				(*it).type == COMPONENT_LSQ){
+	for(auto it = dotReader.getComponentList().begin(); it != dotReader.getComponentList().end(); it++){
+		if((*it)->type == COMPONENT_START ||
+				(*it)->type == COMPONENT_END ||
+				(*it)->type == COMPONENT_MC ||
+				(*it)->type == COMPONENT_LSQ){
 			topModulePortComponents.push_back((*it));
 		}
 	}
@@ -80,21 +83,20 @@ std::string GraphToVerilog::writeTopModulePorts(){
 	generateTopModulePortComponents();
 
 	//Clock and Reset signal are always present in the design ports
-	topModulePortList += tabs + "input clk;\n" + tabs + "input rst;\n\n";
+	topModulePortList += tabs + "input clk,\n" + tabs + "input rst,\n\n";
 
 	//Writing IO Ports:
-	std::vector<Component>::iterator it;
 
-	for(it = topModulePortComponents.begin(); it != topModulePortComponents.end(); it++){
-		if((*it).type == COMPONENT_START){
-			StartComponent startComponent = (StartComponent)(*it);
-			topModulePortList += startComponent.getModuleIODeclaration(tabs);
-		} else if((*it).type == COMPONENT_END){
-			EndComponent endComponent = (EndComponent)(*it);
-			topModulePortList += endComponent.getModuleIODeclaration(tabs);
-		} else if((*it).type == COMPONENT_MC){
-			MemoryContentComponent memoryContentComponent = (MemoryContentComponent)(*it);
-			topModulePortList += memoryContentComponent.getModuleIODeclaration(tabs);
+	for(auto it = topModulePortComponents.begin(); it != topModulePortComponents.end(); it++){
+		if((*it)->type == COMPONENT_START){
+			StartComponent* startComponent = (StartComponent*)(*it);
+			topModulePortList += startComponent->getModuleIODeclaration(tabs);
+		} else if((*it)->type == COMPONENT_END){
+			EndComponent* endComponent = (EndComponent*)(*it);
+			topModulePortList += endComponent->getModuleIODeclaration(tabs);
+		} else if((*it)->type == COMPONENT_MC){
+			MemoryContentComponent* memoryContentComponent = (MemoryContentComponent*)(*it);
+			topModulePortList += memoryContentComponent->getModuleIODeclaration(tabs);
 		}
 	}
 
@@ -115,10 +117,9 @@ std::string GraphToVerilog::writeTopModulePorts(){
 //function in a sub class
 std::string GraphToVerilog::writeModulePortWires(){
 	std::string modulePortWires;
-	std::vector<Component>::iterator it;
 
-	for(it = dotReader.getComponentList().begin(); it != dotReader.getComponentList().end(); it++){
-		modulePortWires += (*it).getModulePortDeclarations(tabs);
+	for(auto it = dotReader.getComponentList().begin(); it != dotReader.getComponentList().end(); it++){
+		modulePortWires += (*it)->getModulePortDeclarations(tabs);
 		modulePortWires += "\n";
 	}
 
@@ -129,18 +130,57 @@ std::string GraphToVerilog::writeModulePortWires(){
 std::string GraphToVerilog::writeModuleInstantiation(){
 	std::string moduleInstances = "";
 
-	std::vector<Component>::iterator it;
-	for(it = dotReader.getComponentList().begin(); it != dotReader.getComponentList().end(); it++){
-		if((*it).type == COMPONENT_START){
-			moduleInstances += ((StartComponent)(*it)).getModuleInstantiation(tabs);
+	for(auto it = dotReader.getComponentList().begin(); it != dotReader.getComponentList().end(); it++){
+		if((*it)->type == COMPONENT_START){
+			moduleInstances += ((StartComponent*)(*it))->getModuleInstantiation(tabs);
 			moduleInstances += "\n\n";
-		} else if((*it).type == COMPONENT_END){
-			moduleInstances += ((EndComponent)(*it)).getModuleInstantiation(tabs);
+		} else if((*it)->type == COMPONENT_END){
+			moduleInstances += ((EndComponent*)(*it))->getModuleInstantiation(tabs);
+			moduleInstances += "\n\n";
+		} else if((*it)->type == COMPONENT_OPERATOR){
+			if((*it)->op == OPERATOR_ADD){
+				moduleInstances += ((AddComponent*)(*it))->getModuleInstantiation(tabs);
+				moduleInstances += "\n\n";
+			}
+			if((*it)->op == OPERATOR_RET){
+				moduleInstances += ((RetComponent*)(*it))->getModuleInstantiation(tabs);
+				moduleInstances += "\n\n";
+			}
+		} else if((*it)->type == COMPONENT_SINK){
+			moduleInstances += ((SinkComponent*)(*it))->getModuleInstantiation(tabs);
 			moduleInstances += "\n\n";
 		}
 	}
 
 	return moduleInstances;
+}
+
+
+std::string GraphToVerilog::writeInputOutputConnections(){
+	std::string inputoutput = "\n\n";
+
+	for(auto it = dotReader.getComponentList().begin(); it != dotReader.getComponentList().end(); it++){
+		if((*it)->type == COMPONENT_START){
+			inputoutput += ((StartComponent*)(*it))->getInputOutputConnections();
+			inputoutput += "\n";
+		} if((*it)->type == COMPONENT_END){
+			inputoutput += ((EndComponent*)(*it))->getInputOutputConnections();
+			inputoutput += "\n";
+		} if((*it)->type == COMPONENT_SINK){
+			inputoutput += ((SinkComponent*)(*it))->getInputOutputConnections();
+			inputoutput += "\n";
+		} else if((*it)->type == COMPONENT_OPERATOR){
+			if((*it)->op == OPERATOR_ADD){
+				inputoutput += ((AddComponent*)(*it))->getInputOutputConnections();
+				inputoutput += "\n";
+			} else if((*it)->op == OPERATOR_RET){
+				inputoutput += ((RetComponent*)(*it))->getInputOutputConnections();
+				inputoutput += "\n";
+			}
+		}
+	}
+
+	return inputoutput;
 }
 
 

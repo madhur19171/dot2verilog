@@ -12,16 +12,6 @@
 
 #include "entity_names.h"
 
-//Structure that will store the connection information of a component
-//Right now it has only one element, but it may be extended as and when needed
-struct connection{
-	//Assuming that two different blocks have only one unique connection between them
-	//Then connection is vector containing all the connections that component has with other components
-	//The vector contains pairs. The first element of that pair is the name of the component that is connected to this component
-	//The second element of the pair is the input-output mapping of this component and the connected component
-	std::vector<std::pair<std::string, std::pair<std::string, std::string>>> io;
-};
-
 //Input/Output Connections have the name as follows:
 //<name>_data
 //<name>_valid
@@ -51,14 +41,21 @@ public:
 	std::string name;
 	std::string type;
 	int bbID;
-	std::string in, out;//Becomes obsolete after inputConnections and outputConnection are initialized
+	std::string in;
+	std::string out;//Becomes obsolete after inputConnections and outputConnection are initialized
 	float delay, latency;
 	int II;
 	int slots;
 	bool transparent;
 	std::string op;
 	uint64_t value;
-	connection connections;
+
+	/**Confirm this assumption*/
+	//Assuming that two different blocks have only one unique connection between them
+	//Then connection is vector containing all the connections that component has with other components
+	//The vector contains pairs. The first element of that pair is the name of the component that is connected to this component
+	//The second element of the pair is the input-output mapping of this component and the connected component
+	std::vector<std::pair<Component*, std::pair<std::string, std::string>>> io;
 
 	//Every entity of top module has clk and rst signal for synchronization
 	std::string clk, rst;
@@ -67,7 +64,7 @@ public:
 	std::string inputPortBus;
 	std::map<std::string, InputConnection> inputConnections;
 	std::string outputPortBus;
-	std::map<std:: string, OutputConnection> outputConnections;
+	std::map<std::string, OutputConnection> outputConnections;
 
 
 
@@ -76,7 +73,7 @@ public:
 	int getVectorLength(std::string str);
 	std::string generateVector(std::string str);
 	std::string generateVector(int from, int to);
-	Component castToSubClass();
+	Component* castToSubClass(Component* component);
 	//Creates the port connections for individual modules like fork, join, merge...
 	std::string getModulePortDeclarations(std::string tabs);
 	//Instantiates the Component and generates a verilog code to instantiate this component
@@ -94,6 +91,9 @@ protected:
 	void setOutputPortBus();//Connects Component Wires with component module outputs. This is called inside getModuleInstantiation
 	void setOutputConnections();
 
+	//This will create verilog code connecting outConn to inConn
+	std::string connectInputOutput(InputConnection inConn, OutputConnection outConn);
+
 
 	//Finds the name of io port based on input.
 	//Eg. input->in2-:32; output->in2
@@ -105,6 +105,13 @@ protected:
 	std::string getVerilogParameters();
 private:
 };
+
+////Structure that will store the connection information of a component
+////Right now it has only one element, but it may be extended as and when needed
+//struct connection{
+//
+//};
+
 
 
 //Type Component Classes (To be moved to their respective class files)
@@ -118,6 +125,10 @@ public:
 	std::string getModuleIODeclaration(std::string tabs);
 	//Instantiates the Component and generates a verilog code to instantiate this component
 	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
 
 private:
 	std::string getVerilogParameters();
@@ -134,9 +145,66 @@ public:
 	//Instantiates the Component and generates a verilog code to instantiate this component
 	std::string getModuleInstantiation(std::string tabs);
 
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
 private:
 	std::string getVerilogParameters();
 };
+
+
+//Type Component Classes (To be moved to their respective class files)
+class SinkComponent : public Component{
+public:
+	SinkComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Since this has no outputs hence no getInputOutputConnections() function for this Class
+	//However, to maintain uniformity of code, we will connect the clk and rst in this sink
+	//,although they are of no use.
+	std::string getInputOutputConnections();
+
+private:
+	//Overriding setOutputPortBus functions as
+	//Sink only has input port and no output ports.
+	void setOutputPortBus();
+	std::string getVerilogParameters();
+};
+
+
+//Type Component Classes (To be moved to their respective class files)
+class AddComponent : public Component{
+public:
+	AddComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	std::string getVerilogParameters();
+};
+
+
+//Type Component Classes (To be moved to their respective class files)
+class RetComponent : public Component{
+public:
+	RetComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	std::string getVerilogParameters();
+};
+
 
 //This interfaces with a BRAM
 //The Configuration is supposedly Dual Port BRAM.

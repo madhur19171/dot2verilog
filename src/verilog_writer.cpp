@@ -16,6 +16,7 @@ int main() {
 
 
 	std::string fileName = "/media/madhur/CommonSpace/Work/Dynamatic/Installation/etc/dynamatic/dot2verilog/dot2verilog/src/HelloWorld.dot";
+	std::string outFileName = fileName.substr(0, fileName.size() - 3) + "v";
 
 	DotReader dotReader = DotReader(fileName);
 
@@ -37,11 +38,12 @@ int main() {
 	std::cout << std::endl << std::endl;
 
 	std::cout << "Number of Blocks: " << dotReader.getNumberOfBlocks() << std::endl;
+	std::cout << "No Error" << std::endl;
 	std::cout << std::endl << std::endl;
 
 	std::cout << "Component List:" << std::endl;
 	for(unsigned int i = 0; i < dotReader.getComponentList().size(); i++){
-		(dotReader.getComponentList().at(i)).printComponent();
+		(dotReader.getComponentList().at(i))->printComponent();
 	}
 	std::cout << std::endl << std::endl;
 
@@ -71,6 +73,14 @@ int main() {
 	GraphToVerilog graphToVerilog(dotReader);
 	graphToVerilog.writeVerilogCode();
 	std::cout << graphToVerilog.getVerilogCode() << std::endl;
+
+	//Deallocates the allocated memory for Component Objects;
+	dotReader.destroyObjects();
+
+	std::ofstream outStream(outFileName);
+	outStream << graphToVerilog.getVerilogCode() << std::endl;
+
+	outStream.close();
 
 	return 0;
 }

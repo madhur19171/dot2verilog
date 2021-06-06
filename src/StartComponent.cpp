@@ -23,7 +23,7 @@ StartComponent::StartComponent(Component& c){
 	slots = c.slots;
 	transparent = c.transparent;
 	value = c.value;
-	connections = c.connections;
+	io = c.io;
 	inputConnections = c.inputConnections;
 	outputConnections = c.outputConnections;
 
@@ -80,5 +80,66 @@ std::string StartComponent::getVerilogParameters(){
 	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
 	return ret;
 }
+
+
+std::string StartComponent::getInputOutputConnections(){
+	std::string ret;
+
+	ret += "\tassign " + clk + " = clk;\n";
+	ret += "\tassign " + rst + " = rst;\n";
+
+	//First input of start component is connected to top module IO port
+	ret += "\tassign " + inputConnections.at("in1").data + " = " + port_din + ";\n";
+	ret += "\tassign " + inputConnections.at("in1").valid + " = " + port_valid + ";\n";
+	ret += "\tassign " + port_ready + " = " + inputConnections.at("in1").ready + ";\n";
+
+
+	InputConnection inConn;
+	OutputConnection outConn;
+	Component* connectedToComponent;
+	std::string connectedFromPort, connectedToPort;
+	for(auto it = io.begin(); it != io.end(); it++){
+		connectedToComponent = (*it).first;
+		connectedFromPort = (*it).second.first;
+		connectedToPort = (*it).second.second;
+		inConn = connectedToComponent->inputConnections[connectedToPort];
+		outConn = outputConnections[connectedFromPort];
+		ret += connectInputOutput(inConn, outConn);
+	}
+
+	return ret;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

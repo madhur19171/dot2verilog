@@ -26,7 +26,7 @@ private:
 	DotReader dotReader;
 	std::string tabs = "";
 	std::string verilogCode = "";
-	std::vector<Component> topModulePortComponents;
+	std::vector<Component*> topModulePortComponents;
 
 	void insertTab();
 	void removeTab();
@@ -39,6 +39,8 @@ private:
 	std::string writeModulePortWires();
 	//returns Instantiation all the modules present in the Design
 	std::string writeModuleInstantiation();
+	//returns verilog code connecting various input and outputs of components together
+	std::string writeInputOutputConnections();
 	//Writes "module <name>("
 	std::string writeTopModuleName();
 	//Writes "endmodule;"

@@ -20,7 +20,7 @@ MemoryContentComponent::MemoryContentComponent(Component& c){
 	slots = c.slots;
 	transparent = c.transparent;
 	value = c.value;
-	connections = c.connections;
+	io = c.io;
 	inputConnections = c.inputConnections;
 	outputConnections = c.outputConnections;
 
