@@ -110,7 +110,8 @@ std::string GraphToVerilog::writeTopModulePorts(){
 
 
 
-//This function accesses the getModulePortDeclarations function of each component to generate
+//This function accesses the getModulePortDeclarations function of each component
+//(Because every component needs wires to connect) to generate
 //a declaration of all wires of input/output connections of the sub modules
 //They include the data, valid and ready signal for all input and outputs of that component
 //Additional ports can be added if needed for a particular component by overriding getModulePortDeclarations
@@ -137,17 +138,73 @@ std::string GraphToVerilog::writeModuleInstantiation(){
 		} else if((*it)->type == COMPONENT_END){
 			moduleInstances += ((EndComponent*)(*it))->getModuleInstantiation(tabs);
 			moduleInstances += "\n\n";
+		} else if((*it)->type == COMPONENT_FORK){
+			moduleInstances += ((ForkComponent*)(*it))->getModuleInstantiation(tabs);
+			moduleInstances += "\n\n";
 		} else if((*it)->type == COMPONENT_OPERATOR){
 			if((*it)->op == OPERATOR_ADD){
 				moduleInstances += ((AddComponent*)(*it))->getModuleInstantiation(tabs);
 				moduleInstances += "\n\n";
-			}
-			if((*it)->op == OPERATOR_RET){
+			} else if((*it)->op == OPERATOR_SUB){
+				moduleInstances += ((SubComponent*)(*it))->getModuleInstantiation(tabs);
+				moduleInstances += "\n\n";
+			} else if((*it)->op == OPERATOR_AND){
+				moduleInstances += ((AndComponent*)(*it))->getModuleInstantiation(tabs);
+				moduleInstances += "\n\n";
+			} else if((*it)->op == OPERATOR_OR){
+				moduleInstances += ((OrComponent*)(*it))->getModuleInstantiation(tabs);
+				moduleInstances += "\n\n";
+			} else if((*it)->op == OPERATOR_XOR){
+				moduleInstances += ((XorComponent*)(*it))->getModuleInstantiation(tabs);
+				moduleInstances += "\n\n";
+			} else if((*it)->op == OPERATOR_SHL){
+				moduleInstances += ((ShlComponent*)(*it))->getModuleInstantiation(tabs);
+				moduleInstances += "\n\n";
+			} else if((*it)->op == OPERATOR_LSHR){
+				moduleInstances += ((LshrComponent*)(*it))->getModuleInstantiation(tabs);
+				moduleInstances += "\n\n";
+			} else if((*it)->op == OPERATOR_ASHR){
+				moduleInstances += ((AshrComponent*)(*it))->getModuleInstantiation(tabs);
+				moduleInstances += "\n\n";
+			} else if((*it)->op == OPERATOR_UGT){
+				moduleInstances += ((UgtComponent*)(*it))->getModuleInstantiation(tabs);
+				moduleInstances += "\n\n";
+			} else if((*it)->op == OPERATOR_UGE){
+				moduleInstances += ((UgeComponent*)(*it))->getModuleInstantiation(tabs);
+				moduleInstances += "\n\n";
+			} else if((*it)->op == OPERATOR_SGT){
+				moduleInstances += ((SgtComponent*)(*it))->getModuleInstantiation(tabs);
+				moduleInstances += "\n\n";
+			} else if((*it)->op == OPERATOR_SGE){
+				moduleInstances += ((SgeComponent*)(*it))->getModuleInstantiation(tabs);
+				moduleInstances += "\n\n";
+			} else if((*it)->op == OPERATOR_ULT){
+				moduleInstances += ((UltComponent*)(*it))->getModuleInstantiation(tabs);
+				moduleInstances += "\n\n";
+			} else if((*it)->op == OPERATOR_ULE){
+				moduleInstances += ((UleComponent*)(*it))->getModuleInstantiation(tabs);
+				moduleInstances += "\n\n";
+			} else if((*it)->op == OPERATOR_SLT){
+				moduleInstances += ((SltComponent*)(*it))->getModuleInstantiation(tabs);
+				moduleInstances += "\n\n";
+			} else if((*it)->op == OPERATOR_SLE){
+				moduleInstances += ((SleComponent*)(*it))->getModuleInstantiation(tabs);
+				moduleInstances += "\n\n";
+			} else if((*it)->op == OPERATOR_RET){
 				moduleInstances += ((RetComponent*)(*it))->getModuleInstantiation(tabs);
 				moduleInstances += "\n\n";
+			} else if((*it)->op == OPERATOR_SELECT){
+				moduleInstances += ((SelectComponent*)(*it))->getModuleInstantiation(tabs);
+				moduleInstances += "\n\n";
 			}
+		} else if((*it)->type == COMPONENT_SOURCE){
+			moduleInstances += ((SourceComponent*)(*it))->getModuleInstantiation(tabs);
+			moduleInstances += "\n\n";
 		} else if((*it)->type == COMPONENT_SINK){
 			moduleInstances += ((SinkComponent*)(*it))->getModuleInstantiation(tabs);
+			moduleInstances += "\n\n";
+		} else if((*it)->type == COMPONENT_CONSTANT_){
+			moduleInstances += ((ConstantComponent*)(*it))->getModuleInstantiation(tabs);
 			moduleInstances += "\n\n";
 		}
 	}
@@ -163,20 +220,83 @@ std::string GraphToVerilog::writeInputOutputConnections(){
 		if((*it)->type == COMPONENT_START){
 			inputoutput += ((StartComponent*)(*it))->getInputOutputConnections();
 			inputoutput += "\n";
-		} if((*it)->type == COMPONENT_END){
+		} else if((*it)->type == COMPONENT_END){
 			inputoutput += ((EndComponent*)(*it))->getInputOutputConnections();
 			inputoutput += "\n";
-		} if((*it)->type == COMPONENT_SINK){
-			inputoutput += ((SinkComponent*)(*it))->getInputOutputConnections();
+		} else if((*it)->type == COMPONENT_FORK){
+			inputoutput += ((ForkComponent*)(*it))->getInputOutputConnections();
 			inputoutput += "\n";
 		} else if((*it)->type == COMPONENT_OPERATOR){
 			if((*it)->op == OPERATOR_ADD){
 				inputoutput += ((AddComponent*)(*it))->getInputOutputConnections();
 				inputoutput += "\n";
+			} else if((*it)->op == OPERATOR_SUB){
+				inputoutput += ((SubComponent*)(*it))->getInputOutputConnections();
+				inputoutput += "\n";
+			} else if((*it)->op == OPERATOR_AND){
+				inputoutput += ((AndComponent*)(*it))->getInputOutputConnections();
+				inputoutput += "\n";
+			} else if((*it)->op == OPERATOR_OR){
+				inputoutput += ((OrComponent*)(*it))->getInputOutputConnections();
+				inputoutput += "\n";
+			} else if((*it)->op == OPERATOR_XOR){
+				inputoutput += ((XorComponent*)(*it))->getInputOutputConnections();
+				inputoutput += "\n";
+			} else if((*it)->op == OPERATOR_SHL){
+				inputoutput += ((ShlComponent*)(*it))->getInputOutputConnections();
+				inputoutput += "\n";
+			} else if((*it)->op == OPERATOR_LSHR){
+				inputoutput += ((LshrComponent*)(*it))->getInputOutputConnections();
+				inputoutput += "\n";
+			} else if((*it)->op == OPERATOR_ASHR){
+				inputoutput += ((AshrComponent*)(*it))->getInputOutputConnections();
+				inputoutput += "\n";
+			} else if((*it)->op == OPERATOR_EQ){
+				inputoutput += ((EqComponent*)(*it))->getInputOutputConnections();
+				inputoutput += "\n";
+			} else if((*it)->op == OPERATOR_NE){
+				inputoutput += ((NeComponent*)(*it))->getInputOutputConnections();
+				inputoutput += "\n";
+			} else if((*it)->op == OPERATOR_UGT){
+				inputoutput += ((UgtComponent*)(*it))->getInputOutputConnections();
+				inputoutput += "\n";
+			} else if((*it)->op == OPERATOR_UGE){
+				inputoutput += ((UgeComponent*)(*it))->getInputOutputConnections();
+				inputoutput += "\n";
+			} else if((*it)->op == OPERATOR_SGT){
+				inputoutput += ((SgtComponent*)(*it))->getInputOutputConnections();
+				inputoutput += "\n";
+			} else if((*it)->op == OPERATOR_SGE){
+				inputoutput += ((SgeComponent*)(*it))->getInputOutputConnections();
+				inputoutput += "\n";
+			} else if((*it)->op == OPERATOR_ULT){
+				inputoutput += ((UltComponent*)(*it))->getInputOutputConnections();
+				inputoutput += "\n";
+			} else if((*it)->op == OPERATOR_ULE){
+				inputoutput += ((UleComponent*)(*it))->getInputOutputConnections();
+				inputoutput += "\n";
+			} else if((*it)->op == OPERATOR_SLT){
+				inputoutput += ((SltComponent*)(*it))->getInputOutputConnections();
+				inputoutput += "\n";
+			} else if((*it)->op == OPERATOR_SLE){
+				inputoutput += ((SleComponent*)(*it))->getInputOutputConnections();
+				inputoutput += "\n";
 			} else if((*it)->op == OPERATOR_RET){
 				inputoutput += ((RetComponent*)(*it))->getInputOutputConnections();
 				inputoutput += "\n";
+			} else if((*it)->op == OPERATOR_SELECT){
+				inputoutput += ((SelectComponent*)(*it))->getInputOutputConnections();
+				inputoutput += "\n";
 			}
+		} else if((*it)->type == COMPONENT_SOURCE){
+			inputoutput += ((SourceComponent*)(*it))->getInputOutputConnections();
+			inputoutput += "\n";
+		} else if((*it)->type == COMPONENT_SINK){
+			inputoutput += ((SinkComponent*)(*it))->getInputOutputConnections();
+			inputoutput += "\n";
+		} else if((*it)->type == COMPONENT_CONSTANT_){
+			inputoutput += ((ConstantComponent*)(*it))->getInputOutputConnections();
+			inputoutput += "\n";
 		}
 	}
 

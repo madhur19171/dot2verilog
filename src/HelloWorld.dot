@@ -3,18 +3,35 @@ Digraph G {
 //DHLS version: 0.1.1" [shape = "none" pos = "20,20!"]
 		"a" [type = "Entry", bbID= 1, in = "in1:32", out = "out1:32"];
 		"b" [type = "Entry", bbID= 1, in = "in1:32", out = "out1:32"];
-		"add_0" [type = "Operator", bbID= 1, op = "add_op", in = "in1:32 in2:32 ", out = "out1:32 ", delay=1.693, latency=0, II=1];
+		"icmp_0" [type = "Operator", bbID= 1, op = "icmp_sgt_op", in = "in1:32 in2:32 ", out = "out1:1 ", delay=1.530, latency=0, II=1];
+		"cst_0" [type = "Constant", bbID= 1, in = "in1:32", out = "out1:32", value = "0x00000000"];
+		"sub_1" [type = "Operator", bbID= 1, op = "sub_op", in = "in1:32 in2:32 ", out = "out1:32 ", delay=1.693, latency=0, II=1];
+		"select_0" [type = "Operator", bbID= 1, op = "select_op", in = "in1?:1 in2+:32 in3-:32 ", out = "out1:32 ", trueFrac=0.2, delay=0.000, latency=0, II=1];
+		"add_2" [type = "Operator", bbID= 1, op = "add_op", in = "in1:32 in2:32 ", out = "out1:32 ", delay=1.693, latency=0, II=1];
 		"ret_0" [type = "Operator", bbID= 1, op = "ret_op", in = "in1:32 ", out = "out1:32 ", delay=0.000, latency=0, II=1];
+		"fork_0" [type = "Fork", bbID= 1, in = "in1:32", out = "out1:32 out2:32 "];
+		"fork_1" [type = "Fork", bbID= 1, in = "in1:32", out = "out1:32 out2:32 out3:32 "];
 		"end_0" [type = "Exit", bbID= 0, in = "in1:32 ", out = "out1:32"];
 		"start_0" [type = "Entry", control= "true", bbID= 1, in = "in1:0", out = "out1:0"];
 		"sink_0" [type = "Sink", bbID= 0, in = "in1:0"];
+		"source_0" [type = "Source", bbID= 1, out = "out1:32"];
 	subgraph cluster_0 {
 	color = "darkgreen";
 		label = "block1";
-		"a" -> "add_0" [color = "red", from = "out1", to = "in1"];
-		"b" -> "add_0" [color = "red", from = "out1", to = "in2"];
-		"add_0" -> "ret_0" [color = "red", from = "out1", to = "in1"];
+		"a" -> "fork_0" [color = "red", from = "out1", to = "in1"];
+		"b" -> "fork_1" [color = "red", from = "out1", to = "in1"];
+		"icmp_0" -> "select_0" [color = "red", from = "out1", to = "in1"];
+		"cst_0" -> "sub_1" [color = "red", from = "out1", to = "in1"];
+		"sub_1" -> "select_0" [color = "red", from = "out1", to = "in3"];
+		"select_0" -> "add_2" [color = "red", from = "out1", to = "in1"];
+		"add_2" -> "ret_0" [color = "red", from = "out1", to = "in1"];
 		"ret_0" -> "end_0" [color = "red", from = "out1", to = "in1"];
+		"fork_0" -> "icmp_0" [color = "red", from = "out1", to = "in1"];
+		"fork_0" -> "add_2" [color = "red", from = "out2", to = "in2"];
+		"fork_1" -> "icmp_0" [color = "red", from = "out1", to = "in2"];
+		"fork_1" -> "sub_1" [color = "red", from = "out2", to = "in2"];
+		"fork_1" -> "select_0" [color = "red", from = "out3", to = "in2"];
 		"start_0" -> "sink_0" [color = "gold3", from = "out1", to = "in1"];
+		"source_0" -> "cst_0" [color = "red", from = "out1", to = "in1"];
 	}
 }

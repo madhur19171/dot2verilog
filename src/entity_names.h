@@ -93,8 +93,37 @@
 #define COMPONENT_SELECTOR		"Selector"
 #define COMPONENT_OPERATOR		"Operator"
 
+
+
 #define OPERATOR_ADD			"add_op"
+#define OPERATOR_SUB			"sub_op"
+
+#define OPERATOR_AND			"and_op"
+#define OPERATOR_OR				"or_op"
+#define OPERATOR_XOR			"xor_op"
+
+#define OPERATOR_SHL			"shl_op"
+#define OPERATOR_LSHR			"lshr_op"
+#define OPERATOR_ASHR			"ashr_op"
+
+#define OPERATOR_EQ				"icmp_eq_op"
+#define OPERATOR_NE				"icmp_ne_op"
+
+#define OPERATOR_UGT			"icmp_ugt_op"
+#define OPERATOR_UGE			"icmp_uge_op"
+#define OPERATOR_SGT			"icmp_sgt_op"
+#define OPERATOR_SGE			"icmp_sge_op"
+
+#define OPERATOR_ULT			"icmp_ult_op"
+#define OPERATOR_ULE			"icmp_ule_op"
+#define OPERATOR_SLT			"icmp_slt_op"
+#define OPERATOR_SLE			"icmp_sle_op"
+
+#define OPERATOR_SELECT			"select_op"
+
 #define OPERATOR_RET			"ret_op"
+
+
 
 #define UNDERSCORE  "_"
 #define COLON ":"

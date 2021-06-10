@@ -154,6 +154,26 @@ private:
 };
 
 
+
+//Type Component Classes (To be moved to their respective class files)
+class SourceComponent : public Component{
+public:
+	SourceComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Since this has no outputs hence no getInputOutputConnections() function for this Class
+	//However, to maintain uniformity of code, we will connect the clk and rst in this sink
+	//,although they are of no use.
+	std::string getInputOutputConnections();
+
+private:
+	//Overriding setInputPortBus functions as
+	//Source only has Output port and no input ports.
+	void setInputPortBus();
+	std::string getVerilogParameters();
+};
+
 //Type Component Classes (To be moved to their respective class files)
 class SinkComponent : public Component{
 public:
@@ -175,6 +195,40 @@ private:
 
 
 //Type Component Classes (To be moved to their respective class files)
+class ConstantComponent : public Component{
+public:
+	ConstantComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	void setInputPortBus();
+	std::string getVerilogParameters();
+};
+
+
+//Type Component Classes (To be moved to their respective class files)
+class ForkComponent : public Component{
+public:
+	ForkComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	std::string getVerilogParameters();
+};
+
+
+
+//Type Component Classes (To be moved to their respective class files)
 class AddComponent : public Component{
 public:
 	AddComponent(Component& c);
@@ -186,6 +240,298 @@ public:
 	std::string getInputOutputConnections();
 
 private:
+	std::string getVerilogParameters();
+};
+
+
+//Type Component Classes (To be moved to their respective class files)
+class SubComponent : public Component{
+public:
+	SubComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	std::string getVerilogParameters();
+};
+
+
+//Type Component Classes (To be moved to their respective class files)
+class AndComponent : public Component{
+public:
+	AndComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	std::string getVerilogParameters();
+};
+
+//Type Component Classes (To be moved to their respective class files)
+class OrComponent : public Component{
+public:
+	OrComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	std::string getVerilogParameters();
+};
+
+
+//Type Component Classes (To be moved to their respective class files)
+class XorComponent : public Component{
+public:
+	XorComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	std::string getVerilogParameters();
+};
+
+
+
+//Type Component Classes (To be moved to their respective class files)
+class ShlComponent : public Component{
+public:
+	ShlComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	std::string getVerilogParameters();
+};
+
+
+
+//Type Component Classes (To be moved to their respective class files)
+class LshrComponent : public Component{
+public:
+	LshrComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	std::string getVerilogParameters();
+};
+
+
+//Type Component Classes (To be moved to their respective class files)
+class AshrComponent : public Component{
+public:
+	AshrComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	std::string getVerilogParameters();
+};
+
+
+
+//Type Component Classes (To be moved to their respective class files)
+class EqComponent : public Component{
+public:
+	EqComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	std::string getVerilogParameters();
+};
+
+
+//Type Component Classes (To be moved to their respective class files)
+class NeComponent : public Component{
+public:
+	NeComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	std::string getVerilogParameters();
+};
+
+
+//Type Component Classes (To be moved to their respective class files)
+class UgtComponent : public Component{
+public:
+	UgtComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	std::string getVerilogParameters();
+};
+
+
+//Type Component Classes (To be moved to their respective class files)
+class UgeComponent : public Component{
+public:
+	UgeComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	std::string getVerilogParameters();
+};
+
+
+//Type Component Classes (To be moved to their respective class files)
+class SgtComponent : public Component{
+public:
+	SgtComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	std::string getVerilogParameters();
+};
+
+
+//Type Component Classes (To be moved to their respective class files)
+class SgeComponent : public Component{
+public:
+	SgeComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	std::string getVerilogParameters();
+};
+
+
+
+//Type Component Classes (To be moved to their respective class files)
+class UltComponent : public Component{
+public:
+	UltComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	std::string getVerilogParameters();
+};
+
+
+//Type Component Classes (To be moved to their respective class files)
+class UleComponent : public Component{
+public:
+	UleComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	std::string getVerilogParameters();
+};
+
+
+//Type Component Classes (To be moved to their respective class files)
+class SltComponent : public Component{
+public:
+	SltComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	std::string getVerilogParameters();
+};
+
+
+//Type Component Classes (To be moved to their respective class files)
+class SleComponent : public Component{
+public:
+	SleComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	std::string getVerilogParameters();
+};
+
+
+//Type Component Classes (To be moved to their respective class files)
+class SelectComponent : public Component{
+public:
+	SelectComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	void setInputPortBus();
 	std::string getVerilogParameters();
 };
 
@@ -204,6 +550,7 @@ public:
 private:
 	std::string getVerilogParameters();
 };
+
 
 
 //This interfaces with a BRAM

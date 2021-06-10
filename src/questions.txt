@@ -1,3 +1,5 @@
+
+June 2nd:
 Information about LSQ ports. What are in1:32*l0a kind of things?
 Is join ever used? If yes then how is it any different from Merge?
 What are TEHB and OEHB?
@@ -13,3 +15,10 @@ file for now. This workaround will work only when all the code is written purely
 Another solution might be to use SystemVerilog but I would frown upon that thought.
 
 Input always comes at diffenert times in merge but can arrive at the same time in mux
+
+June 9th:
+What are Sext and Zext operations in Arithmetic Units?
+Is it possible for any component to have different data_in_size and data_out_size?
+What is antitoken in select entity in arithmetic units?
+Ask About handshake protocol and do the simulation accordingly. Does ready signal go low as soon as a handshake happens?
+What is the use of source? It is always followed by a Const.

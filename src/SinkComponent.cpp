@@ -50,9 +50,8 @@ std::string SinkComponent::getModuleInstantiation(std::string tabs){
 	ret += tabs + "\t";
 	ret += "(.clk(" + clk + "), .rst(" + rst + "),\n";
 	ret += tabs + "\t";
-	ret += inputPortBus + ", \n";
-	ret += tabs + "\t";
-	ret += outputPortBus + ");";
+	ret += inputPortBus + ");";
+	//Sink does not have any output port bus
 
 	return ret;
 }

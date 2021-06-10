@@ -135,13 +135,89 @@ Component* Component::castToSubClass(Component* component){
 		EndComponent* obj = new EndComponent(*this);
 		component = (Component *)obj;
 		return component;
+	}  else if(type == COMPONENT_FORK){
+		ForkComponent* obj = new ForkComponent(*this);
+		component = (Component *)obj;
+		return component;
 	} else if(type == COMPONENT_OPERATOR){
 		if(op == OPERATOR_ADD){
 			AddComponent* obj = new AddComponent(*this);
 			component = (Component *)obj;
 			return component;
+		} else if(op == OPERATOR_SUB){
+			SubComponent* obj = new SubComponent(*this);
+			component = (Component *)obj;
+			return component;
+		} else if(op == OPERATOR_AND){
+			AndComponent* obj = new AndComponent(*this);
+			component = (Component *)obj;
+			return component;
+		} else if(op == OPERATOR_OR){
+			OrComponent* obj = new OrComponent(*this);
+			component = (Component *)obj;
+			return component;
+		} else if(op == OPERATOR_XOR){
+			XorComponent* obj = new XorComponent(*this);
+			component = (Component *)obj;
+			return component;
+		} else if(op == OPERATOR_SHL){
+			ShlComponent* obj = new ShlComponent(*this);
+			component = (Component *)obj;
+			return component;
+		} else if(op == OPERATOR_LSHR){
+			LshrComponent* obj = new LshrComponent(*this);
+			component = (Component *)obj;
+			return component;
+		} else if(op == OPERATOR_ASHR){
+			AshrComponent* obj = new AshrComponent(*this);
+			component = (Component *)obj;
+			return component;
+		} else if(op == OPERATOR_EQ){
+			EqComponent* obj = new EqComponent(*this);
+			component = (Component *)obj;
+			return component;
+		} else if(op == OPERATOR_NE){
+			NeComponent* obj = new NeComponent(*this);
+			component = (Component *)obj;
+			return component;
+		} else if(op == OPERATOR_UGT){
+			UgtComponent* obj = new UgtComponent(*this);
+			component = (Component *)obj;
+			return component;
+		} else if(op == OPERATOR_UGE){
+			UgeComponent* obj = new UgeComponent(*this);
+			component = (Component *)obj;
+			return component;
+		} else if(op == OPERATOR_SGT){
+			SgtComponent* obj = new SgtComponent(*this);
+			component = (Component *)obj;
+			return component;
+		} else if(op == OPERATOR_SGE){
+			SgeComponent* obj = new SgeComponent(*this);
+			component = (Component *)obj;
+			return component;
+		} else if(op == OPERATOR_ULT){
+			UltComponent* obj = new UltComponent(*this);
+			component = (Component *)obj;
+			return component;
+		} else if(op == OPERATOR_ULE){
+			UleComponent* obj = new UleComponent(*this);
+			component = (Component *)obj;
+			return component;
+		} else if(op == OPERATOR_SLT){
+			SltComponent* obj = new SltComponent(*this);
+			component = (Component *)obj;
+			return component;
+		} else if(op == OPERATOR_SLE){
+			SleComponent* obj = new SleComponent(*this);
+			component = (Component *)obj;
+			return component;
 		} else if(op == OPERATOR_RET){
 			RetComponent* obj = new RetComponent(*this);
+			component = (Component *)obj;
+			return component;
+		} else if(op == OPERATOR_SELECT){
+			SelectComponent* obj = new SelectComponent(*this);
 			component = (Component *)obj;
 			return component;
 		}
@@ -149,8 +225,16 @@ Component* Component::castToSubClass(Component* component){
 		MemoryContentComponent* obj = new MemoryContentComponent(*this);
 		component = (Component *)obj;
 		return component;
+	} else if(type == COMPONENT_SOURCE){
+		SourceComponent* obj = new SourceComponent(*this);
+		component = (Component *)obj;
+		return component;
 	} else if(type == COMPONENT_SINK){
 		SinkComponent* obj = new SinkComponent(*this);
+		component = (Component *)obj;
+		return component;
+	} else if(type == COMPONENT_CONSTANT_){
+		ConstantComponent* obj = new ConstantComponent(*this);
 		component = (Component *)obj;
 		return component;
 	}
