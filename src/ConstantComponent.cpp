@@ -39,14 +39,15 @@ void ConstantComponent::setInputPortBus(){
 	//First create data_in bus
 	inputPortBus = ".data_in_bus({";
 	//The bus will be assigned from highest input to lowest input. eg {in3, in2, in1}
-	inputPortBus += std::to_string(getVectorLength(in) == 0 ? 1 : getVectorLength(in)) + "'d" + std::to_string(value);
+	//Index 0 because constant has only one input
+	inputPortBus += std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "'d" + std::to_string(value);
 	inputPortBus += "}), ";
 
 	//Now create valid_in bus
 	inputPortBus += ".valid_in_bus({";
 	//The bus will be assigned from highest input to lowest input. eg {in3, in2, in1}
-	for(int i = inputConnections.size(); i > 0; i--){
-		inConn = inputConnections["in" + std::to_string(i)];
+	for(int i = inputConnections.size() - 1; i >= 0; i--){
+		inConn = inputConnections[i];
 		inputPortBus += inConn.valid + ", ";
 	}
 	inputPortBus = inputPortBus.erase(inputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
@@ -55,8 +56,8 @@ void ConstantComponent::setInputPortBus(){
 	//Now create ready_in bus
 	inputPortBus += ".ready_in_bus({";
 	//The bus will be assigned from highest input to lowest input. eg {in3, in2, in1}
-	for(int i = inputConnections.size(); i > 0; i--){
-		inConn = inputConnections["in" + std::to_string(i)];
+	for(int i = inputConnections.size() - 1; i >= 0; i--){
+		inConn = inputConnections[i];
 		inputPortBus += inConn.ready + ", ";
 	}
 	inputPortBus = inputPortBus.erase(inputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
@@ -87,8 +88,8 @@ std::string ConstantComponent::getVerilogParameters(){
 	//This method of generating module parameters will work because Start node has
 	//only 1 input and 1 output
 	ret += "#(.INPUTS(1), .OUTPUTS(1), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(getVectorLength(in) == 0 ? 1 : getVectorLength(in)) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(getVectorLength(out) == 0 ? 1 : getVectorLength(out)) + ")) ";
+	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
+	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
 	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
 	return ret;
 }
@@ -104,7 +105,7 @@ std::string ConstantComponent::getInputOutputConnections(){
 	InputConnection inConn;
 	OutputConnection outConn;
 	Component* connectedToComponent;
-	std::string connectedFromPort, connectedToPort;
+	int connectedFromPort, connectedToPort;
 	for(auto it = io.begin(); it != io.end(); it++){
 		connectedToComponent = (*it).first;
 		connectedFromPort = (*it).second.first;

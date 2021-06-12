@@ -9,6 +9,7 @@
 
 //Subclass for Entry type component
 ForkComponent::ForkComponent(Component& c){
+	index = c.index;
 	moduleName = "fork_node";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
@@ -52,16 +53,11 @@ std::string ForkComponent::getModuleInstantiation(std::string tabs){
 
 std::string ForkComponent::getVerilogParameters(){
 	std::string ret;
-	int numOutputs = 0;
-	std::string tempStr;
-	std::istringstream ss(out);
-	while(ss >> tempStr)
-		numOutputs++;
 	//This method of generating module parameters will work because Start node has
 	//only 1 input and 1 output
-	ret += "#(.INPUTS(1), .OUTPUTS(" + std::to_string(numOutputs) + "), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(getVectorLength(in) == 0 ? 1 : getVectorLength(in)) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(getVectorLength(out) == 0 ? 1 : getVectorLength(out)) + ")) ";
+	ret += "#(.INPUTS(1), .OUTPUTS(" + std::to_string(out.size) + "), ";
+	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
+	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
 	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
 	return ret;
 }
@@ -77,7 +73,7 @@ std::string ForkComponent::getInputOutputConnections(){
 	InputConnection inConn;
 	OutputConnection outConn;
 	Component* connectedToComponent;
-	std::string connectedFromPort, connectedToPort;
+	int connectedFromPort, connectedToPort;
 	for(auto it = io.begin(); it != io.end(); it++){
 		connectedToComponent = (*it).first;
 		connectedFromPort = (*it).second.first;

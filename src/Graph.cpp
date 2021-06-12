@@ -28,8 +28,9 @@ void Graph::startDFS(){
 	//Other than "start" are also traversed here
 	for(auto it = visited.begin(); it != visited.end(); it++){
 		Component* comp = dotReader.getComponentMap().at(it->first);
+		//		cout << comp->name << " " << comp->type << endl;
 		//If a component has no input or component is an entry point, and not visited yet.
-		if((comp->in == DEFAULT_IN || comp->type == COMPONENT_START) && !visited[comp->name]){
+		if((comp->in.size == 0 || comp->type == COMPONENT_START) && !visited[comp->name]){
 			root = comp;
 			DFS(root);
 		}
@@ -45,7 +46,9 @@ void Graph::DFS(Component* v){
 
 
 		Component* nextComponent;
+		//		cout << v->io.size() << endl;
 		if(v->io.size() != 0){
+
 			for(auto it = v->io.begin(); it != v->io.end(); it++){
 				std::string name = ((*it).first)->name;
 				nextComponent = (dotReader.getComponentMap().at(name));

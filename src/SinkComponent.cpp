@@ -9,6 +9,7 @@
 #include "ComponentClass.h"
 
 SinkComponent::SinkComponent(Component& c){
+	index = c.index;
 	moduleName = "sink_node";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
@@ -61,7 +62,7 @@ std::string SinkComponent::getVerilogParameters(){
 	//This method of generating module parameters will work because Start node has
 	//only 1 input and 1 output
 	ret += "#(.INPUTS(1), .OUTPUTS(0), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(getVectorLength(in) == 0 ? 1 : getVectorLength(in)) + "))";
+	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "))";
 	//Since there is no output, DATA_OUT_SIZE can be default
 	return ret;
 }

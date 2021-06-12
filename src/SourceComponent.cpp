@@ -8,6 +8,7 @@
 #include "ComponentClass.h"
 
 SourceComponent::SourceComponent(Component& c){
+	index = c.index;
 	moduleName = "source_node";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
@@ -59,7 +60,7 @@ std::string SourceComponent::getVerilogParameters(){
 	std::string ret;
 
 	ret += "#(.INPUTS(0), .OUTPUTS(1), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(getVectorLength(out) == 0 ? 1 : getVectorLength(out)) + "))";
+	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + "))";
 	//Since there is no Input, DATA_IN_SIZE can be default
 	return ret;
 }
@@ -76,7 +77,7 @@ std::string SourceComponent::getInputOutputConnections(){
 	InputConnection inConn;
 	OutputConnection outConn;
 	Component* connectedToComponent;
-	std::string connectedFromPort, connectedToPort;
+	int connectedFromPort, connectedToPort;
 	for(auto it = io.begin(); it != io.end(); it++){
 		connectedToComponent = (*it).first;
 		connectedFromPort = (*it).second.first;

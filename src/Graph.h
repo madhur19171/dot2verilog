@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "dot_reader.h"
+#include "dot_reader1.h"
 
 class Graph {
 public:

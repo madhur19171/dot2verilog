@@ -17,6 +17,7 @@ public:
 	GraphToVerilog(DotReader dotReader);
 
 	void writeVerilogCode();
+	void writeToFile();
 
 	std::string& getVerilogCode() {
 		return verilogCode;

@@ -14,6 +14,17 @@ GraphToVerilog::GraphToVerilog(DotReader dotReader){
 	tabs = "";
 }
 
+
+void GraphToVerilog::writeToFile(){
+	std::string file_n = dotReader.getFileName() + ".v";
+	std::ofstream outStream(file_n);
+	writeVerilogCode();
+	std::cout << getVerilogCode() << std::endl;
+	outStream << getVerilogCode() << std::endl;
+
+	outStream.close();
+}
+
 //Function that calls other functions to append their generated verilog code snippet
 //The sequence in which the sub-functions are called determines in which sequence the snippet
 //will appear in the final code.
@@ -22,6 +33,7 @@ GraphToVerilog::GraphToVerilog(DotReader dotReader){
 //Followed by declaring wires that connect various sub components in the top module
 void GraphToVerilog::writeVerilogCode(){
 	verilogCode += writeTopModuleName();
+
 
 	insertTab();
 	verilogCode += writeTopModulePorts();
@@ -47,10 +59,7 @@ void GraphToVerilog::writeVerilogCode(){
 std::string GraphToVerilog::writeTopModuleName(){
 	std::string moduleName;
 
-	std::string& file_n = dotReader.getFileName();
-	file_n = substring(file_n, 0, file_n.find('.'));
-
-	moduleName = "module " + file_n + "(\n";
+	moduleName = "module " + dotReader.getFileName() + "(\n";
 
 	return moduleName;
 }
@@ -59,7 +68,6 @@ std::string GraphToVerilog::writeTopModuleName(){
 //All the components that need to have input output declarations in the top module
 //port list
 void GraphToVerilog::generateTopModulePortComponents(){
-
 	for(auto it = dotReader.getComponentList().begin(); it != dotReader.getComponentList().end(); it++){
 		if((*it)->type == COMPONENT_START ||
 				(*it)->type == COMPONENT_END ||
@@ -305,7 +313,7 @@ std::string GraphToVerilog::writeInputOutputConnections(){
 
 
 std::string GraphToVerilog::writeEndModule(){
-	return "endmodule";
+	return "endmodule\n";
 }
 
 //Till now, a useless function

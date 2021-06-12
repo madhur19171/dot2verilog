@@ -36,13 +36,15 @@ struct OutputConnection{
 //it is assigned the default value
 class Component{
 public:
+	//Index is new and has to be added to all subclass constructors
+	int index;
 	std::string moduleName;
 	std::string instanceName;
 	std::string name;
 	std::string type;
 	int bbID;
-	std::string in;
-	std::string out;//Becomes obsolete after inputConnections and outputConnection are initialized
+	IN_T in;
+	OUT_T out;
 	float delay, latency;
 	int II;
 	int slots;
@@ -55,16 +57,16 @@ public:
 	//Then connection is vector containing all the connections that component has with other components
 	//The vector contains pairs. The first element of that pair is the name of the component that is connected to this component
 	//The second element of the pair is the input-output mapping of this component and the connected component
-	std::vector<std::pair<Component*, std::pair<std::string, std::string>>> io;
+	std::vector<std::pair<Component*, std::pair<int, int>>> io;
 
 	//Every entity of top module has clk and rst signal for synchronization
 	std::string clk, rst;
 	//Stores the module port input and output connections, using which
 	//modules are connected to outside world
 	std::string inputPortBus;
-	std::map<std::string, InputConnection> inputConnections;
+	std::map<int, InputConnection> inputConnections;
 	std::string outputPortBus;
-	std::map<std::string, OutputConnection> outputConnections;
+	std::map<int, OutputConnection> outputConnections;
 
 
 
@@ -105,12 +107,6 @@ protected:
 	std::string getVerilogParameters();
 private:
 };
-
-////Structure that will store the connection information of a component
-////Right now it has only one element, but it may be extended as and when needed
-//struct connection{
-//
-//};
 
 
 

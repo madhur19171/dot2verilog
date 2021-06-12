@@ -9,6 +9,7 @@
 
 //Subclass for Entry type component
 StartComponent::StartComponent(Component& c){
+	index = c.index;
 	moduleName = "start_node";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
@@ -32,9 +33,7 @@ StartComponent::StartComponent(Component& c){
 
 	//here pvalid and pready are to distinguish these TopModule IO ports from(p stands for port)
 	//local entity valid and ready signals
-	//	port_din = substring(name, 0, name.find('_')) + "_" + "din";
-	//	port_valid = substring(name, 0, name.find('_')) + "_" + "pvalid";
-	//	port_ready = substring(name, 0, name.find('_')) + "_" + "pready";
+
 	port_din = name + "_" + "din";
 	port_valid = name + "_" + "pvalid";
 	port_ready = name + "_" + "pready";
@@ -43,7 +42,8 @@ StartComponent::StartComponent(Component& c){
 //Returns the input/output declarations for top-module
 std::string StartComponent::getModuleIODeclaration(std::string tabs){
 	std::string ret = "";
-	ret += tabs + "input " + generateVector(in) + port_din + ",\n";
+	//Start has only one input
+	ret += tabs + "input " + generateVector(in.input[0].bit_size - 1, 0) + port_din + ",\n";
 	ret += tabs + "input " + port_valid + ",\n";
 	ret += tabs + "output " + port_ready + ",\n";
 	ret += "\n";
@@ -75,8 +75,8 @@ std::string StartComponent::getVerilogParameters(){
 	//This method of generating module parameters will work because Start node has
 	//only 1 input and 1 output
 	ret += "#(.INPUTS(1), .OUTPUTS(1), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(getVectorLength(in) == 0 ? 1 : getVectorLength(in)) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(getVectorLength(out) == 0 ? 1 : getVectorLength(out)) + ")) ";
+	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
+	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
 	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
 	return ret;
 }
@@ -89,15 +89,15 @@ std::string StartComponent::getInputOutputConnections(){
 	ret += "\tassign " + rst + " = rst;\n";
 
 	//First input of start component is connected to top module IO port
-	ret += "\tassign " + inputConnections.at("in1").data + " = " + port_din + ";\n";
-	ret += "\tassign " + inputConnections.at("in1").valid + " = " + port_valid + ";\n";
-	ret += "\tassign " + port_ready + " = " + inputConnections.at("in1").ready + ";\n";
+	ret += "\tassign " + inputConnections.at(0).data + " = " + port_din + ";\n";
+	ret += "\tassign " + inputConnections.at(0).valid + " = " + port_valid + ";\n";
+	ret += "\tassign " + port_ready + " = " + inputConnections.at(0).ready + ";\n";
 
 
 	InputConnection inConn;
 	OutputConnection outConn;
 	Component* connectedToComponent;
-	std::string connectedFromPort, connectedToPort;
+	int connectedFromPort, connectedToPort;
 	for(auto it = io.begin(); it != io.end(); it++){
 		connectedToComponent = (*it).first;
 		connectedFromPort = (*it).second.first;

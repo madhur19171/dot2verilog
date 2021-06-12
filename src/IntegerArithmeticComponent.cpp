@@ -10,6 +10,7 @@
 
 //Subclass for Entry type component
 AddComponent::AddComponent(Component& c){
+	index = c.index;
 	moduleName = "add_op";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
@@ -55,8 +56,8 @@ std::string AddComponent::getVerilogParameters(){
 	//This method of generating module parameters will work because Start node has
 	//only 1 input and 1 output
 	ret += "#(.INPUTS(2), .OUTPUTS(1), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(getVectorLength(in) == 0 ? 1 : getVectorLength(in)) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(getVectorLength(out) == 0 ? 1 : getVectorLength(out)) + ")) ";
+	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
+	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
 	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
 	return ret;
 }
@@ -71,7 +72,7 @@ std::string AddComponent::getInputOutputConnections(){
 	InputConnection inConn;
 	OutputConnection outConn;
 	Component* connectedToComponent;
-	std::string connectedFromPort, connectedToPort;
+	int connectedFromPort, connectedToPort;
 	for(auto it = io.begin(); it != io.end(); it++){
 		connectedToComponent = (*it).first;
 		connectedFromPort = (*it).second.first;
@@ -87,6 +88,7 @@ std::string AddComponent::getInputOutputConnections(){
 
 //Subclass for Entry type component
 SubComponent::SubComponent(Component& c){
+	index = c.index;
 	moduleName = "sub_op";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
@@ -132,8 +134,8 @@ std::string SubComponent::getVerilogParameters(){
 	//This method of generating module parameters will work because Start node has
 	//only 1 input and 1 output
 	ret += "#(.INPUTS(2), .OUTPUTS(1), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(getVectorLength(in) == 0 ? 1 : getVectorLength(in)) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(getVectorLength(out) == 0 ? 1 : getVectorLength(out)) + ")) ";
+	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
+	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
 	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
 	return ret;
 }
@@ -148,7 +150,7 @@ std::string SubComponent::getInputOutputConnections(){
 	InputConnection inConn;
 	OutputConnection outConn;
 	Component* connectedToComponent;
-	std::string connectedFromPort, connectedToPort;
+	int connectedFromPort, connectedToPort;
 	for(auto it = io.begin(); it != io.end(); it++){
 		connectedToComponent = (*it).first;
 		connectedFromPort = (*it).second.first;
@@ -165,6 +167,7 @@ std::string SubComponent::getInputOutputConnections(){
 
 //Subclass for Entry type component
 AndComponent::AndComponent(Component& c){
+	index = c.index;
 	moduleName = "and_op";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
@@ -210,8 +213,8 @@ std::string AndComponent::getVerilogParameters(){
 	//This method of generating module parameters will work because Start node has
 	//only 1 input and 1 output
 	ret += "#(.INPUTS(2), .OUTPUTS(1), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(getVectorLength(in) == 0 ? 1 : getVectorLength(in)) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(getVectorLength(out) == 0 ? 1 : getVectorLength(out)) + ")) ";
+	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
+	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
 	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
 	return ret;
 }
@@ -226,7 +229,7 @@ std::string AndComponent::getInputOutputConnections(){
 	InputConnection inConn;
 	OutputConnection outConn;
 	Component* connectedToComponent;
-	std::string connectedFromPort, connectedToPort;
+	int connectedFromPort, connectedToPort;
 	for(auto it = io.begin(); it != io.end(); it++){
 		connectedToComponent = (*it).first;
 		connectedFromPort = (*it).second.first;
@@ -243,6 +246,7 @@ std::string AndComponent::getInputOutputConnections(){
 
 //Subclass for Entry type component
 OrComponent::OrComponent(Component& c){
+	index = c.index;
 	moduleName = "or_op";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
@@ -288,8 +292,8 @@ std::string OrComponent::getVerilogParameters(){
 	//This method of generating module parameters will work because Start node has
 	//only 1 input and 1 output
 	ret += "#(.INPUTS(2), .OUTPUTS(1), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(getVectorLength(in) == 0 ? 1 : getVectorLength(in)) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(getVectorLength(out) == 0 ? 1 : getVectorLength(out)) + ")) ";
+	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
+	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
 	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
 	return ret;
 }
@@ -304,7 +308,7 @@ std::string OrComponent::getInputOutputConnections(){
 	InputConnection inConn;
 	OutputConnection outConn;
 	Component* connectedToComponent;
-	std::string connectedFromPort, connectedToPort;
+	int connectedFromPort, connectedToPort;
 	for(auto it = io.begin(); it != io.end(); it++){
 		connectedToComponent = (*it).first;
 		connectedFromPort = (*it).second.first;
@@ -321,6 +325,7 @@ std::string OrComponent::getInputOutputConnections(){
 
 //Subclass for Entry type component
 XorComponent::XorComponent(Component& c){
+	index = c.index;
 	moduleName = "xor_op";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
@@ -366,8 +371,8 @@ std::string XorComponent::getVerilogParameters(){
 	//This method of generating module parameters will work because Start node has
 	//only 1 input and 1 output
 	ret += "#(.INPUTS(2), .OUTPUTS(1), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(getVectorLength(in) == 0 ? 1 : getVectorLength(in)) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(getVectorLength(out) == 0 ? 1 : getVectorLength(out)) + ")) ";
+	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
+	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
 	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
 	return ret;
 }
@@ -382,7 +387,7 @@ std::string XorComponent::getInputOutputConnections(){
 	InputConnection inConn;
 	OutputConnection outConn;
 	Component* connectedToComponent;
-	std::string connectedFromPort, connectedToPort;
+	int connectedFromPort, connectedToPort;
 	for(auto it = io.begin(); it != io.end(); it++){
 		connectedToComponent = (*it).first;
 		connectedFromPort = (*it).second.first;
@@ -399,6 +404,7 @@ std::string XorComponent::getInputOutputConnections(){
 
 //Subclass for Entry type component
 ShlComponent::ShlComponent(Component& c){
+	index = c.index;
 	moduleName = "shl_op";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
@@ -444,8 +450,8 @@ std::string ShlComponent::getVerilogParameters(){
 	//This method of generating module parameters will work because Start node has
 	//only 1 input and 1 output
 	ret += "#(.INPUTS(2), .OUTPUTS(1), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(getVectorLength(in) == 0 ? 1 : getVectorLength(in)) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(getVectorLength(out) == 0 ? 1 : getVectorLength(out)) + ")) ";
+	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
+	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
 	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
 	return ret;
 }
@@ -460,7 +466,7 @@ std::string ShlComponent::getInputOutputConnections(){
 	InputConnection inConn;
 	OutputConnection outConn;
 	Component* connectedToComponent;
-	std::string connectedFromPort, connectedToPort;
+	int connectedFromPort, connectedToPort;
 	for(auto it = io.begin(); it != io.end(); it++){
 		connectedToComponent = (*it).first;
 		connectedFromPort = (*it).second.first;
@@ -476,6 +482,7 @@ std::string ShlComponent::getInputOutputConnections(){
 
 //Subclass for Entry type component
 LshrComponent::LshrComponent(Component& c){
+	index = c.index;
 	moduleName = "lshr_op";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
@@ -521,8 +528,8 @@ std::string LshrComponent::getVerilogParameters(){
 	//This method of generating module parameters will work because Start node has
 	//only 1 input and 1 output
 	ret += "#(.INPUTS(2), .OUTPUTS(1), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(getVectorLength(in) == 0 ? 1 : getVectorLength(in)) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(getVectorLength(out) == 0 ? 1 : getVectorLength(out)) + ")) ";
+	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
+	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
 	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
 	return ret;
 }
@@ -537,7 +544,7 @@ std::string LshrComponent::getInputOutputConnections(){
 	InputConnection inConn;
 	OutputConnection outConn;
 	Component* connectedToComponent;
-	std::string connectedFromPort, connectedToPort;
+	int connectedFromPort, connectedToPort;
 	for(auto it = io.begin(); it != io.end(); it++){
 		connectedToComponent = (*it).first;
 		connectedFromPort = (*it).second.first;
@@ -553,6 +560,7 @@ std::string LshrComponent::getInputOutputConnections(){
 
 //Subclass for Entry type component
 AshrComponent::AshrComponent(Component& c){
+	index = c.index;
 	moduleName = "ashr_op";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
@@ -598,8 +606,8 @@ std::string AshrComponent::getVerilogParameters(){
 	//This method of generating module parameters will work because Start node has
 	//only 1 input and 1 output
 	ret += "#(.INPUTS(2), .OUTPUTS(1), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(getVectorLength(in) == 0 ? 1 : getVectorLength(in)) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(getVectorLength(out) == 0 ? 1 : getVectorLength(out)) + ")) ";
+	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
+	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
 	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
 	return ret;
 }
@@ -614,7 +622,7 @@ std::string AshrComponent::getInputOutputConnections(){
 	InputConnection inConn;
 	OutputConnection outConn;
 	Component* connectedToComponent;
-	std::string connectedFromPort, connectedToPort;
+	int connectedFromPort, connectedToPort;
 	for(auto it = io.begin(); it != io.end(); it++){
 		connectedToComponent = (*it).first;
 		connectedFromPort = (*it).second.first;
@@ -631,6 +639,7 @@ std::string AshrComponent::getInputOutputConnections(){
 
 //Subclass for Entry type component
 EqComponent::EqComponent(Component& c){
+	index = c.index;
 	moduleName = "icmp_eq__op";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
@@ -676,8 +685,8 @@ std::string EqComponent::getVerilogParameters(){
 	//This method of generating module parameters will work because Start node has
 	//only 1 input and 1 output
 	ret += "#(.INPUTS(2), .OUTPUTS(1), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(getVectorLength(in) == 0 ? 1 : getVectorLength(in)) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(getVectorLength(out) == 0 ? 1 : getVectorLength(out)) + ")) ";
+	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
+	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
 	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
 	return ret;
 }
@@ -692,7 +701,7 @@ std::string EqComponent::getInputOutputConnections(){
 	InputConnection inConn;
 	OutputConnection outConn;
 	Component* connectedToComponent;
-	std::string connectedFromPort, connectedToPort;
+	int connectedFromPort, connectedToPort;
 	for(auto it = io.begin(); it != io.end(); it++){
 		connectedToComponent = (*it).first;
 		connectedFromPort = (*it).second.first;
@@ -709,6 +718,7 @@ std::string EqComponent::getInputOutputConnections(){
 
 //Subclass for Entry type component
 NeComponent::NeComponent(Component& c){
+	index = c.index;
 	moduleName = "icmp_ne_op";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
@@ -754,8 +764,8 @@ std::string NeComponent::getVerilogParameters(){
 	//This method of generating module parameters will work because Start node has
 	//only 1 input and 1 output
 	ret += "#(.INPUTS(2), .OUTPUTS(1), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(getVectorLength(in) == 0 ? 1 : getVectorLength(in)) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(getVectorLength(out) == 0 ? 1 : getVectorLength(out)) + ")) ";
+	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
+	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
 	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
 	return ret;
 }
@@ -770,7 +780,7 @@ std::string NeComponent::getInputOutputConnections(){
 	InputConnection inConn;
 	OutputConnection outConn;
 	Component* connectedToComponent;
-	std::string connectedFromPort, connectedToPort;
+	int connectedFromPort, connectedToPort;
 	for(auto it = io.begin(); it != io.end(); it++){
 		connectedToComponent = (*it).first;
 		connectedFromPort = (*it).second.first;
@@ -787,6 +797,7 @@ std::string NeComponent::getInputOutputConnections(){
 
 //Subclass for Entry type component
 UgtComponent::UgtComponent(Component& c){
+	index = c.index;
 	moduleName = "icmp_ugt_op";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
@@ -832,8 +843,8 @@ std::string UgtComponent::getVerilogParameters(){
 	//This method of generating module parameters will work because Start node has
 	//only 1 input and 1 output
 	ret += "#(.INPUTS(2), .OUTPUTS(1), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(getVectorLength(in) == 0 ? 1 : getVectorLength(in)) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(getVectorLength(out) == 0 ? 1 : getVectorLength(out)) + ")) ";
+	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
+	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
 	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
 	return ret;
 }
@@ -848,7 +859,7 @@ std::string UgtComponent::getInputOutputConnections(){
 	InputConnection inConn;
 	OutputConnection outConn;
 	Component* connectedToComponent;
-	std::string connectedFromPort, connectedToPort;
+	int connectedFromPort, connectedToPort;
 	for(auto it = io.begin(); it != io.end(); it++){
 		connectedToComponent = (*it).first;
 		connectedFromPort = (*it).second.first;
@@ -865,6 +876,7 @@ std::string UgtComponent::getInputOutputConnections(){
 
 //Subclass for Entry type component
 UgeComponent::UgeComponent(Component& c){
+	index = c.index;
 	moduleName = "icmp_uge_op";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
@@ -910,8 +922,8 @@ std::string UgeComponent::getVerilogParameters(){
 	//This method of generating module parameters will work because Start node has
 	//only 1 input and 1 output
 	ret += "#(.INPUTS(2), .OUTPUTS(1), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(getVectorLength(in) == 0 ? 1 : getVectorLength(in)) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(getVectorLength(out) == 0 ? 1 : getVectorLength(out)) + ")) ";
+	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
+	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
 	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
 	return ret;
 }
@@ -926,7 +938,7 @@ std::string UgeComponent::getInputOutputConnections(){
 	InputConnection inConn;
 	OutputConnection outConn;
 	Component* connectedToComponent;
-	std::string connectedFromPort, connectedToPort;
+	int connectedFromPort, connectedToPort;
 	for(auto it = io.begin(); it != io.end(); it++){
 		connectedToComponent = (*it).first;
 		connectedFromPort = (*it).second.first;
@@ -942,6 +954,7 @@ std::string UgeComponent::getInputOutputConnections(){
 
 //Subclass for Entry type component
 SgtComponent::SgtComponent(Component& c){
+	index = c.index;
 	moduleName = "icmp_sgt_op";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
@@ -987,8 +1000,8 @@ std::string SgtComponent::getVerilogParameters(){
 	//This method of generating module parameters will work because Start node has
 	//only 1 input and 1 output
 	ret += "#(.INPUTS(2), .OUTPUTS(1), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(getVectorLength(in) == 0 ? 1 : getVectorLength(in)) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(getVectorLength(out) == 0 ? 1 : getVectorLength(out)) + ")) ";
+	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
+	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
 	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
 	return ret;
 }
@@ -1003,7 +1016,7 @@ std::string SgtComponent::getInputOutputConnections(){
 	InputConnection inConn;
 	OutputConnection outConn;
 	Component* connectedToComponent;
-	std::string connectedFromPort, connectedToPort;
+	int connectedFromPort, connectedToPort;
 	for(auto it = io.begin(); it != io.end(); it++){
 		connectedToComponent = (*it).first;
 		connectedFromPort = (*it).second.first;
@@ -1020,6 +1033,7 @@ std::string SgtComponent::getInputOutputConnections(){
 
 //Subclass for Entry type component
 SgeComponent::SgeComponent(Component& c){
+	index = c.index;
 	moduleName = "icmp_sge_op";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
@@ -1065,8 +1079,8 @@ std::string SgeComponent::getVerilogParameters(){
 	//This method of generating module parameters will work because Start node has
 	//only 1 input and 1 output
 	ret += "#(.INPUTS(2), .OUTPUTS(1), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(getVectorLength(in) == 0 ? 1 : getVectorLength(in)) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(getVectorLength(out) == 0 ? 1 : getVectorLength(out)) + ")) ";
+	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
+	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
 	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
 	return ret;
 }
@@ -1081,7 +1095,7 @@ std::string SgeComponent::getInputOutputConnections(){
 	InputConnection inConn;
 	OutputConnection outConn;
 	Component* connectedToComponent;
-	std::string connectedFromPort, connectedToPort;
+	int connectedFromPort, connectedToPort;
 	for(auto it = io.begin(); it != io.end(); it++){
 		connectedToComponent = (*it).first;
 		connectedFromPort = (*it).second.first;
@@ -1098,6 +1112,7 @@ std::string SgeComponent::getInputOutputConnections(){
 
 //Subclass for Entry type component
 UltComponent::UltComponent(Component& c){
+	index = c.index;
 	moduleName = "icmp_ult_op";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
@@ -1143,8 +1158,8 @@ std::string UltComponent::getVerilogParameters(){
 	//This method of generating module parameters will work because Start node has
 	//only 1 input and 1 output
 	ret += "#(.INPUTS(2), .OUTPUTS(1), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(getVectorLength(in) == 0 ? 1 : getVectorLength(in)) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(getVectorLength(out) == 0 ? 1 : getVectorLength(out)) + ")) ";
+	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
+	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
 	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
 	return ret;
 }
@@ -1159,7 +1174,7 @@ std::string UltComponent::getInputOutputConnections(){
 	InputConnection inConn;
 	OutputConnection outConn;
 	Component* connectedToComponent;
-	std::string connectedFromPort, connectedToPort;
+	int connectedFromPort, connectedToPort;
 	for(auto it = io.begin(); it != io.end(); it++){
 		connectedToComponent = (*it).first;
 		connectedFromPort = (*it).second.first;
@@ -1176,6 +1191,7 @@ std::string UltComponent::getInputOutputConnections(){
 
 //Subclass for Entry type component
 UleComponent::UleComponent(Component& c){
+	index = c.index;
 	moduleName = "icmp_ule_op";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
@@ -1221,8 +1237,8 @@ std::string UleComponent::getVerilogParameters(){
 	//This method of generating module parameters will work because Start node has
 	//only 1 input and 1 output
 	ret += "#(.INPUTS(2), .OUTPUTS(1), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(getVectorLength(in) == 0 ? 1 : getVectorLength(in)) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(getVectorLength(out) == 0 ? 1 : getVectorLength(out)) + ")) ";
+	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
+	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
 	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
 	return ret;
 }
@@ -1237,7 +1253,7 @@ std::string UleComponent::getInputOutputConnections(){
 	InputConnection inConn;
 	OutputConnection outConn;
 	Component* connectedToComponent;
-	std::string connectedFromPort, connectedToPort;
+	int connectedFromPort, connectedToPort;
 	for(auto it = io.begin(); it != io.end(); it++){
 		connectedToComponent = (*it).first;
 		connectedFromPort = (*it).second.first;
@@ -1253,6 +1269,7 @@ std::string UleComponent::getInputOutputConnections(){
 
 //Subclass for Entry type component
 SltComponent::SltComponent(Component& c){
+	index = c.index;
 	moduleName = "icmp_slt_op";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
@@ -1298,8 +1315,8 @@ std::string SltComponent::getVerilogParameters(){
 	//This method of generating module parameters will work because Start node has
 	//only 1 input and 1 output
 	ret += "#(.INPUTS(2), .OUTPUTS(1), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(getVectorLength(in) == 0 ? 1 : getVectorLength(in)) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(getVectorLength(out) == 0 ? 1 : getVectorLength(out)) + ")) ";
+	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
+	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
 	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
 	return ret;
 }
@@ -1314,7 +1331,7 @@ std::string SltComponent::getInputOutputConnections(){
 	InputConnection inConn;
 	OutputConnection outConn;
 	Component* connectedToComponent;
-	std::string connectedFromPort, connectedToPort;
+	int connectedFromPort, connectedToPort;
 	for(auto it = io.begin(); it != io.end(); it++){
 		connectedToComponent = (*it).first;
 		connectedFromPort = (*it).second.first;
@@ -1331,6 +1348,7 @@ std::string SltComponent::getInputOutputConnections(){
 
 //Subclass for Entry type component
 SleComponent::SleComponent(Component& c){
+	index = c.index;
 	moduleName = "icmp_sle_op";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
@@ -1376,8 +1394,8 @@ std::string SleComponent::getVerilogParameters(){
 	//This method of generating module parameters will work because Start node has
 	//only 1 input and 1 output
 	ret += "#(.INPUTS(2), .OUTPUTS(1), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(getVectorLength(in) == 0 ? 1 : getVectorLength(in)) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(getVectorLength(out) == 0 ? 1 : getVectorLength(out)) + ")) ";
+	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
+	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
 	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
 	return ret;
 }
@@ -1392,7 +1410,7 @@ std::string SleComponent::getInputOutputConnections(){
 	InputConnection inConn;
 	OutputConnection outConn;
 	Component* connectedToComponent;
-	std::string connectedFromPort, connectedToPort;
+	int connectedFromPort, connectedToPort;
 	for(auto it = io.begin(); it != io.end(); it++){
 		connectedToComponent = (*it).first;
 		connectedFromPort = (*it).second.first;
@@ -1410,6 +1428,7 @@ std::string SleComponent::getInputOutputConnections(){
 
 //Subclass for Entry type component
 SelectComponent::SelectComponent(Component& c){
+	index = c.index;
 	moduleName = "select_op";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
@@ -1438,14 +1457,14 @@ void SelectComponent::setInputPortBus(){
 	//First create data_in bus
 	inputPortBus = ".data_in_bus({";
 	//The bus will be assigned from highest input to lowest input. eg {in3, in2, in1}
-	for(int i = inputConnections.size(); i > 1; i--){
-		inConn = inputConnections["in" + std::to_string(i)];
+	for(int i = inputConnections.size() - 1; i > 0; i--){
+		inConn = inputConnections[i];
 		inputPortBus += inConn.data + ", ";
 	}
 	inputPortBus += "{31'b0, ";//Since Condition is one bit wide but Select takes a 32 bit wide data for condition, so
 	//we need to add extra 31 0s to make it 32 bit wide
 	//Condition bit
-	inConn = inputConnections["in1"];
+	inConn = inputConnections[0];
 	inputPortBus += inConn.data + "}";
 
 	inputPortBus += "}), ";
@@ -1453,8 +1472,8 @@ void SelectComponent::setInputPortBus(){
 	//Now create valid_in bus
 	inputPortBus += ".valid_in_bus({";
 	//The bus will be assigned from highest input to lowest input. eg {in3, in2, in1}
-	for(int i = inputConnections.size(); i > 0; i--){
-		inConn = inputConnections["in" + std::to_string(i)];
+	for(int i = inputConnections.size() - 1; i >= 0; i--){
+		inConn = inputConnections[i];
 		inputPortBus += inConn.valid + ", ";
 	}
 	inputPortBus = inputPortBus.erase(inputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
@@ -1463,8 +1482,8 @@ void SelectComponent::setInputPortBus(){
 	//Now create ready_in bus
 	inputPortBus += ".ready_in_bus({";
 	//The bus will be assigned from highest input to lowest input. eg {in3, in2, in1}
-	for(int i = inputConnections.size(); i > 0; i--){
-		inConn = inputConnections["in" + std::to_string(i)];
+	for(int i = inputConnections.size() - 1; i >= 0; i--){
+		inConn = inputConnections[i];
 		inputPortBus += inConn.ready + ", ";
 	}
 	inputPortBus = inputPortBus.erase(inputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
@@ -1490,17 +1509,26 @@ std::string SelectComponent::getModuleInstantiation(std::string tabs){
 }
 
 std::string SelectComponent::getVerilogParameters(){
-	std::string ret;
-	std::istringstream ss(in);
-	std::string input;
-	//Since in3 is condition, so we need to extract in2 in order to get the
-	//data width, since condition is always 1 bit wide.
-	ss >> input;
-	ss >> input;
+//	std::string ret;
+//	std::istringstream ss(in);
+//	std::string input;
+//	//Since in3 is condition, so we need to extract in2 in order to get the
+//	//data width, since condition is always 1 bit wide.
+//	ss >> input;
+//	ss >> input;
+//
+//	ret += "#(.INPUTS(3), .OUTPUTS(1), ";
+//	ret += ".DATA_IN_SIZE(" + std::to_string(getVectorLength(input) == 0 ? 1 : getVectorLength(input)) + "), ";
+//	ret += ".DATA_OUT_SIZE(" + std::to_string(getVectorLength(out) == 0 ? 1 : getVectorLength(out)) + ")) ";
+//	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
+//	return ret;
 
+	std::string ret;
+	//This method of generating module parameters will work because Start node has
+	//only 1 input and 1 output
 	ret += "#(.INPUTS(3), .OUTPUTS(1), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(getVectorLength(input) == 0 ? 1 : getVectorLength(input)) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(getVectorLength(out) == 0 ? 1 : getVectorLength(out)) + ")) ";
+	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[1].bit_size == 0 ? 1 : in.input[1].bit_size) + "), ";
+	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
 	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
 	return ret;
 }
@@ -1515,7 +1543,7 @@ std::string SelectComponent::getInputOutputConnections(){
 	InputConnection inConn;
 	OutputConnection outConn;
 	Component* connectedToComponent;
-	std::string connectedFromPort, connectedToPort;
+	int connectedFromPort, connectedToPort;
 	for(auto it = io.begin(); it != io.end(); it++){
 		connectedToComponent = (*it).first;
 		connectedFromPort = (*it).second.first;
@@ -1533,6 +1561,7 @@ std::string SelectComponent::getInputOutputConnections(){
 
 //Subclass for Entry type component
 RetComponent::RetComponent(Component& c){
+	index = c.index;
 	moduleName = "ret_op";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
@@ -1578,8 +1607,8 @@ std::string RetComponent::getVerilogParameters(){
 	//This method of generating module parameters will work because Start node has
 	//only 1 input and 1 output
 	ret += "#(.INPUTS(1), .OUTPUTS(1), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(getVectorLength(in) == 0 ? 1 : getVectorLength(in)) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(getVectorLength(out) == 0 ? 1 : getVectorLength(out)) + ")) ";
+	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
+	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
 	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
 	return ret;
 }
@@ -1594,7 +1623,7 @@ std::string RetComponent::getInputOutputConnections(){
 	InputConnection inConn;
 	OutputConnection outConn;
 	Component* connectedToComponent;
-	std::string connectedFromPort, connectedToPort;
+	int connectedFromPort, connectedToPort;
 	for(auto it = io.begin(); it != io.end(); it++){
 		connectedToComponent = (*it).first;
 		connectedFromPort = (*it).second.first;
