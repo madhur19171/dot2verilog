@@ -223,6 +223,72 @@ private:
 };
 
 
+//Type Component Classes (To be moved to their respective class files)
+class MuxComponent : public Component{
+public:
+	MuxComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+	void setInputPortBus();
+
+private:
+	std::string getVerilogParameters();
+};
+
+
+//Type Component Classes (To be moved to their respective class files)
+class BranchComponent : public Component{
+public:
+	BranchComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+	void setInputPortBus();
+
+private:
+	std::string getVerilogParameters();
+};
+
+//Type Component Classes (To be moved to their respective class files)
+class MergeComponent : public Component{
+public:
+	MergeComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	std::string getVerilogParameters();
+};
+
+
+//Type Component Classes (To be moved to their respective class files)
+class ControlMergeComponent : public Component{
+public:
+	ControlMergeComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+//	void setOutputPortBus();
+
+private:
+	std::string getVerilogParameters();
+};
+
 
 //Type Component Classes (To be moved to their respective class files)
 class AddComponent : public Component{

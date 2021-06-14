@@ -90,7 +90,7 @@ using namespace std;
 #define COMPONENT_CTRLMERGE     "CntrlMerge"
 #define COMPONENT_LSQ           "LSQ"
 #define COMPONENT_MC            "MC"
-#define COMPONENT_SEL			"SEL"
+#define COMPONENT_SEL			"SEL"//What is this for? Select operator is in arithmetic units
 #define COMPONENT_DISTRIBUTOR   "Distributor"
 #define COMPONENT_SELECTOR		"Selector"
 #define COMPONENT_OPERATOR		"Operator"

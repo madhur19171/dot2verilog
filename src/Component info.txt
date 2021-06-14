@@ -29,6 +29,12 @@ Const:
 	1 input 1 output
 	Preceded by a Source.
 	Outputs a Constant number specified in its parameters
+	
+Control Merge:
+	N inputs and 2 Outputs
+	Out of these N inputs, only the last two(1, 0) are processed.
+	The outputs are {condition, data_out}. Both condition and data_out are 1 bit wide.
+	
 
 Add/Sub:
 	Add will always have only 2 inputs and 1 output as per the vhd file.

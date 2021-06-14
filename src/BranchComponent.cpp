@@ -1,16 +1,17 @@
 /*
- * ConstantComponent.cpp
+ * BranchComponent.cpp
  *
- *  Created on: 09-Jun-2021
+ *  Created on: 13-Jun-2021
  *      Author: madhur
  */
+
 
 #include "ComponentClass.h"
 
 //Subclass for Entry type component
-ConstantComponent::ConstantComponent(Component& c){
+BranchComponent::BranchComponent(Component& c){
 	index = c.index;
-	moduleName = "const_node";
+	moduleName = "branch_node";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
 	type = c.type;
@@ -32,16 +33,56 @@ ConstantComponent::ConstantComponent(Component& c){
 	rst = c.rst;
 }
 
-//Overriding setInputPortBus because data_in of Constant is not the data sent by previous
-//Component. It is the data mentioned in value attribute of this component in dot file.
-void ConstantComponent::setInputPortBus(){
+
+std::string BranchComponent::getModuleInstantiation(std::string tabs){
+	setInputPortBus();
+	setOutputPortBus();
+
+	std::string ret;
+	//Module name followed by verilog parameters followed by the Instance name
+	ret += tabs;
+	ret += moduleName + " " + getVerilogParameters() + instanceName + "\n";
+	ret += tabs + "\t";
+	ret += "(.clk(" + clk + "), .rst(" + rst + "),\n";
+	ret += tabs + "\t";
+	ret += inputPortBus + ", \n";
+	ret += tabs + "\t";
+	ret += outputPortBus + ");";
+
+	return ret;
+}
+
+//In Branch, the last input(input[1]) is always the condition. It can be 1 or more bits wide
+//The following inputs are the data to be selected
+std::string BranchComponent::getVerilogParameters(){
+	std::string ret;
+	//In branch, input[0] is input data and input[1] is the condition
+	ret += "#(.INPUTS(" + std::to_string(in.size) + "), .OUTPUTS(" + std::to_string(out.size) + "), ";
+	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
+	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
+	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
+	return ret;
+}
+
+void BranchComponent::setInputPortBus(){
 	InputConnection inConn;
 
 	//First create data_in bus
 	inputPortBus = ".data_in_bus({";
-	//The bus will be assigned from highest input to lowest input. eg {in3, in2, in1}
-	//Index 0 because constant has only one input
-	inputPortBus += std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "'d" + std::to_string(value);
+
+	inConn = inputConnections[inputConnections.size() - 1];
+	inputPortBus += "{";
+	if(!(in.input[0].bit_size == 0 || in.input[0].bit_size == 1)){
+		inputPortBus += (std::to_string((in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) - 1));
+		inputPortBus += "'b0, ";
+	}
+	inputPortBus += inConn.data + "}, ";
+
+	for(int i = inputConnections.size() - 2; i >= 0; i--){
+		inConn = inputConnections[i];
+		inputPortBus += inConn.data + ", ";
+	}
+	inputPortBus = inputPortBus.erase(inputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
 	inputPortBus += "}), ";
 
 	//Now create valid_in bus
@@ -65,38 +106,7 @@ void ConstantComponent::setInputPortBus(){
 	inputPortBus += "})";
 }
 
-
-std::string ConstantComponent::getModuleInstantiation(std::string tabs){
-	setInputPortBus();
-	setOutputPortBus();
-
-	std::string ret;
-	//Module name followed by verilog parameters followed by the Instance name
-	ret += tabs;
-	ret += moduleName + " " + getVerilogParameters() + instanceName + "\n";
-	ret += tabs + "\t";
-	ret += "(.clk(" + clk + "), .rst(" + rst + "),\n";
-	ret += tabs + "\t";
-	ret += inputPortBus + ", \n";
-	ret += tabs + "\t";
-	ret += outputPortBus + ");";
-
-	return ret;
-}
-
-std::string ConstantComponent::getVerilogParameters(){
-	std::string ret;
-	//This method of generating module parameters will work because Start node has
-	//only 1 input and 1 output
-	ret += "#(.INPUTS(1), .OUTPUTS(1), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
-	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
-	return ret;
-}
-
-
-std::string ConstantComponent::getInputOutputConnections(){
+std::string BranchComponent::getInputOutputConnections(){
 	std::string ret;
 
 	ret += "\tassign " + clk + " = clk;\n";
@@ -107,7 +117,6 @@ std::string ConstantComponent::getInputOutputConnections(){
 	OutputConnection outConn;
 	Component* connectedToComponent;
 	int connectedFromPort, connectedToPort;
-//	std::cout << name << " : " << std::endl;
 	for(auto it = io.begin(); it != io.end(); it++){
 		connectedToComponent = (*it).first;
 		connectedFromPort = (*it).second.first;
@@ -115,7 +124,6 @@ std::string ConstantComponent::getInputOutputConnections(){
 		inConn = connectedToComponent->inputConnections[connectedToPort];
 		outConn = outputConnections[connectedFromPort];
 		ret += connectInputOutput(inConn, outConn);
-//		cout << "\tConnected To: " << connectedToComponent->name << "\t From: " << connectedFromPort << "\t To: " << connectedToPort << endl;
 	}
 
 	return ret;

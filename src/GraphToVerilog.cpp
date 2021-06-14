@@ -214,6 +214,18 @@ std::string GraphToVerilog::writeModuleInstantiation(){
 		} else if((*it)->type == COMPONENT_CONSTANT_){
 			moduleInstances += ((ConstantComponent*)(*it))->getModuleInstantiation(tabs);
 			moduleInstances += "\n\n";
+		} else if((*it)->type == COMPONENT_CTRLMERGE){
+			moduleInstances += ((ControlMergeComponent*)(*it))->getModuleInstantiation(tabs);
+			moduleInstances += "\n\n";
+		} else if((*it)->type == COMPONENT_MERGE){
+			moduleInstances += ((MergeComponent*)(*it))->getModuleInstantiation(tabs);
+			moduleInstances += "\n\n";
+		} else if((*it)->type == COMPONENT_MUX){
+			moduleInstances += ((MuxComponent*)(*it))->getModuleInstantiation(tabs);
+			moduleInstances += "\n\n";
+		} else if((*it)->type == COMPONENT_BRANCH){
+			moduleInstances += ((BranchComponent*)(*it))->getModuleInstantiation(tabs);
+			moduleInstances += "\n\n";
 		}
 	}
 
@@ -304,6 +316,18 @@ std::string GraphToVerilog::writeInputOutputConnections(){
 			inputoutput += "\n";
 		} else if((*it)->type == COMPONENT_CONSTANT_){
 			inputoutput += ((ConstantComponent*)(*it))->getInputOutputConnections();
+			inputoutput += "\n";
+		} else if((*it)->type == COMPONENT_CTRLMERGE){
+			inputoutput += ((ControlMergeComponent*)(*it))->getInputOutputConnections();
+			inputoutput += "\n";
+		} else if((*it)->type == COMPONENT_MERGE){
+			inputoutput += ((MergeComponent*)(*it))->getInputOutputConnections();
+			inputoutput += "\n";
+		} else if((*it)->type == COMPONENT_MUX){
+			inputoutput += ((MuxComponent*)(*it))->getInputOutputConnections();
+			inputoutput += "\n";
+		} else if((*it)->type == COMPONENT_BRANCH){
+			inputoutput += ((BranchComponent*)(*it))->getInputOutputConnections();
 			inputoutput += "\n";
 		}
 	}

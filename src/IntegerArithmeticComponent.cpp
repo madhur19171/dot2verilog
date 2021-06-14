@@ -1461,7 +1461,7 @@ void SelectComponent::setInputPortBus(){
 		inConn = inputConnections[i];
 		inputPortBus += inConn.data + ", ";
 	}
-	inputPortBus += "{31'b0, ";//Since Condition is one bit wide but Select takes a 32 bit wide data for condition, so
+	inputPortBus += "{" + std::to_string((in.input[1].bit_size == 0 ? 1 : in.input[1].bit_size) - 1) + "'b0, ";//Since Condition is one bit wide but Select takes a 32 bit wide data for condition, so
 	//we need to add extra 31 0s to make it 32 bit wide
 	//Condition bit
 	inConn = inputConnections[0];

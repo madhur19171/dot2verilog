@@ -158,6 +158,22 @@ Component* Component::castToSubClass(Component* component){
 		ConstantComponent* obj = new ConstantComponent(*this);
 		component = (Component *)obj;
 		return component;
+	} else if(type == COMPONENT_CTRLMERGE){
+		ControlMergeComponent* obj = new ControlMergeComponent(*this);
+		component = (Component *)obj;
+		return component;
+	} else if(type == COMPONENT_MERGE){
+		MergeComponent* obj = new MergeComponent(*this);
+		component = (Component *)obj;
+		return component;
+	} else if(type == COMPONENT_MUX){
+		MuxComponent* obj = new MuxComponent(*this);
+		component = (Component *)obj;
+		return component;
+	} else if(type == COMPONENT_BRANCH){
+		BranchComponent* obj = new BranchComponent(*this);
+		component = (Component *)obj;
+		return component;
 	}
 
 	return this;
