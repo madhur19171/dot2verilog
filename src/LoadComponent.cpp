@@ -1,17 +1,16 @@
 /*
- * MuxComponent.cpp
+ * LoadComponent.cpp
  *
- *  Created on: 13-Jun-2021
+ *  Created on: 19-Jun-2021
  *      Author: madhur
  */
-
 
 #include "ComponentClass.h"
 
 //Subclass for Entry type component
-MuxComponent::MuxComponent(Component& c){
+LoadComponent::LoadComponent(Component& c){
 	index = c.index;
-	moduleName = "mux_node";
+	moduleName = "mc_load_op";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
 	type = c.type;
@@ -33,8 +32,7 @@ MuxComponent::MuxComponent(Component& c){
 	rst = c.rst;
 }
 
-
-std::string MuxComponent::getModuleInstantiation(std::string tabs){
+std::string LoadComponent::getModuleInstantiation(std::string tabs){
 	setInputPortBus();
 	setOutputPortBus();
 
@@ -52,51 +50,43 @@ std::string MuxComponent::getModuleInstantiation(std::string tabs){
 	return ret;
 }
 
-//In Mux, the first input(input[0]) is always the condition. It can be 1 or more bits wide
-//The following inputs are the data to be selected
-std::string MuxComponent::getVerilogParameters(){
+std::string LoadComponent::getVerilogParameters(){
 	std::string ret;
 	//This method of generating module parameters will work because Start node has
 	//only 1 input and 1 output
-	ret += "#(.INPUTS(" + std::to_string(in.size) + "), .OUTPUTS(" + std::to_string(out.size) + "), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[1].bit_size == 0 ? 1 : in.input[1].bit_size) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + "), ";
-	ret += ".COND_SIZE(" + std::to_string(in.input[0].bit_size) + ")) ";
+	ret += "#(.INPUTS(2), .OUTPUTS(2), ";
+	ret += ".ADDRESS_SIZE(" + std::to_string(in.input[1].bit_size == 0 ? 1 : in.input[1].bit_size) + "), ";
+	ret += ".DATA_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + ")) ";
 	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
 	return ret;
 }
 
 
-void MuxComponent::setInputPortBus(){
+//1 will be address, 0 will be data
+void LoadComponent::setInputPortBus(){
 	InputConnection inConn;
 
 	//First create data_in bus
 	inputPortBus = ".data_in_bus({";
 
-//	//Since mux has {cond, data[N-1], data[N-2].....data[0]}
-//	inputPortBus += "{" + std::to_string(in.input[1].bit_size - in.input[0].bit_size) + "'b0, ";//Since Condition is N bit wide but Mux takes a 32 bit wide data for condition, so
-//
-	//we need to add extra 0s to make it 32 bit wide
-	inputPortBus += "{";
-	//Condition bit
 	inConn = inputConnections[0];
-	inputPortBus += inConn.data + "}, ";
+	inputPortBus += inConn.data + ", ";
 
-	//The bus will be assigned from highest input to lowest input. eg {in3, in2, in1}
-	for(int i = inputConnections.size() - 1; i > 0; i--){
-		inConn = inputConnections[i];
-		inputPortBus += inConn.data + ", ";
-	}
+	inputPortBus = inputPortBus.erase(inputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
+	inputPortBus += "}), ";
+
+	inputPortBus += ".address_in_bus({";
+
+	inConn = inputConnections[1];
+	inputPortBus += inConn.data + ", ";
 
 	inputPortBus = inputPortBus.erase(inputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
 	inputPortBus += "}), ";
 
 	//Now create valid_in bus
 	inputPortBus += ".valid_in_bus({";
-	inConn = inputConnections[0];
-	inputPortBus += inConn.valid + ", ";
 	//The bus will be assigned from highest input to lowest input. eg {in3, in2, in1}
-	for(int i = inputConnections.size() - 1; i > 0; i--){
+	for(int i = inputConnections.size() - 1; i >= 0; i--){
 		inConn = inputConnections[i];
 		inputPortBus += inConn.valid + ", ";
 	}
@@ -105,10 +95,8 @@ void MuxComponent::setInputPortBus(){
 
 	//Now create ready_in bus
 	inputPortBus += ".ready_in_bus({";
-	inConn = inputConnections[0];
-	inputPortBus += inConn.ready + ", ";
 	//The bus will be assigned from highest input to lowest input. eg {in3, in2, in1}
-	for(int i = inputConnections.size() - 1; i > 0; i--){
+	for(int i = inputConnections.size() - 1; i >= 0; i--){
 		inConn = inputConnections[i];
 		inputPortBus += inConn.ready + ", ";
 	}
@@ -116,14 +104,55 @@ void MuxComponent::setInputPortBus(){
 	inputPortBus += "})";
 }
 
+//1 will be address, 0 will be data
+void LoadComponent::setOutputPortBus(){
+	OutputConnection outConn;
+
+	//First create data_in bus
+	outputPortBus = ".data_out_bus({";
+
+	outConn = outputConnections[0];
+	outputPortBus += outConn.data + ", ";
+
+	outputPortBus = outputPortBus.erase(outputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
+	outputPortBus += "}), ";
+
+	//Then create address_in bus
+	outputPortBus += ".address_out_bus({";
+
+	outConn = outputConnections[1];
+	outputPortBus += outConn.data + ", ";
+
+	outputPortBus = outputPortBus.erase(outputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
+	outputPortBus += "}), ";
+
+	//Now create valid_in bus
+	outputPortBus += ".valid_out_bus({";
+	//The bus will be assigned from highest output to lowest output. eg {out3, out2, out1}
+	for(int i = outputConnections.size() - 1; i >= 0; i--){
+		outConn = outputConnections[i];
+		outputPortBus += outConn.valid + ", ";
+	}
+	outputPortBus = outputPortBus.erase(outputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
+	outputPortBus += "}), ";
+
+	//Now create ready_in bus
+	outputPortBus += ".ready_out_bus({";
+	//The bus will be assigned from highest output to lowest output. eg {out3, out2, out1}
+	for(int i = outputConnections.size() - 1; i >= 0; i--){
+		outConn = outputConnections[i];
+		outputPortBus += outConn.ready + ", ";
+	}
+	outputPortBus = outputPortBus.erase(outputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
+	outputPortBus += "})";
+}
 
 
-std::string MuxComponent::getInputOutputConnections(){
+std::string LoadComponent::getInputOutputConnections(){
 	std::string ret;
 
 	ret += "\tassign " + clk + " = clk;\n";
 	ret += "\tassign " + rst + " = rst;\n";
-
 
 	InputConnection inConn;
 	OutputConnection outConn;
@@ -140,3 +169,5 @@ std::string MuxComponent::getInputOutputConnections(){
 
 	return ret;
 }
+
+

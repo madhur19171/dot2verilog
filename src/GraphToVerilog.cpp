@@ -156,6 +156,9 @@ std::string GraphToVerilog::writeModuleInstantiation(){
 			} else if((*it)->op == OPERATOR_SUB){
 				moduleInstances += ((SubComponent*)(*it))->getModuleInstantiation(tabs);
 				moduleInstances += "\n\n";
+			} else if((*it)->op == OPERATOR_MUL){
+				moduleInstances += ((MulComponent*)(*it))->getModuleInstantiation(tabs);
+				moduleInstances += "\n\n";
 			} else if((*it)->op == OPERATOR_AND){
 				moduleInstances += ((AndComponent*)(*it))->getModuleInstantiation(tabs);
 				moduleInstances += "\n\n";
@@ -204,6 +207,12 @@ std::string GraphToVerilog::writeModuleInstantiation(){
 			} else if((*it)->op == OPERATOR_SELECT){
 				moduleInstances += ((SelectComponent*)(*it))->getModuleInstantiation(tabs);
 				moduleInstances += "\n\n";
+			} else if((*it)->op == OPERATOR_READ_MEMORY){
+				moduleInstances += ((LoadComponent*)(*it))->getModuleInstantiation(tabs);
+				moduleInstances += "\n\n";
+			} else if((*it)->op == OPERATOR_WRITE_MEMORY){
+				moduleInstances += ((StoreComponent*)(*it))->getModuleInstantiation(tabs);
+				moduleInstances += "\n\n";
 			}
 		} else if((*it)->type == COMPONENT_SOURCE){
 			moduleInstances += ((SourceComponent*)(*it))->getModuleInstantiation(tabs);
@@ -220,11 +229,20 @@ std::string GraphToVerilog::writeModuleInstantiation(){
 		} else if((*it)->type == COMPONENT_MERGE){
 			moduleInstances += ((MergeComponent*)(*it))->getModuleInstantiation(tabs);
 			moduleInstances += "\n\n";
+		} else if((*it)->type == COMPONENT_BUF){
+			moduleInstances += ((BufferComponent*)(*it))->getModuleInstantiation(tabs);
+			moduleInstances += "\n\n";
 		} else if((*it)->type == COMPONENT_MUX){
 			moduleInstances += ((MuxComponent*)(*it))->getModuleInstantiation(tabs);
 			moduleInstances += "\n\n";
 		} else if((*it)->type == COMPONENT_BRANCH){
 			moduleInstances += ((BranchComponent*)(*it))->getModuleInstantiation(tabs);
+			moduleInstances += "\n\n";
+		} else if((*it)->type == COMPONENT_MC){
+			moduleInstances += ((MemoryContentComponent*)(*it))->getModuleInstantiation(tabs);
+			moduleInstances += "\n\n";
+		} else if((*it)->type == COMPONENT_TFIFO){
+			moduleInstances += ((tFIFOComponent*)(*it))->getModuleInstantiation(tabs);
 			moduleInstances += "\n\n";
 		}
 	}
@@ -252,6 +270,9 @@ std::string GraphToVerilog::writeInputOutputConnections(){
 				inputoutput += "\n";
 			} else if((*it)->op == OPERATOR_SUB){
 				inputoutput += ((SubComponent*)(*it))->getInputOutputConnections();
+				inputoutput += "\n";
+			} else if((*it)->op == OPERATOR_MUL){
+				inputoutput += ((MulComponent*)(*it))->getInputOutputConnections();
 				inputoutput += "\n";
 			} else if((*it)->op == OPERATOR_AND){
 				inputoutput += ((AndComponent*)(*it))->getInputOutputConnections();
@@ -307,6 +328,12 @@ std::string GraphToVerilog::writeInputOutputConnections(){
 			} else if((*it)->op == OPERATOR_SELECT){
 				inputoutput += ((SelectComponent*)(*it))->getInputOutputConnections();
 				inputoutput += "\n";
+			} else if((*it)->op == OPERATOR_READ_MEMORY){
+				inputoutput += ((LoadComponent*)(*it))->getInputOutputConnections();
+				inputoutput += "\n";
+			} else if((*it)->op == OPERATOR_WRITE_MEMORY){
+				inputoutput += ((StoreComponent*)(*it))->getInputOutputConnections();
+				inputoutput += "\n";
 			}
 		} else if((*it)->type == COMPONENT_SOURCE){
 			inputoutput += ((SourceComponent*)(*it))->getInputOutputConnections();
@@ -323,11 +350,20 @@ std::string GraphToVerilog::writeInputOutputConnections(){
 		} else if((*it)->type == COMPONENT_MERGE){
 			inputoutput += ((MergeComponent*)(*it))->getInputOutputConnections();
 			inputoutput += "\n";
+		} else if((*it)->type == COMPONENT_BUF){
+			inputoutput += ((BufferComponent*)(*it))->getInputOutputConnections();
+			inputoutput += "\n";
 		} else if((*it)->type == COMPONENT_MUX){
 			inputoutput += ((MuxComponent*)(*it))->getInputOutputConnections();
 			inputoutput += "\n";
 		} else if((*it)->type == COMPONENT_BRANCH){
 			inputoutput += ((BranchComponent*)(*it))->getInputOutputConnections();
+			inputoutput += "\n";
+		} else if((*it)->type == COMPONENT_MC){
+			inputoutput += ((MemoryContentComponent*)(*it))->getInputOutputConnections();
+			inputoutput += "\n";
+		} else if((*it)->type == COMPONENT_TFIFO){
+			inputoutput += ((tFIFOComponent*)(*it))->getInputOutputConnections();
 			inputoutput += "\n";
 		}
 	}

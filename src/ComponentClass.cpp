@@ -1,4 +1,4 @@
-/*
+_2/*
  * ComponentClass.cpp
  *
  *  Created on: 31-May-2021
@@ -67,6 +67,10 @@ Component* Component::castToSubClass(Component* component){
 			return component;
 		} else if(op == OPERATOR_SUB){
 			SubComponent* obj = new SubComponent(*this);
+			component = (Component *)obj;
+			return component;
+		} else if(op == OPERATOR_MUL){
+			MulComponent* obj = new MulComponent(*this);
 			component = (Component *)obj;
 			return component;
 		} else if(op == OPERATOR_AND){
@@ -141,6 +145,14 @@ Component* Component::castToSubClass(Component* component){
 			SelectComponent* obj = new SelectComponent(*this);
 			component = (Component *)obj;
 			return component;
+		} else if(op == OPERATOR_READ_MEMORY){
+			LoadComponent* obj = new LoadComponent(*this);
+			component = (Component *)obj;
+			return component;
+		} else if(op == OPERATOR_WRITE_MEMORY){
+			StoreComponent* obj = new StoreComponent(*this);
+			component = (Component *)obj;
+			return component;
 		}
 	}else if(type == COMPONENT_MC){
 		MemoryContentComponent* obj = new MemoryContentComponent(*this);
@@ -166,12 +178,24 @@ Component* Component::castToSubClass(Component* component){
 		MergeComponent* obj = new MergeComponent(*this);
 		component = (Component *)obj;
 		return component;
+	} else if(type == COMPONENT_BUF){
+		BufferComponent* obj = new BufferComponent(*this);
+		component = (Component *)obj;
+		return component;
 	} else if(type == COMPONENT_MUX){
 		MuxComponent* obj = new MuxComponent(*this);
 		component = (Component *)obj;
 		return component;
 	} else if(type == COMPONENT_BRANCH){
 		BranchComponent* obj = new BranchComponent(*this);
+		component = (Component *)obj;
+		return component;
+	} else if(type == COMPONENT_MC){
+		MemoryContentComponent* obj = new MemoryContentComponent(*this);
+		component = (Component *)obj;
+		return component;
+	} else if(type == COMPONENT_TFIFO){
+		tFIFOComponent* obj = new tFIFOComponent(*this);
 		component = (Component *)obj;
 		return component;
 	}
@@ -258,7 +282,7 @@ std::string Component::getModulePortDeclarations(std::string tabs){
 }
 
 
-//Overridden by Const and Select
+//Overridden by Const and Select and LoadComponent and StoreComponent and EndComponent
 void Component::setInputPortBus(){
 	InputConnection inConn;
 
@@ -293,6 +317,7 @@ void Component::setInputPortBus(){
 	inputPortBus += "})";
 }
 
+//Overridden by LoadComponent and StoreComponent
 void Component::setOutputPortBus(){
 	OutputConnection outConn;
 

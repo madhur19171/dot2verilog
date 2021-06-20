@@ -6,7 +6,7 @@
  */
 
 
-#import "ComponentClass.h"
+#include "ComponentClass.h"
 
 //Subclass for Entry type component
 ControlMergeComponent::ControlMergeComponent(Component& c){

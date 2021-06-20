@@ -144,7 +144,7 @@ public:
 	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
 	//Of the components it is connected to
 	std::string getInputOutputConnections();
-
+	void setInputPortBus();
 private:
 	std::string getVerilogParameters();
 };
@@ -283,12 +283,29 @@ public:
 	//Of the components it is connected to
 	std::string getInputOutputConnections();
 
-//	void setOutputPortBus();
+	//	void setOutputPortBus();
 
 private:
 	std::string getVerilogParameters();
 };
 
+
+//Type Component Classes (To be moved to their respective class files)
+class BufferComponent : public Component{
+public:
+	BufferComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+	//	void setOutputPortBus();
+
+private:
+	std::string getVerilogParameters();
+};
 
 //Type Component Classes (To be moved to their respective class files)
 class AddComponent : public Component{
@@ -310,6 +327,22 @@ private:
 class SubComponent : public Component{
 public:
 	SubComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	std::string getVerilogParameters();
+};
+
+
+//Type Component Classes (To be moved to their respective class files)
+class MulComponent : public Component{
+public:
+	MulComponent(Component& c);
 	//Instantiates the Component and generates a verilog code to instantiate this component
 	std::string getModuleInstantiation(std::string tabs);
 
@@ -625,12 +658,14 @@ private:
 //out2 is connected to end
 class MemoryContentComponent : public Component{
 public:
+	//For Store operation
 	std::string port_address_0;
 	std::string port_ce_0;
 	std::string port_we_0;
 	std::string port_dout_0;
 	std::string port_din_0;
 
+	//For Load Operation
 	std::string port_address_1;
 	std::string port_ce_1;
 	std::string port_we_1;
@@ -640,9 +675,68 @@ public:
 	MemoryContentComponent(Component& c);
 	std::string getModuleIODeclaration(std::string tabs);
 
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
 private:
-	//	std::string getAddressPortVector();
-	//	std::string getDataPortVector();
+	std::string getVerilogParameters();
+};
+
+
+
+//Type Component Classes (To be moved to their respective class files)
+class LoadComponent : public Component{
+public:
+	LoadComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	void setInputPortBus();
+	void setOutputPortBus();
+	std::string getVerilogParameters();
+};
+
+
+//Type Component Classes (To be moved to their respective class files)
+class StoreComponent : public Component{
+public:
+	StoreComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	void setInputPortBus();
+	void setOutputPortBus();
+	std::string getVerilogParameters();
+};
+
+
+//Type Component Classes (To be moved to their respective class files)
+class tFIFOComponent : public Component{
+public:
+	tFIFOComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	std::string getVerilogParameters();
 };
 
 

@@ -99,6 +99,7 @@ using namespace std;
 
 #define OPERATOR_ADD			"add_op"
 #define OPERATOR_SUB			"sub_op"
+#define OPERATOR_MUL			"mul_op"
 
 #define OPERATOR_AND			"and_op"
 #define OPERATOR_OR				"or_op"
@@ -124,6 +125,9 @@ using namespace std;
 #define OPERATOR_SELECT			"select_op"
 
 #define OPERATOR_RET			"ret_op"
+
+#define OPERATOR_READ_MEMORY	"mc_load_op"
+#define OPERATOR_WRITE_MEMORY	"mc_store_op"
 
 
 #define UNDERSCORE  "_"

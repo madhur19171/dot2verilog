@@ -56,6 +56,69 @@ std::string EndComponent::getModuleIODeclaration(std::string tabs){
 }
 
 
+void EndComponent::setInputPortBus(){
+	InputConnection inConn;
+
+	//First create data_in bus
+	inputPortBus = ".data_in_bus({";
+	//The bus will be assigned from highest input to lowest input. eg {in3, in2, in1}
+	for(int i = inputConnections.size() - 1; i >= 0; i--){
+		if(in.input[i].type == "u"){
+			inConn = inputConnections[i];
+			inputPortBus += inConn.data + ", ";
+		}
+	}
+	inputPortBus = inputPortBus.erase(inputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
+	inputPortBus += "}), ";
+
+	//Now create valid_in bus
+	inputPortBus += ".valid_in_bus({";
+	//The bus will be assigned from highest input to lowest input. eg {in3, in2, in1}
+	for(int i = inputConnections.size() - 1; i >= 0; i--){
+		if(in.input[i].type == "u"){
+			inConn = inputConnections[i];
+			inputPortBus += inConn.valid + ", ";
+		}
+	}
+	inputPortBus = inputPortBus.erase(inputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
+	inputPortBus += "}), ";
+
+	//Now create ready_in bus
+	inputPortBus += ".ready_in_bus({";
+	//The bus will be assigned from highest input to lowest input. eg {in3, in2, in1}
+	for(int i = inputConnections.size() - 1; i >= 0; i--){
+		if(in.input[i].type == "u"){
+			inConn = inputConnections[i];
+			inputPortBus += inConn.ready + ", ";
+		}
+	}
+	inputPortBus = inputPortBus.erase(inputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
+	inputPortBus += "}), ";
+
+	inputPortBus += ".e_valid_bus({";
+	//The bus will be assigned from highest input to lowest input. eg {in3, in2, in1}
+	for(int i = inputConnections.size() - 1; i >= 0; i--){
+		if(in.input[i].type == "e"){
+			inConn = inputConnections[i];
+			inputPortBus += inConn.valid + ", ";
+		}
+	}
+	inputPortBus = inputPortBus.erase(inputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
+	inputPortBus += "}), ";
+
+	inputPortBus += ".e_ready_bus({";
+	//The bus will be assigned from highest input to lowest input. eg {in3, in2, in1}
+	for(int i = inputConnections.size() - 1; i >= 0; i--){
+		if(in.input[i].type == "e"){
+			inConn = inputConnections[i];
+			inputPortBus += inConn.ready + ", ";
+		}
+	}
+	inputPortBus = inputPortBus.erase(inputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
+	inputPortBus += "})";
+}
+
+
 std::string EndComponent::getModuleInstantiation(std::string tabs){
 	setInputPortBus();
 	setOutputPortBus();
@@ -76,12 +139,11 @@ std::string EndComponent::getModuleInstantiation(std::string tabs){
 
 std::string EndComponent::getVerilogParameters(){
 	std::string ret;
-	//This method of generating module parameters will work because Start node has
-	//only 1 input and 1 output
-	ret += "#(.INPUTS(1), .OUTPUTS(1), .MEMORY_INPUTS(0), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
+
+	ret += "#(.INPUTS(1), .OUTPUTS(1), .MEMORY_INPUTS(" + std::to_string(in.size - 1) + "), ";
+	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[in.size - 1].bit_size == 0 ? 1 : in.input[in.size - 1].bit_size) + "), ";
 	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
-	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
+
 	return ret;
 }
 
@@ -102,3 +164,13 @@ std::string EndComponent::getInputOutputConnections(){
 
 	return ret;
 }
+
+
+
+
+
+
+
+
+
+

@@ -7,7 +7,8 @@ getModuleIODeclaration in its subclass. Additionally it also needs to have port_
 in its class members. writeTopModulePorts and generateTopModulePortComponents in the GraphToVerilog also have to integrate these components
 
 
-
+tFIFO:
+	it uses mod operations with depths that are not powers of 2. This will lead to high utilization.
 
 Start:
 	1 Input and 1 Output
