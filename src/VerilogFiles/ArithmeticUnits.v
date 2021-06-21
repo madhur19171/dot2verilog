@@ -121,6 +121,7 @@ module mul_op #(parameter INPUTS = 2,
 		output reg [OUTPUTS - 1 : 0]valid_out_bus = 0,
 		input 	[OUTPUTS - 1 : 0] ready_out_bus
 );
+	localparam LATENCY = 4;
 
 	reg signed [DATA_IN_SIZE - 1 : 0] data_in[INPUTS - 1 : 0];
 	reg [INPUTS - 1 : 0] valid_in = 0;
@@ -149,10 +150,21 @@ module mul_op #(parameter INPUTS = 2,
 
 	end
 	
-	joinC #(.N(INPUTS)) add_fork(.valid_in(valid_in), .ready_in(ready_in), .valid_out(valid_out), .ready_out(ready_out));
+	wire join_valid;
+	wire buff_valid, oehb_valid, oehb_ready;
+	wire oehb_dataOut, oehb_datain;
+	
+	joinC #(.N(INPUTS)) add_fork(.valid_in(valid_in), .ready_in(ready_in), .valid_out(join_valid), .ready_out(oehb_ready));
+	
+	mul_4_stage multiply_unit (.clk(clk), .ce(oehb_ready), .a(data_in[0]), .b(data_in[1]), .p(data_out[0]));
+	
+	delay_buffer #(.SIZE(LATENCY - 1))delay_buff(.clk(clk), .rst(rst), .valid_in(join_valid), .ready_in(oehb_ready), .valid_out(buff_valid));
+	
+	OEHB #(.INPUTS(1), .OUTPUTS(1), .DATA_IN_SIZE(1), .DATA_OUT_SIZE(1)) oehb_buffer (.clk(clk), .rst(rst),
+										 .data_in_bus(0), .valid_in_bus(buff_valid), .ready_in_bus(oehb_ready),
+										 .data_out_bus(oehb_dataOut), .valid_out_bus(valid_out[0]), .ready_out_bus(ready_out[0]));
+	
 
-	assign temp_result = data_in[0] * data_in[1];
-	assign data_out[0] = temp_result[DATA_OUT_SIZE - 1 : 0];
 
 endmodule
 

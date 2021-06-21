@@ -17,14 +17,30 @@ endmodule*/
 
 module joinC #(parameter N = 2)(
 	input [N - 1 : 0] valid_in,
-	output [N - 1 : 0] ready_in,
+	output reg  [N - 1 : 0] ready_in = 0,
 	output valid_out,
 	input ready_out
 );
 	
 	assign valid_out = &valid_in;//AND of all the bits in valid_in vector
 	
-	assign ready_in = valid_in & {N{ready_out}};
+	
+	reg[N - 1 : 0] singleValid = 0;
+	integer i, j;
+	
+	always @(*)begin
+		for(i = 0; i < N; i = i + 1)begin
+			singleValid[i] = 1;
+			for(j = 0; j < N; j = j + 1)
+				if(i != j)
+					singleValid[i] = singleValid[i] & valid_in[j];
+		end
+		
+		for(i = 0; i < N; i = i + 1)begin
+			ready_in[i] = singleValid[i] & ready_out;
+		end
+	end
+	
 endmodule
 
 
@@ -80,7 +96,7 @@ module TEHB #(parameter INPUTS = 2,
 		if(rst)
 			full_reg <= 0;
 		else
-			full_reg <= valid_out[0] & ~ready_in[0];
+			full_reg <= valid_out[0] & ~ready_out[0];
 	
 	always@(posedge clk, posedge rst)
 		if(rst)
@@ -365,7 +381,7 @@ endmodule*/
 //----------------------------------------------------------------------- 
 //-- merge, version 0.0
 //-----------------------------------------------------------------------
-module merge_node #(parameter INPUTS = 1,
+module merge_node #(parameter INPUTS = 3,
 		parameter OUTPUTS = 1,
 		parameter DATA_IN_SIZE = 32,
 		parameter DATA_OUT_SIZE = 32)
@@ -396,13 +412,14 @@ module merge_node #(parameter INPUTS = 1,
 
 	always @(*) begin
 		temp_valid_out = 0;
+		temp_data_out = data_in[0];
 		for(i = INPUTS - 1; i >= 0; i = i - 1) begin
 			data_in[i] = data_in_bus[(i + 1) * DATA_IN_SIZE - 1 -: DATA_IN_SIZE];
 			valid_in[i] = valid_in_bus[i];
 			ready_in_bus[i] = ready_in[i];
 			
 			if(valid_in[i])begin
-				temp_data_out = data_in[0];
+				temp_data_out = data_in[i];
 				temp_valid_out = 1;
 			end
 		end
@@ -435,7 +452,7 @@ endmodule
 //----------------------------------------------------------------------- 
 //-- merge_notehb, version 0.0
 //-----------------------------------------------------------------------
-module merge_notehb_node #(parameter INPUTS = 1,
+module merge_notehb_node #(parameter INPUTS = 2,
 		parameter OUTPUTS = 1,
 		parameter DATA_IN_SIZE = 32,
 		parameter DATA_OUT_SIZE = 32)
@@ -468,6 +485,7 @@ module merge_notehb_node #(parameter INPUTS = 1,
 
 	always @(*) begin
 		temp_valid_out = 0;
+		temp_data_out = data_in[0];
 		for(i = INPUTS - 1; i >= 0; i = i - 1) begin
 			data_in[i] = data_in_bus[(i + 1) * DATA_IN_SIZE - 1 -: DATA_IN_SIZE];
 			valid_in[i] = valid_in_bus[i];
@@ -510,8 +528,8 @@ endmodule
 //data_out_bus will contain {condition, data_out}
 module cntrlMerge_node #(parameter INPUTS = 2,
 		parameter OUTPUTS = 2,
-		parameter DATA_IN_SIZE = 32,
-		parameter DATA_OUT_SIZE = 32)
+		parameter DATA_IN_SIZE = 1,
+		parameter DATA_OUT_SIZE = 1)
 	(
 		input clk,
 		input rst,
@@ -779,7 +797,7 @@ endmodule
 
 module end_node #(parameter INPUTS = 1,
 		parameter OUTPUTS = 1,
-		parameter MEMORY_INPUTS = 1,
+		parameter MEMORY_INPUTS = 2,
 		parameter DATA_IN_SIZE = 32,
 		parameter DATA_OUT_SIZE = 32)
 	(
@@ -1267,7 +1285,8 @@ module elasticFifoInner #(parameter INPUTS = 1, OUTPUTS = 1, DATA_IN_SIZE = 32, 
 	end 
 	
 	always @(posedge clk) begin
-		if(WriteEn)
+		if(rst)begin end
+		else if(WriteEn)
 			Memory[Tail] <= data_in;
 	end
 	

@@ -17,8 +17,12 @@ Another solution might be to use SystemVerilog but I would frown upon that thoug
 Input always comes at diffenert times in merge but can arrive at the same time in mux
 
 June 9th:
-What are Sext and Zext operations in Arithmetic Units?
 Is it possible for any component to have different data_in_size and data_out_size?
 What is antitoken in select entity in arithmetic units?
 Ask About handshake protocol and do the simulation accordingly. Does ready signal go low as soon as a handshake happens?
 What is the use of source? It is always followed by a Const.
+
+June 23:
+	What are Sext and Zext operations in Arithmetic Units?
+	tFIFO:
+		it uses mod operations with depths that are not powers of 2. This will lead to high utilization.

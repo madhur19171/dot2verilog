@@ -1,4 +1,4 @@
-_2/*
+/*
  * ComponentClass.cpp
  *
  *  Created on: 31-May-2021
