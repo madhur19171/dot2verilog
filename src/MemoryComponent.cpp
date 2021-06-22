@@ -28,17 +28,18 @@ MemoryContentComponent::MemoryContentComponent(Component& c){
 	outputConnections = c.outputConnections;
 
 	//MC_ is removed from the name to specify that it is Top Module IO port connection
-	port_address_0 = substring(name, name.find('_') + 1, name.size()) + "_" + "address_0";
-	port_ce_0 = substring(name, name.find('_') + 1, name.size()) + "_" + "ce_0";
-	port_we_0 = substring(name, name.find('_') + 1, name.size()) + "_" + "we_0";
-	port_din_0 = substring(name, name.find('_') + 1, name.size()) + "_" + "din_0";
-	port_dout_0 = substring(name, name.find('_') + 1, name.size()) + "_" + "dout_0";
+	std::string memory_name = nodes[index].memory;
+	port_address_0 = memory_name + "_" + "address0";
+	port_ce_0 = memory_name + "_" + "ce0";
+	port_we_0 = memory_name + "_" + "we0";
+	port_din_0 = memory_name + "_" + "din0";
+	port_dout_0 = memory_name + "_" + "dout0";
 
-	port_address_1 = substring(name, name.find('_') + 1, name.size()) + "_" + "address_1";
-	port_ce_1 = substring(name, name.find('_') + 1, name.size()) + "_" + "ce_1";
-	port_we_1 = substring(name, name.find('_') + 1, name.size()) + "_" + "we_1";
-	port_din_1 = substring(name, name.find('_') + 1, name.size()) + "_" + "din_1";
-	port_dout_1 = substring(name, name.find('_') + 1, name.size()) + "_" + "dout_1";
+	port_address_1 = memory_name + "_" + "address1";
+	port_ce_1 = memory_name + "_" + "ce1";
+	port_we_1 = memory_name + "_" + "we1";
+	port_din_1 = memory_name + "_" + "din1";
+	port_dout_1 = memory_name + "_" + "dout1";
 
 }
 
@@ -89,6 +90,13 @@ std::string MemoryContentComponent::getInputOutputConnections(){
 
 	ret += "\tassign " + port_ce_0 + " = " + port_we_0 + ";\n";
 
+	for(int i = in.size - 1; i >= 0; i--){
+		if(in.input[i].type == "c" && in.input[i].info_type == "fake"){
+			ret += "\tassign " + inputConnections[i].valid + " = 0;\n";
+			ret += "\tassign " + inputConnections[i].data + " = 0;\n";
+		}
+	}
+
 
 	InputConnection inConn;
 	OutputConnection outConn;
@@ -128,8 +136,32 @@ std::string MemoryContentComponent::getModuleInstantiation(std::string tabs){
 	ret +=  ".io_loadDataIn(" + port_din_1 + "), .io_loadAddrOut(" + port_address_1 + "), .io_loadEnable(" + port_ce_1 + "),\n";
 	ret += tabs + "\t";
 
-	ret +=  ".io_bbpValids(0), .io_bb_stCountArray(0),\n";
-	ret += tabs + "\t";
+
+	ret +=  ".io_bbpValids({";
+	for(int i = in.size - 1; i >= 0; i--){
+		if(in.input[i].type == "c")
+			ret +=  inputConnections[i].valid + ", ";
+	}
+	ret = ret.erase(ret.size() - 2, 2);
+	ret += "}), ";
+
+	ret +=  ".io_bb_stCountArray({";
+	for(int i = in.size - 1; i >= 0; i--){
+		if(in.input[i].type == "c")
+			ret +=  inputConnections[i].data + ", ";
+	}
+	ret = ret.erase(ret.size() - 2, 2);
+	ret += "}), ";
+
+
+	ret +=  ".io_bbReadyToPrevs({";
+	for(int i = in.size - 1; i >= 0; i--){
+		if(in.input[i].type == "c")
+			ret +=  inputConnections[i].ready + ", ";
+	}
+	ret = ret.erase(ret.size() - 2, 2);
+	ret += "}), ";
+
 
 	ret +=  ".io_rdPortsPrev_ready({";
 	for(int i = in.size - 1; i >= 0; i--){
@@ -211,7 +243,7 @@ std::string MemoryContentComponent::getModuleInstantiation(std::string tabs){
 
 	ret +=  ".io_rdPortsNext_ready({";
 	for(int i = out.size - 1; i >= 0; i--){
-		if(out.output[i].info_type == "d" && out.output[i].type == "l")
+		if(out.output[i].type == "l")
 			ret +=  outputConnections[i].ready + ", ";
 	}
 	ret = ret.erase(ret.size() - 2, 2);
@@ -219,7 +251,7 @@ std::string MemoryContentComponent::getModuleInstantiation(std::string tabs){
 
 	ret +=  ".io_rdPortsNext_valid({";
 	for(int i = out.size - 1; i >= 0; i--){
-		if(out.output[i].info_type == "d" && out.output[i].type == "l")
+		if(out.output[i].type == "l")
 			ret +=  outputConnections[i].valid + ", ";
 	}
 	ret = ret.erase(ret.size() - 2, 2);
@@ -227,15 +259,30 @@ std::string MemoryContentComponent::getModuleInstantiation(std::string tabs){
 
 	ret +=  ".io_rdPortsNext_bits({";
 	for(int i = out.size - 1; i >= 0; i--){
-		if(out.output[i].info_type == "d" && out.output[i].type == "l")
+		if(out.output[i].type == "l")
 			ret +=  outputConnections[i].data + ", ";
 	}
 	ret = ret.erase(ret.size() - 2, 2);
 	ret += "}), ";
 	ret += tabs + "\n\t";
 
-	ret +=  ".io_Empty_Ready(" + outputConnections[out.size - 1].ready + "), .io_Empty_Valid(" + outputConnections[out.size - 1].valid + "));";
+	//ret +=  ".io_Empty_Ready(" + outputConnections[out.size - 1].ready + "), .io_Empty_Valid(" + outputConnections[out.size - 1].valid + "));";
 
+	ret +=  ".io_Empty_Valid({";
+	for(int i = out.size - 1; i >= 0; i--){
+		if(out.output[i].type == "e")
+			ret +=  outputConnections[i].valid + ", ";
+	}
+	ret = ret.erase(ret.size() - 2, 2);
+	ret += "}), ";
+
+	ret +=  ".io_Empty_Ready({";
+		for(int i = out.size - 1; i >= 0; i--){
+			if(out.output[i].type == "e")
+				ret +=  outputConnections[i].ready + ", ";
+		}
+		ret = ret.erase(ret.size() - 2, 2);
+		ret += "}));";
 
 	return ret;
 }

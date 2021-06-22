@@ -9,9 +9,12 @@
 #include "ComponentClass.h"
 
 //Subclass for Entry type component
-tFIFOComponent::tFIFOComponent(Component& c){
+FIFOComponent::FIFOComponent(Component& c){
 	index = c.index;
-	moduleName = "transpFIFO_node";
+	if(c.type == COMPONENT_TFIFO)
+		moduleName = "transpFIFO_node";
+	else if(c.type == COMPONENT_NFIFO)
+		moduleName = "nontranspFIFO_node";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
 	type = c.type;
@@ -34,7 +37,7 @@ tFIFOComponent::tFIFOComponent(Component& c){
 }
 
 
-std::string tFIFOComponent::getModuleInstantiation(std::string tabs){
+std::string FIFOComponent::getModuleInstantiation(std::string tabs){
 	setInputPortBus();
 	setOutputPortBus();
 
@@ -52,7 +55,7 @@ std::string tFIFOComponent::getModuleInstantiation(std::string tabs){
 	return ret;
 }
 
-std::string tFIFOComponent::getVerilogParameters(){
+std::string FIFOComponent::getVerilogParameters(){
 	std::string ret;
 	//This method of generating module parameters will work because Start node has
 	//only 1 input and 1 output
@@ -65,7 +68,7 @@ std::string tFIFOComponent::getVerilogParameters(){
 }
 
 
-std::string tFIFOComponent::getInputOutputConnections(){
+std::string FIFOComponent::getInputOutputConnections(){
 	std::string ret;
 
 	ret += "\tassign " + clk + " = clk;\n";

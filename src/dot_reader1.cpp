@@ -65,6 +65,30 @@ void DotReader::generateConnectionMap(){
 				componentMap[(*it)->name]->io.push_back(connection);
 			}
 		}
+
+		//Special Case for StoreComponent since it sends two outputs to same MC
+		if((*it)->op == OPERATOR_WRITE_MEMORY){
+			int sec_data = 0, sec_addr = 0;
+			int next_node_id = (*it)->out.output[0].next_nodes_id;
+			Component* nextComponent = componentMap[nodes[next_node_id].name];
+			for(int j = 0; j < nextComponent->in.size; j++){
+				int prev_node_id = nextComponent->in.input[j].prev_nodes_id;
+				if(prev_node_id == (*it)->index && nextComponent->in.input[j].info_type == "d"){
+					sec_data = j;
+					break;
+				}
+			}
+			(*it)->io[0].second.second = sec_data;
+
+			for(int j = 0; j < nextComponent->in.size; j++){
+				int prev_node_id = nextComponent->in.input[j].prev_nodes_id;
+				if(prev_node_id == (*it)->index && nextComponent->in.input[j].info_type == "a"){
+					sec_addr = j;
+					break;
+				}
+			}
+			(*it)->io[1].second.second = sec_addr;
+		}
 	}
 
 

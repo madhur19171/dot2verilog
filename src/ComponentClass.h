@@ -52,7 +52,7 @@ public:
 	std::string op;
 	uint64_t value;
 
-	/**Confirm this assumption*/
+	/**Confirm this assumption*/ //=========>>> Assumption wrong for StoreComponent.
 	//Assuming that two different blocks have only one unique connection between them
 	//Then connection is vector containing all the connections that component has with other components
 	//The vector contains pairs. The first element of that pair is the name of the component that is connected to this component
@@ -630,6 +630,36 @@ private:
 	std::string getVerilogParameters();
 };
 
+//Type Component Classes (To be moved to their respective class files)
+class SZextComponent : public Component{
+public:
+	SZextComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	std::string getVerilogParameters();
+};
+
+//Type Component Classes (To be moved to their respective class files)
+class GetPtrComponent : public Component{
+public:
+	GetPtrComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	std::string getVerilogParameters();
+};
+
 
 //Type Component Classes (To be moved to their respective class files)
 class RetComponent : public Component{
@@ -725,9 +755,9 @@ private:
 
 
 //Type Component Classes (To be moved to their respective class files)
-class tFIFOComponent : public Component{
+class FIFOComponent : public Component{
 public:
-	tFIFOComponent(Component& c);
+	FIFOComponent(Component& c);
 	//Instantiates the Component and generates a verilog code to instantiate this component
 	std::string getModuleInstantiation(std::string tabs);
 
@@ -738,6 +768,8 @@ public:
 private:
 	std::string getVerilogParameters();
 };
+
+
 
 
 

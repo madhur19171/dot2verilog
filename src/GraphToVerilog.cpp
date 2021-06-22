@@ -59,7 +59,15 @@ void GraphToVerilog::writeVerilogCode(){
 std::string GraphToVerilog::writeTopModuleName(){
 	std::string moduleName;
 
-	moduleName = "module " + dotReader.getFileName() + "(\n";
+	std::string filennn = dotReader.getFileName();
+
+	unsigned long pos = filennn.rfind("_optimized");
+	if(pos != std::string::npos){
+		std::cout << "Found" << std::endl;
+		filennn = substring(filennn, 0, pos);
+	}
+
+	moduleName = "module " + filennn + "(\n";
 
 	return moduleName;
 }
@@ -201,6 +209,12 @@ std::string GraphToVerilog::writeModuleInstantiation(){
 			} else if((*it)->op == OPERATOR_SLE){
 				moduleInstances += ((SleComponent*)(*it))->getModuleInstantiation(tabs);
 				moduleInstances += "\n\n";
+			} else if((*it)->op == OPERATOR_SEXT || (*it)->op == OPERATOR_ZEXT){
+				moduleInstances += ((SZextComponent*)(*it))->getModuleInstantiation(tabs);
+				moduleInstances += "\n\n";
+			} else if((*it)->op == OPERATOR_GETPTR){
+				moduleInstances += ((GetPtrComponent*)(*it))->getModuleInstantiation(tabs);
+				moduleInstances += "\n\n";
 			} else if((*it)->op == OPERATOR_RET){
 				moduleInstances += ((RetComponent*)(*it))->getModuleInstantiation(tabs);
 				moduleInstances += "\n\n";
@@ -229,7 +243,7 @@ std::string GraphToVerilog::writeModuleInstantiation(){
 		} else if((*it)->type == COMPONENT_MERGE){
 			moduleInstances += ((MergeComponent*)(*it))->getModuleInstantiation(tabs);
 			moduleInstances += "\n\n";
-		} else if((*it)->type == COMPONENT_BUF){
+		} else if((*it)->type == COMPONENT_BUF || (*it)->type == COMPONENT_TEHB || (*it)->type == COMPONENT_OEHB){
 			moduleInstances += ((BufferComponent*)(*it))->getModuleInstantiation(tabs);
 			moduleInstances += "\n\n";
 		} else if((*it)->type == COMPONENT_MUX){
@@ -241,8 +255,8 @@ std::string GraphToVerilog::writeModuleInstantiation(){
 		} else if((*it)->type == COMPONENT_MC){
 			moduleInstances += ((MemoryContentComponent*)(*it))->getModuleInstantiation(tabs);
 			moduleInstances += "\n\n";
-		} else if((*it)->type == COMPONENT_TFIFO){
-			moduleInstances += ((tFIFOComponent*)(*it))->getModuleInstantiation(tabs);
+		} else if((*it)->type == COMPONENT_TFIFO || (*it)->type == COMPONENT_NFIFO){
+			moduleInstances += ((FIFOComponent*)(*it))->getModuleInstantiation(tabs);
 			moduleInstances += "\n\n";
 		}
 	}
@@ -322,6 +336,12 @@ std::string GraphToVerilog::writeInputOutputConnections(){
 			} else if((*it)->op == OPERATOR_SLE){
 				inputoutput += ((SleComponent*)(*it))->getInputOutputConnections();
 				inputoutput += "\n";
+			} else if((*it)->op == OPERATOR_SEXT || (*it)->op == OPERATOR_ZEXT){
+				inputoutput += ((SZextComponent*)(*it))->getInputOutputConnections();
+				inputoutput += "\n";
+			} else if((*it)->op == OPERATOR_GETPTR){
+				inputoutput += ((GetPtrComponent*)(*it))->getInputOutputConnections();
+				inputoutput += "\n";
 			} else if((*it)->op == OPERATOR_RET){
 				inputoutput += ((RetComponent*)(*it))->getInputOutputConnections();
 				inputoutput += "\n";
@@ -350,7 +370,7 @@ std::string GraphToVerilog::writeInputOutputConnections(){
 		} else if((*it)->type == COMPONENT_MERGE){
 			inputoutput += ((MergeComponent*)(*it))->getInputOutputConnections();
 			inputoutput += "\n";
-		} else if((*it)->type == COMPONENT_BUF){
+		} else if((*it)->type == COMPONENT_BUF || (*it)->type == COMPONENT_TEHB || (*it)->type == COMPONENT_OEHB){
 			inputoutput += ((BufferComponent*)(*it))->getInputOutputConnections();
 			inputoutput += "\n";
 		} else if((*it)->type == COMPONENT_MUX){
@@ -362,8 +382,8 @@ std::string GraphToVerilog::writeInputOutputConnections(){
 		} else if((*it)->type == COMPONENT_MC){
 			inputoutput += ((MemoryContentComponent*)(*it))->getInputOutputConnections();
 			inputoutput += "\n";
-		} else if((*it)->type == COMPONENT_TFIFO){
-			inputoutput += ((tFIFOComponent*)(*it))->getInputOutputConnections();
+		} else if((*it)->type == COMPONENT_TFIFO || (*it)->type == COMPONENT_NFIFO){
+			inputoutput += ((FIFOComponent*)(*it))->getInputOutputConnections();
 			inputoutput += "\n";
 		}
 	}

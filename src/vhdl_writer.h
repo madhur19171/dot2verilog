@@ -126,6 +126,10 @@ using namespace std;
 
 #define OPERATOR_RET			"ret_op"
 
+#define OPERATOR_SEXT			"sext_op"
+#define OPERATOR_ZEXT			"zext_op"
+#define OPERATOR_GETPTR			"getelementptr_op"
+
 #define OPERATOR_READ_MEMORY	"mc_load_op"
 #define OPERATOR_WRITE_MEMORY	"mc_store_op"
 

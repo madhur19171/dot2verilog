@@ -381,6 +381,7 @@ endmodule*/
 //----------------------------------------------------------------------- 
 //-- merge, version 0.0
 //-----------------------------------------------------------------------
+
 module merge_node #(parameter INPUTS = 3,
 		parameter OUTPUTS = 1,
 		parameter DATA_IN_SIZE = 32,
@@ -410,9 +411,32 @@ module merge_node #(parameter INPUTS = 3,
 	
 	integer i;
 
+//	always @(*) begin
+//		temp_valid_out = 0;
+//		temp_data_out = data_in[0];
+//		for(i = INPUTS - 1; i >= 0; i = i - 1) begin
+//			data_in[i] = data_in_bus[(i + 1) * DATA_IN_SIZE - 1 -: DATA_IN_SIZE];
+//			valid_in[i] = valid_in_bus[i];
+//			ready_in_bus[i] = ready_in[i];
+//			
+//			if(valid_in[i])begin
+//				temp_data_out = data_in[i];
+//				temp_valid_out = 1;
+//			end
+//		end
+//
+//		for(i = OUTPUTS - 1; i >= 0; i = i - 1) begin
+//			data_out_bus[(i + 1) * DATA_OUT_SIZE - 1 -: DATA_OUT_SIZE] = data_out[i];
+//			valid_out_bus[i] = valid_out[i];
+//			ready_out[i] = ready_out_bus[i];
+//		end
+//
+//	end
+	
+
 	always @(*) begin
 		temp_valid_out = 0;
-		temp_data_out = data_in[0];
+		temp_data_out = data_in_bus[0 +: DATA_IN_SIZE];
 		for(i = INPUTS - 1; i >= 0; i = i - 1) begin
 			data_in[i] = data_in_bus[(i + 1) * DATA_IN_SIZE - 1 -: DATA_IN_SIZE];
 			valid_in[i] = valid_in_bus[i];
@@ -431,7 +455,7 @@ module merge_node #(parameter INPUTS = 3,
 		end
 
 	end
-	
+
 	wire[DATA_IN_SIZE - 1 : 0] tehb_data_in;
 	wire tehb_valid_in;
 	wire tehb_ready_in;
@@ -1359,6 +1383,38 @@ module transpFIFO_node #(parameter INPUTS = 1, OUTPUTS = 1, DATA_IN_SIZE = 32, D
 		.data_in(fifo_in), .valid_in(fifo_valid_in), .ready_in(fifo_ready_in),
 		.data_out(fifo_out), .valid_out(fifo_valid_out), .ready_out(fifo_ready_out)
 	);
+
+endmodule
+
+
+module nontranspFIFO_node #(parameter INPUTS = 1, OUTPUTS = 1, DATA_IN_SIZE = 32, DATA_OUT_SIZE = 32, FIFO_DEPTH = 10) (
+	input clk, rst, 
+	input [DATA_IN_SIZE - 1 : 0] data_in_bus, input valid_in_bus, output ready_in_bus,
+	output [DATA_OUT_SIZE - 1 : 0] data_out_bus, output valid_out_bus, input ready_out_bus 
+);
+
+	wire fifo_valid, fifo_ready;
+	wire tehb_vaid, tehb_ready;
+	
+	wire[DATA_IN_SIZE - 1 : 0] tehb_out, fifo_out;
+	
+	
+	TEHB #(.INPUTS(1), .OUTPUTS(1), .DATA_IN_SIZE(DATA_IN_SIZE), .DATA_OUT_SIZE(DATA_OUT_SIZE)) nfifo_tehb(
+		.clk(clk), .rst(rst),
+		.data_in_bus(data_in_bus), .valid_in_bus(valid_in_bus), .ready_in_bus(tehb_ready),
+		.data_out_bus(tehb_out), .valid_out_bus(tehb_valid), .ready_out_bus(fifo_ready)
+	);
+	
+
+	elasticFifoInner #(.INPUTS(INPUTS), .OUTPUTS(OUTPUTS), .DATA_IN_SIZE(DATA_IN_SIZE), .DATA_OUT_SIZE(DATA_OUT_SIZE), .FIFO_DEPTH(FIFO_DEPTH)) tFIFO_inst(
+		.clk(clk), .rst(rst),
+		.data_in(tehb_out), .valid_in(tehb_valid), .ready_in(fifo_ready),
+		.data_out(fifo_out), .valid_out(fifo_valid), .ready_out(ready_out_bus)
+	);
+	
+	assign data_out_bus = fifo_out;
+	assign valid_out_bus = fifo_valid;
+	assign ready_in_bus = tehb_ready;
 
 endmodule
 

@@ -137,6 +137,14 @@ Component* Component::castToSubClass(Component* component){
 			SleComponent* obj = new SleComponent(*this);
 			component = (Component *)obj;
 			return component;
+		} else if(op == OPERATOR_SEXT || op == OPERATOR_ZEXT){
+			SZextComponent* obj = new SZextComponent(*this);
+			component = (Component *)obj;
+			return component;
+		} else if(op == OPERATOR_GETPTR){
+			GetPtrComponent* obj = new GetPtrComponent(*this);
+			component = (Component *)obj;
+			return component;
 		} else if(op == OPERATOR_RET){
 			RetComponent* obj = new RetComponent(*this);
 			component = (Component *)obj;
@@ -178,7 +186,7 @@ Component* Component::castToSubClass(Component* component){
 		MergeComponent* obj = new MergeComponent(*this);
 		component = (Component *)obj;
 		return component;
-	} else if(type == COMPONENT_BUF){
+	} else if(type == COMPONENT_BUF || type == COMPONENT_TEHB || type == COMPONENT_OEHB){
 		BufferComponent* obj = new BufferComponent(*this);
 		component = (Component *)obj;
 		return component;
@@ -194,8 +202,8 @@ Component* Component::castToSubClass(Component* component){
 		MemoryContentComponent* obj = new MemoryContentComponent(*this);
 		component = (Component *)obj;
 		return component;
-	} else if(type == COMPONENT_TFIFO){
-		tFIFOComponent* obj = new tFIFOComponent(*this);
+	} else if(type == COMPONENT_TFIFO || type == COMPONENT_NFIFO){
+		FIFOComponent* obj = new FIFOComponent(*this);
 		component = (Component *)obj;
 		return component;
 	}

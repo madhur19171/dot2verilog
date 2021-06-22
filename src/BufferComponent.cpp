@@ -11,7 +11,12 @@
 //Subclass for Entry type component
 BufferComponent::BufferComponent(Component& c){
 	index = c.index;
-	moduleName = "elasticBuffer";
+	if(c.type == COMPONENT_BUF)
+		moduleName = "elasticBuffer";
+	else if(c.type == COMPONENT_TEHB)
+		moduleName = "TEHB";
+	else if(c.type == COMPONENT_OEHB)
+			moduleName = "OEHB";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
 	type = c.type;

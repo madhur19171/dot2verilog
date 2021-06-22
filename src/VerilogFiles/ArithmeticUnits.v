@@ -327,8 +327,106 @@ endmodule
 
 
 //Sext and Zext to be included. What are they anyway?
+//Is Sext for converting Unsigned data to signed data?
+//Is zext doing the same thing?
+
+module sext_op #(parameter INPUTS = 1,
+		parameter OUTPUTS = 1,
+		parameter DATA_IN_SIZE = 32,
+		parameter DATA_OUT_SIZE = 32)
+		(
+		input clk,
+		input rst,
+		input [INPUTS * (DATA_IN_SIZE)- 1 : 0]data_in_bus,
+		input [INPUTS - 1 : 0]valid_in_bus,
+		output reg [INPUTS - 1 : 0] ready_in_bus = 0,
+		
+		output reg signed [OUTPUTS * (DATA_OUT_SIZE) - 1 : 0]data_out_bus = 0,
+		output reg [OUTPUTS - 1 : 0]valid_out_bus = 0,
+		input 	[OUTPUTS - 1 : 0] ready_out_bus
+);
+
+	reg signed [DATA_IN_SIZE - 1 : 0] data_in[INPUTS - 1 : 0];
+	reg [INPUTS - 1 : 0] valid_in = 0;
+	wire [INPUTS - 1 : 0] ready_in;
+	
+	wire signed [DATA_OUT_SIZE - 1 : 0] data_out[OUTPUTS - 1 : 0];
+	wire [OUTPUTS - 1 : 0]valid_out;
+	reg [OUTPUTS - 1 : 0]ready_out = 0;
+	
+	integer i;
+
+	always @(*) begin
+		for(i = INPUTS - 1; i >= 0; i = i - 1) begin
+			data_in[i] = data_in_bus[(i + 1) * DATA_IN_SIZE - 1 -: DATA_IN_SIZE];
+			valid_in[i] = valid_in_bus[i];
+			ready_in_bus[i] = ready_in[i];
+		end
+
+		for(i = OUTPUTS - 1; i >= 0; i = i - 1) begin
+			data_out_bus[(i + 1) * DATA_OUT_SIZE - 1 -: DATA_OUT_SIZE] = data_out[i];
+			valid_out_bus[i] = valid_out[i];
+			ready_out[i] = ready_out_bus[i];
+		end
+
+	end
+	
+	assign data_out[0] = data_in[0];
+	assign valid_out[0] = valid_in[0];
+	assign ready_in[0] = ~valid_in[0] | valid_out[0] & ready_out[0];
+	
+	
+endmodule
 
 
+
+module zext_op #(parameter INPUTS = 1,
+		parameter OUTPUTS = 1,
+		parameter DATA_IN_SIZE = 32,
+		parameter DATA_OUT_SIZE = 32)
+		(
+		input clk,
+		input rst,
+		input [INPUTS * (DATA_IN_SIZE)- 1 : 0]data_in_bus,
+		input [INPUTS - 1 : 0]valid_in_bus,
+		output reg [INPUTS - 1 : 0] ready_in_bus = 0,
+		
+		output reg signed [OUTPUTS * (DATA_OUT_SIZE) - 1 : 0]data_out_bus = 0,
+		output reg [OUTPUTS - 1 : 0]valid_out_bus = 0,
+		input 	[OUTPUTS - 1 : 0] ready_out_bus
+);
+
+	reg signed [DATA_IN_SIZE - 1 : 0] data_in[INPUTS - 1 : 0];
+	reg [INPUTS - 1 : 0] valid_in = 0;
+	wire [INPUTS - 1 : 0] ready_in;
+	
+	wire signed [DATA_OUT_SIZE - 1 : 0] data_out[OUTPUTS - 1 : 0];
+	wire [OUTPUTS - 1 : 0]valid_out;
+	reg [OUTPUTS - 1 : 0]ready_out = 0;
+	
+	integer i;
+
+	always @(*) begin
+		for(i = INPUTS - 1; i >= 0; i = i - 1) begin
+			data_in[i] = data_in_bus[(i + 1) * DATA_IN_SIZE - 1 -: DATA_IN_SIZE];
+			valid_in[i] = valid_in_bus[i];
+			ready_in_bus[i] = ready_in[i];
+		end
+
+		for(i = OUTPUTS - 1; i >= 0; i = i - 1) begin
+			data_out_bus[(i + 1) * DATA_OUT_SIZE - 1 -: DATA_OUT_SIZE] = data_out[i];
+			valid_out_bus[i] = valid_out[i];
+			ready_out[i] = ready_out_bus[i];
+		end
+
+	end
+	
+	assign data_out[0] = data_in[0];
+	assign valid_out[0] = valid_in[0];
+	assign ready_in[0] = ready_out[0];
+	
+	
+endmodule
 
 
 //-----------------------------------------------------------------------
@@ -1140,6 +1238,84 @@ module icmp_sle_op #(parameter INPUTS = 2,
 
 	assign data_out[0] = data_in[0] <= data_in[1];
 
+endmodule
+
+
+//-----------------------------------------------------------------------
+//-- getelemntptr, version 0.0
+//-----------------------------------------------------------------------
+//nodes attribute := constants
+//Higher inputs will contain constant values, specifically the dimensions
+//Lower inputs will contain variable inputs which will be multiplied with constant dimensions
+//to determine the address. This is used to for index translation for N dimensional Array to 1D array? 
+module getelementptr_op #(parameter INPUTS = 3,
+		parameter OUTPUTS = 1,
+		parameter DATA_IN_SIZE = 32,
+		parameter DATA_OUT_SIZE = 32,
+		parameter CONST_SIZE = 1)
+		(
+		input clk,
+		input rst,
+		input [INPUTS * (DATA_IN_SIZE)- 1 : 0]data_in_bus,
+		input [INPUTS - 1 : 0]valid_in_bus,
+		output reg [INPUTS - 1 : 0] ready_in_bus = 0,
+		
+		output reg [OUTPUTS * (DATA_OUT_SIZE) - 1 : 0]data_out_bus = 0,
+		output reg [OUTPUTS - 1 : 0]valid_out_bus = 0,
+		input 	[OUTPUTS - 1 : 0] ready_out_bus
+);
+
+	reg [DATA_IN_SIZE - 1 : 0] data_in[INPUTS - 1 : 0];
+	reg [INPUTS - 1 : 0] valid_in = 0;
+	wire [INPUTS - 1 : 0] ready_in;
+	
+	wire [DATA_OUT_SIZE - 1 : 0] data_out[OUTPUTS - 1 : 0];
+	wire [OUTPUTS - 1 : 0]valid_out;
+	reg [OUTPUTS - 1 : 0]ready_out = 0;
+	
+	integer i;
+
+	always @(*) begin
+		for(i = INPUTS - 1; i >= 0; i = i - 1) begin
+			data_in[i] = data_in_bus[(i + 1) * DATA_IN_SIZE - 1 -: DATA_IN_SIZE];
+			valid_in[i] = valid_in_bus[i];
+			ready_in_bus[i] = ready_in[i];
+		end
+
+		for(i = OUTPUTS - 1; i >= 0; i = i - 1) begin
+			data_out_bus[(i + 1) * DATA_OUT_SIZE - 1 -: DATA_OUT_SIZE] = data_out[i];
+			valid_out_bus[i] = valid_out[i];
+			ready_out[i] = ready_out_bus[i];
+		end
+
+	end
+	
+	
+	joinC #(.N(INPUTS - CONST_SIZE)) (.valid_in(valid_in[INPUTS - CONST_SIZE - 1 : 0]),
+					.ready_in(ready_in[INPUTS - CONST_SIZE - 1 : 0]),
+					.valid_out(valid_out[0]),
+					.ready_out(ready_out[0]));
+					
+	assign ready_in[INPUTS - 1 : INPUTS - CONST_SIZE] = {CONST_SIZE{1'b1}};
+	
+	integer temp_const = 1, temp_mul = 0;
+	integer temp_data_out = 0;//Does it have to be unsigned?
+	
+	integer j;
+	
+	always @(*)begin
+		temp_data_out = 0;
+		for(i = 0; i < INPUTS - CONST_SIZE; i = i + 1)begin
+			temp_const = 1;
+			for(j = INPUTS - CONST_SIZE + i; j < INPUTS; j = j + 1)
+				temp_const = temp_const * data_in[j];
+			temp_mul = data_in[i] * temp_const;
+			temp_data_out = temp_data_out + temp_mul;
+		end
+	end
+	
+	assign data_out[0] = temp_data_out[DATA_OUT_SIZE - 1 : 0];
+	
 endmodule
 
 

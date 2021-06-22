@@ -54,7 +54,7 @@ module read_data_signals #(parameter ARBITER_SIZE = 1, DATA_WIDTH = 32) (
 	input [ARBITER_SIZE - 1 : 0] sel,
 	input [DATA_WIDTH - 1 : 0] read_data,
 	output reg [ARBITER_SIZE * DATA_WIDTH  - 1 : 0] out_data = 0,
-	output reg [ARBITER_SIZE - 1 : 0] valid,
+	output reg [ARBITER_SIZE - 1 : 0] valid = 0,
 	input [ARBITER_SIZE - 1 : 0] nReady
 );
 	reg [ARBITER_SIZE - 1 : 0] sel_prev = 0;
@@ -201,7 +201,7 @@ module MemCont #(parameter DATA_SIZE = 32, ADDRESS_SIZE = 32, BB_COUNT = 1, LOAD
 	output io_loadEnable,
 	
 	input [BB_COUNT - 1 : 0] io_bbpValids,
-	input [BB_COUNT * 32 : 0] io_bb_stCountArray,
+	input [BB_COUNT * 32 - 1 : 0] io_bb_stCountArray,
 	output [BB_COUNT - 1 : 0] io_bbReadyToPrevs,
 	
 	output io_Empty_Valid,
@@ -224,7 +224,6 @@ module MemCont #(parameter DATA_SIZE = 32, ADDRESS_SIZE = 32, BB_COUNT = 1, LOAD
 	output [STORE_COUNT - 1 : 0] io_wrDataPorts_ready
 );
 
-	wire[31 : 0] counter1;
 	wire [STORE_COUNT - 1 : 0]valid_WR;
 	
 	assign io_wrDataPorts_ready = io_wrAddrPorts_ready;
@@ -246,8 +245,7 @@ module MemCont #(parameter DATA_SIZE = 32, ADDRESS_SIZE = 32, BB_COUNT = 1, LOAD
 	);
 	
 	reg [31:0] counter = 0;
-	
-	assign counter1 = counter;
+
 	
 	integer i;
 	
@@ -264,7 +262,7 @@ module MemCont #(parameter DATA_SIZE = 32, ADDRESS_SIZE = 32, BB_COUNT = 1, LOAD
 		end
 	end
 	
-	assign io_Empty_Valid = (counter1 == 0) & (io_bbpValids == 0);
+	assign io_Empty_Valid = (~(|counter)) & (~(|io_bbpValids));
 	
 	assign io_bbReadyToPrevs = {STORE_COUNT{1'b1}};
 	

@@ -36,9 +36,12 @@ EndComponent::EndComponent(Component& c){
 	//	port_dout = substring(name, 0, name.find('_')) + "_" + "dout";
 	//	port_valid = substring(name, 0, name.find('_')) + "_" + "pvalid";
 	//	port_ready = substring(name, 0, name.find('_')) + "_" + "pready";
-	port_dout = name + "_" + "dout";
-	port_valid = name + "_" + "pvalid";
-	port_ready = name + "_" + "pready";
+
+	std::string end_name = substring(name, 0, name.rfind("_"));
+
+	port_dout = end_name + "_out";
+	port_valid = end_name + "_valid";
+	port_ready = end_name + "_ready";
 }
 
 

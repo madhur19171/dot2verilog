@@ -34,9 +34,11 @@ StartComponent::StartComponent(Component& c){
 	//here pvalid and pready are to distinguish these TopModule IO ports from(p stands for port)
 	//local entity valid and ready signals
 
-	port_din = name + "_" + "din";
-	port_valid = name + "_" + "pvalid";
-	port_ready = name + "_" + "pready";
+	std::string start_name = substring(name, 0, name.rfind("_"));
+
+	port_din = start_name + "_in";
+	port_valid = start_name + "_valid";
+	port_ready = start_name + "_ready";
 }
 
 //Returns the input/output declarations for top-module
