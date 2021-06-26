@@ -133,6 +133,9 @@ using namespace std;
 #define OPERATOR_READ_MEMORY	"mc_load_op"
 #define OPERATOR_WRITE_MEMORY	"mc_store_op"
 
+#define OPERATOR_READ_LSQ		"lsq_load_op"
+#define OPERATOR_WRITE_LSQ		"lsq_store_op"
+
 
 #define UNDERSCORE  "_"
 #define COLOUMN " : "

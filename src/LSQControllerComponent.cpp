@@ -1,16 +1,20 @@
 /*
- * StartComponent.cpp
+ * LSQControllerComponent.cpp
  *
- *  Created on: 04-Jun-2021
+ *  Created on: 24-Jun-2021
  *      Author: madhur
  */
+
 
 #include "ComponentClass.h"
 
 //Subclass for Entry type component
-StartComponent::StartComponent(Component& c){
+LSQControllerComponent::LSQControllerComponent(Component& c){
 	index = c.index;
-	moduleName = "start_node";
+	if(c.op == OPERATOR_READ_LSQ)
+		moduleName = "lsq_load_op";
+	else if(c.op == OPERATOR_WRITE_LSQ)
+		moduleName = "lsq_store_op";
 	name = c.name;
 	instanceName = moduleName + "_" + name;
 	type = c.type;
@@ -30,33 +34,10 @@ StartComponent::StartComponent(Component& c){
 
 	clk = c.clk;
 	rst = c.rst;
-
-	//here pvalid and pready are to distinguish these TopModule IO ports from(p stands for port)
-	//local entity valid and ready signals
-
-	std::string start_name = name;
-	if(name == "start_0")
-		start_name = "start";
-
-	port_din = start_name + "_in";
-	port_valid = start_name + "_valid";
-	port_ready = start_name + "_ready";
-}
-
-//Returns the input/output declarations for top-module
-std::string StartComponent::getModuleIODeclaration(std::string tabs){
-	std::string ret = "";
-	//Start has only one input
-	ret += tabs + "input " + generateVector(in.input[0].bit_size - 1, 0) + port_din + ",\n";
-	ret += tabs + "input " + port_valid + ",\n";
-	ret += tabs + "output " + port_ready + ",\n";
-	ret += "\n";
-
-	return ret;
 }
 
 
-std::string StartComponent::getModuleInstantiation(std::string tabs){
+std::string LSQControllerComponent::getModuleInstantiation(std::string tabs){
 	setInputPortBus();
 	setOutputPortBus();
 
@@ -74,28 +55,23 @@ std::string StartComponent::getModuleInstantiation(std::string tabs){
 	return ret;
 }
 
-std::string StartComponent::getVerilogParameters(){
+std::string LSQControllerComponent::getVerilogParameters(){
 	std::string ret;
 	//This method of generating module parameters will work because Start node has
 	//only 1 input and 1 output
-	ret += "#(.INPUTS(1), .OUTPUTS(1), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
+	ret += "#(.INPUTS(2), .OUTPUTS(2), ";
+	ret += ".ADDRESS_SIZE(" + std::to_string(in.input[1].bit_size == 0 ? 1 : in.input[1].bit_size) + "), ";
+	ret += ".DATA_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + ")) ";
 	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
 	return ret;
 }
 
 
-std::string StartComponent::getInputOutputConnections(){
+std::string LSQControllerComponent::getInputOutputConnections(){
 	std::string ret;
 
 	ret += "\tassign " + clk + " = clk;\n";
 	ret += "\tassign " + rst + " = rst;\n";
-
-	//First input of start component is connected to top module IO port
-	ret += "\tassign " + inputConnections.at(0).data + " = " + port_din + ";\n";
-	ret += "\tassign " + inputConnections.at(0).valid + " = " + port_valid + ";\n";
-	ret += "\tassign " + port_ready + " = " + inputConnections.at(0).ready + ";\n";
 
 
 	InputConnection inConn;
@@ -113,37 +89,5 @@ std::string StartComponent::getInputOutputConnections(){
 
 	return ret;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

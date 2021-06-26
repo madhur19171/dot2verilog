@@ -110,9 +110,13 @@ int main( int argc, char* argv[] )
 
 		parse_dot ( input_filename[indx] );
 
+		cout << "dot Parsed" << endl;
+
 		string filen = string(input_filename[indx]);
 		DotReader dotReader(filen);
 		dotReader.lineReader();
+		cout << "dot Read" << endl;
+
 
 		GraphToVerilog g2v(dotReader);
 

@@ -718,6 +718,41 @@ private:
 
 
 
+class LSQComponent : public Component{
+public:
+	//For Store operation
+	std::string port_address_0;
+	std::string port_ce_0;
+	std::string port_we_0;
+	std::string port_dout_0;
+	std::string port_din_0;
+
+	//For Load Operation
+	std::string port_address_1;
+	std::string port_ce_1;
+	std::string port_we_1;
+	std::string port_dout_1;
+	std::string port_din_1;
+
+	bool isNextMC;//If true, this means that one of the next components
+	//LSQ is connected to is a MemCont.
+
+	LSQComponent(Component& c);
+	std::string getModuleIODeclaration(std::string tabs);
+
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	bool isNextMCF();
+};
+
+
+
 //Type Component Classes (To be moved to their respective class files)
 class LoadComponent : public Component{
 public:
@@ -750,6 +785,22 @@ public:
 private:
 	void setInputPortBus();
 	void setOutputPortBus();
+	std::string getVerilogParameters();
+};
+
+
+//Type Component Classes (To be moved to their respective class files)
+class LSQControllerComponent : public Component{
+public:
+	LSQControllerComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
 	std::string getVerilogParameters();
 };
 

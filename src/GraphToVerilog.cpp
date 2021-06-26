@@ -113,6 +113,11 @@ std::string GraphToVerilog::writeTopModulePorts(){
 		} else if((*it)->type == COMPONENT_MC){
 			MemoryContentComponent* memoryContentComponent = (MemoryContentComponent*)(*it);
 			topModulePortList += memoryContentComponent->getModuleIODeclaration(tabs);
+		} else if((*it)->type == COMPONENT_LSQ){
+			//If LSQ has isNextMC true, then this function will return empty string
+			//Hence no io ports will be generated
+			LSQComponent* LSQContentComponent = (LSQComponent*)(*it);
+			topModulePortList += LSQContentComponent->getModuleIODeclaration(tabs);
 		}
 	}
 
@@ -227,6 +232,9 @@ std::string GraphToVerilog::writeModuleInstantiation(){
 			} else if((*it)->op == OPERATOR_WRITE_MEMORY){
 				moduleInstances += ((StoreComponent*)(*it))->getModuleInstantiation(tabs);
 				moduleInstances += "\n\n";
+			} else if((*it)->op == OPERATOR_WRITE_LSQ || (*it)->op == OPERATOR_READ_LSQ){
+				moduleInstances += ((LSQControllerComponent*)(*it))->getModuleInstantiation(tabs);
+				moduleInstances += "\n\n";
 			}
 		} else if((*it)->type == COMPONENT_SOURCE){
 			moduleInstances += ((SourceComponent*)(*it))->getModuleInstantiation(tabs);
@@ -257,6 +265,9 @@ std::string GraphToVerilog::writeModuleInstantiation(){
 			moduleInstances += "\n\n";
 		} else if((*it)->type == COMPONENT_TFIFO || (*it)->type == COMPONENT_NFIFO){
 			moduleInstances += ((FIFOComponent*)(*it))->getModuleInstantiation(tabs);
+			moduleInstances += "\n\n";
+		} else if((*it)->type == COMPONENT_LSQ){
+			moduleInstances += ((LSQComponent*)(*it))->getModuleInstantiation(tabs);
 			moduleInstances += "\n\n";
 		}
 	}
@@ -354,6 +365,9 @@ std::string GraphToVerilog::writeInputOutputConnections(){
 			} else if((*it)->op == OPERATOR_WRITE_MEMORY){
 				inputoutput += ((StoreComponent*)(*it))->getInputOutputConnections();
 				inputoutput += "\n";
+			} else if((*it)->op == OPERATOR_WRITE_LSQ || (*it)->op == OPERATOR_READ_LSQ){
+				inputoutput += ((LSQControllerComponent*)(*it))->getInputOutputConnections();
+				inputoutput += "\n";
 			}
 		} else if((*it)->type == COMPONENT_SOURCE){
 			inputoutput += ((SourceComponent*)(*it))->getInputOutputConnections();
@@ -384,6 +398,9 @@ std::string GraphToVerilog::writeInputOutputConnections(){
 			inputoutput += "\n";
 		} else if((*it)->type == COMPONENT_TFIFO || (*it)->type == COMPONENT_NFIFO){
 			inputoutput += ((FIFOComponent*)(*it))->getInputOutputConnections();
+			inputoutput += "\n";
+		} else if((*it)->type == COMPONENT_LSQ){
+			inputoutput += ((LSQComponent*)(*it))->getInputOutputConnections();
 			inputoutput += "\n";
 		}
 	}

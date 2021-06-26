@@ -22,8 +22,8 @@ DotReader::DotReader(std::string file_name){
 int DotReader::lineReader(){
 
 	//Function calls to generate a Component Graph
-
 	generateComponentList();
+
 	generateConnectionMap();
 
 	return 0;
@@ -66,8 +66,12 @@ void DotReader::generateConnectionMap(){
 			}
 		}
 
-		//Special Case for StoreComponent since it sends two outputs to same MC
-		if((*it)->op == OPERATOR_WRITE_MEMORY){
+		//Whenever any component might have two outputs to the same component,
+		//The io array of that component will map both the outputs to the same input
+		//of the connected component. To solve this issue in case of Store Operations
+		//This code snippet is required. This just maps the second output to a different input.
+		//Special Case for StoreComponent and LSQStore since it sends two outputs to same MC
+		if((*it)->op == OPERATOR_WRITE_MEMORY || (*it)->op == OPERATOR_WRITE_LSQ){
 			int sec_data = 0, sec_addr = 0;
 			int next_node_id = (*it)->out.output[0].next_nodes_id;
 			Component* nextComponent = componentMap[nodes[next_node_id].name];
@@ -89,9 +93,61 @@ void DotReader::generateConnectionMap(){
 			}
 			(*it)->io[1].second.second = sec_addr;
 		}
+
+		//Special Case for LSQ with isNextMC true
+		if((*it)->type == COMPONENT_LSQ){
+			LSQComponent* LSQ = (LSQComponent*)(*it);
+			if(LSQ->isNextMC){
+				//Finding the connected MC
+				MemoryContentComponent* connectedMC;
+				for(auto jt = LSQ->io.begin(); jt != LSQ->io.end(); jt++)
+					if(nodes[(*jt).first->index].memory == nodes[LSQ->index].memory){
+						connectedMC = (MemoryContentComponent*)(*jt).first;
+						break;
+					}
+
+
+				for(auto jt = LSQ->io.begin(); jt != LSQ->io.end(); jt++){
+					if((*jt).first == connectedMC){
+						int connectedFrom = (*jt).second.first;
+
+						if(LSQ->out.output[connectedFrom].type == "x" && LSQ->out.output[connectedFrom].info_type == "a"){
+							int sec_port;
+							for(int cc = 0; cc < connectedMC->in.size; cc++){
+								if(connectedMC->in.input[cc].prev_nodes_id == LSQ->index
+										&& connectedMC->in.input[cc].type == "l"
+												&& connectedMC->in.input[cc].info_type == "a")
+									sec_port = cc;
+							}
+							(*jt).second.second = sec_port;
+						}
+
+						if(LSQ->out.output[connectedFrom].type == "y" && LSQ->out.output[connectedFrom].info_type == "a"){
+							int sec_port;
+							for(int cc = 0; cc < connectedMC->in.size; cc++){
+								if(connectedMC->in.input[cc].prev_nodes_id == LSQ->index
+										&& connectedMC->in.input[cc].type == "s"
+												&& connectedMC->in.input[cc].info_type == "a")
+									sec_port = cc;
+							}
+							(*jt).second.second = sec_port;
+						}
+
+						if(LSQ->out.output[connectedFrom].type == "y" && LSQ->out.output[connectedFrom].info_type == "d"){
+							int sec_port;
+							for(int cc = 0; cc < connectedMC->in.size; cc++){
+								if(connectedMC->in.input[cc].prev_nodes_id == LSQ->index
+										&& connectedMC->in.input[cc].type == "s"
+												&& connectedMC->in.input[cc].info_type == "d")
+									sec_port = cc;
+							}
+							(*jt).second.second = sec_port;
+						}
+					}
+				}
+			}
+		}
 	}
-
-
 }
 
 //This function reads the conponentDeclaration list and initializes the various elements of component structure
@@ -102,14 +158,18 @@ void DotReader::generateComponentList(){
 		Component* comp = new Component();
 		comp->index = i;
 		comp->name = nodes[i].name;
+		cout << "Generated : " << comp->name << endl;
 		comp->type = nodes[i].type;
+		cout << "Generated : " << comp->type << endl;
 		comp->bbID = nodes[i].bbId;
+		cout << "Generated : " << comp->bbID << endl;
 		comp->in = nodes[i].inputs;
 		comp->out = nodes[i].outputs;
 		comp->slots = nodes[i].slots;
 		comp->transparent = nodes[i].trasparent;
 		comp->op = nodes[i].component_operator;
 		comp->value = nodes[i].component_value;
+
 
 		comp = comp->castToSubClass(comp);
 		componentList.push_back(comp);

@@ -1291,7 +1291,7 @@ module getelementptr_op #(parameter INPUTS = 3,
 	end
 	
 	
-	joinC #(.N(INPUTS - CONST_SIZE)) (.valid_in(valid_in[INPUTS - CONST_SIZE - 1 : 0]),
+	joinC #(.N(INPUTS - CONST_SIZE)) getPtrJoin (.valid_in(valid_in[INPUTS - CONST_SIZE - 1 : 0]),
 					.ready_in(ready_in[INPUTS - CONST_SIZE - 1 : 0]),
 					.valid_out(valid_out[0]),
 					.ready_out(ready_out[0]));

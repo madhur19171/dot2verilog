@@ -161,9 +161,17 @@ Component* Component::castToSubClass(Component* component){
 			StoreComponent* obj = new StoreComponent(*this);
 			component = (Component *)obj;
 			return component;
+		} else if(op == OPERATOR_WRITE_LSQ || op == OPERATOR_READ_LSQ){
+			LSQControllerComponent* obj = new LSQControllerComponent(*this);
+			component = (Component *)obj;
+			return component;
 		}
-	}else if(type == COMPONENT_MC){
+	} else if(type == COMPONENT_MC){
 		MemoryContentComponent* obj = new MemoryContentComponent(*this);
+		component = (Component *)obj;
+		return component;
+	} else if(type == COMPONENT_LSQ){
+		LSQComponent* obj = new LSQComponent(*this);
 		component = (Component *)obj;
 		return component;
 	} else if(type == COMPONENT_SOURCE){

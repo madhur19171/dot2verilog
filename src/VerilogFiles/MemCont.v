@@ -264,7 +264,7 @@ module MemCont #(parameter DATA_SIZE = 32, ADDRESS_SIZE = 32, BB_COUNT = 1, LOAD
 	
 	assign io_Empty_Valid = (~(|counter)) & (~(|io_bbpValids));
 	
-	assign io_bbReadyToPrevs = {STORE_COUNT{1'b1}};
+	assign io_bbReadyToPrevs = {BB_COUNT{1'b1}};
 	
 endmodule
 
