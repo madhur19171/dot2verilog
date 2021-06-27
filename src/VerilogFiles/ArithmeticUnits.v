@@ -170,6 +170,60 @@ endmodule
 
 
 
+//Weakly Implemented. Might result in high resource utilization
+//-----------------------------------------------------------------------
+//-- int urem, version 0.0
+//-----------------------------------------------------------------------
+//If data_in_bus contains two data a and b of 32 bit width such that data_in_bus = {a, b}, then sub_op returns b % a as the answer
+module urem_op #(parameter INPUTS = 2,
+		parameter OUTPUTS = 1,
+		parameter DATA_IN_SIZE = 32,
+		parameter DATA_OUT_SIZE = 32)
+		(
+		input clk,
+		input rst,
+		input [INPUTS * (DATA_IN_SIZE)- 1 : 0]data_in_bus,
+		input [INPUTS - 1 : 0]valid_in_bus,
+		output reg [INPUTS - 1 : 0] ready_in_bus = 0,
+		
+		output reg [OUTPUTS * (DATA_OUT_SIZE) - 1 : 0]data_out_bus = 0,
+		output reg [OUTPUTS - 1 : 0]valid_out_bus = 0,
+		input 	[OUTPUTS - 1 : 0] ready_out_bus
+);
+
+	reg signed [DATA_IN_SIZE - 1 : 0] data_in[INPUTS - 1 : 0];
+	reg [INPUTS - 1 : 0] valid_in = 0;
+	wire [INPUTS - 1 : 0] ready_in;
+	
+	wire [DATA_OUT_SIZE - 1 : 0] data_out[OUTPUTS - 1 : 0];
+	wire [OUTPUTS - 1 : 0]valid_out;
+	reg [OUTPUTS - 1 : 0]ready_out = 0;
+	
+	integer i;
+
+	always @(*) begin
+		for(i = INPUTS - 1; i >= 0; i = i - 1) begin
+			data_in[i] = data_in_bus[(i + 1) * DATA_IN_SIZE - 1 -: DATA_IN_SIZE];
+			valid_in[i] = valid_in_bus[i];
+			ready_in_bus[i] = ready_in[i];
+		end
+
+		for(i = OUTPUTS - 1; i >= 0; i = i - 1) begin
+			data_out_bus[(i + 1) * DATA_OUT_SIZE - 1 -: DATA_OUT_SIZE] = data_out[i];
+			valid_out_bus[i] = valid_out[i];
+			ready_out[i] = ready_out_bus[i];
+		end
+
+	end
+	
+	joinC #(.N(INPUTS)) add_fork(.valid_in(valid_in), .ready_in(ready_in), .valid_out(valid_out), .ready_out(ready_out));
+
+	assign data_out[0] = data_in[0] % data_in[1];
+
+endmodule
+
+
+
 //-----------------------------------------------------------------------
 //-- logical and, version 0.0
 //-----------------------------------------------------------------------

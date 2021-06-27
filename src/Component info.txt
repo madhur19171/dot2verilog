@@ -66,19 +66,27 @@ End:
 	the input signals are valid, the end component sends that valid input signal to its output and makes its
 	valid signal 1.
 	*e in input ports of dot file refers to memory inputs
+	
+	
+	
+	
+	
+Potential Tweaks:
+1. Improvement in FIFO architecture. It can be designed such that it does not require mod operator
+2. Improve the speed of LSQ Generation.
+3. Fixed Point arithmetic can dramatically improve utilization + performance and open
+	new horizons for memory distributions
+4. Division and Remainder support (Added urem support, but weakly implemented in Verilog)
 
-Since verilog does not support passing of arrays as arguments, so the program will be written such that
-there will be an Input Bus for input to a component and an Output Bus for output from a component.
-The Input and Output bus will pack all the ports that are are connected to the input and output side of a component.
-Eg.
-if input has following ports:
-	data_in[0], valid_in[0], ready_in[0]
-	data_in[1], valid_in[1], ready_in[1]
-	data_in[2], valid_in[2], ready_in[2]
-	
-then the input port will have the following input buses:
-	data_in_bus -> {data_in[2], data_in[1], data_in[0]}
-	valid_in_bus -> {valid_in[2], valid_in[1], valid_in[0]}
-	ready_in_bus -> {ready_in[2], ready_in[1], ready_in[0]}
-	
-Similarly output buses will be created
+
+
+
+
+
+
+
+
+
+
+
+

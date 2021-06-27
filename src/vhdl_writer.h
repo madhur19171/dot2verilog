@@ -100,6 +100,7 @@ using namespace std;
 #define OPERATOR_ADD			"add_op"
 #define OPERATOR_SUB			"sub_op"
 #define OPERATOR_MUL			"mul_op"
+#define OPERATOR_UREM			"urem_op"
 
 #define OPERATOR_AND			"and_op"
 #define OPERATOR_OR				"or_op"

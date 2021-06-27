@@ -355,6 +355,24 @@ private:
 };
 
 
+
+//Type Component Classes (To be moved to their respective class files)
+class RemComponent : public Component{
+public:
+	RemComponent(Component& c);
+	//Instantiates the Component and generates a verilog code to instantiate this component
+	std::string getModuleInstantiation(std::string tabs);
+
+	//Returns a string containing verilog code for connecting all the outputs of this components to the inputs
+	//Of the components it is connected to
+	std::string getInputOutputConnections();
+
+private:
+	std::string getVerilogParameters();
+};
+
+
+
 //Type Component Classes (To be moved to their respective class files)
 class AndComponent : public Component{
 public:

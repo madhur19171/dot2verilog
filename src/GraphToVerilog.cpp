@@ -172,6 +172,9 @@ std::string GraphToVerilog::writeModuleInstantiation(){
 			} else if((*it)->op == OPERATOR_MUL){
 				moduleInstances += ((MulComponent*)(*it))->getModuleInstantiation(tabs);
 				moduleInstances += "\n\n";
+			} else if((*it)->op == OPERATOR_UREM){
+				moduleInstances += ((RemComponent*)(*it))->getModuleInstantiation(tabs);
+				moduleInstances += "\n\n";
 			} else if((*it)->op == OPERATOR_AND){
 				moduleInstances += ((AndComponent*)(*it))->getModuleInstantiation(tabs);
 				moduleInstances += "\n\n";
@@ -189,6 +192,12 @@ std::string GraphToVerilog::writeModuleInstantiation(){
 				moduleInstances += "\n\n";
 			} else if((*it)->op == OPERATOR_ASHR){
 				moduleInstances += ((AshrComponent*)(*it))->getModuleInstantiation(tabs);
+				moduleInstances += "\n\n";
+			} else if((*it)->op == OPERATOR_EQ){
+				moduleInstances += ((EqComponent*)(*it))->getModuleInstantiation(tabs);
+				moduleInstances += "\n\n";
+			} else if((*it)->op == OPERATOR_NE){
+				moduleInstances += ((NeComponent*)(*it))->getModuleInstantiation(tabs);
 				moduleInstances += "\n\n";
 			} else if((*it)->op == OPERATOR_UGT){
 				moduleInstances += ((UgtComponent*)(*it))->getModuleInstantiation(tabs);
@@ -298,6 +307,9 @@ std::string GraphToVerilog::writeInputOutputConnections(){
 				inputoutput += "\n";
 			} else if((*it)->op == OPERATOR_MUL){
 				inputoutput += ((MulComponent*)(*it))->getInputOutputConnections();
+				inputoutput += "\n";
+			} else if((*it)->op == OPERATOR_UREM){
+				inputoutput += ((RemComponent*)(*it))->getInputOutputConnections();
 				inputoutput += "\n";
 			} else if((*it)->op == OPERATOR_AND){
 				inputoutput += ((AndComponent*)(*it))->getInputOutputConnections();

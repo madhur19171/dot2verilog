@@ -73,6 +73,10 @@ Component* Component::castToSubClass(Component* component){
 			MulComponent* obj = new MulComponent(*this);
 			component = (Component *)obj;
 			return component;
+		} else if(op == OPERATOR_UREM){
+			RemComponent* obj = new RemComponent(*this);
+			component = (Component *)obj;
+			return component;
 		} else if(op == OPERATOR_AND){
 			AndComponent* obj = new AndComponent(*this);
 			component = (Component *)obj;
