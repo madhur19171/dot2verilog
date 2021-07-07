@@ -123,8 +123,8 @@ int main( int argc, char* argv[] )
 
 		g2v.writeToFile();
 
-		Graph graph(dotReader);
-		graph.startDFS();
+//		Graph graph(dotReader);
+//		graph.startDFS();
 
 	}
 

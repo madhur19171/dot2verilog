@@ -145,6 +145,7 @@ public:
 	//Of the components it is connected to
 	std::string getInputOutputConnections();
 	void setInputPortBus();
+
 private:
 	std::string getVerilogParameters();
 };

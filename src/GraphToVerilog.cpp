@@ -34,22 +34,32 @@ void GraphToVerilog::writeToFile(){
 void GraphToVerilog::writeVerilogCode(){
 	verilogCode += writeTopModuleName();
 
+	std::cout << "HI 1" << std::endl;
+
 
 	insertTab();
 	verilogCode += writeTopModulePorts();
 	removeTab();
 
+	std::cout << "HI 2" << std::endl;
+
 	insertTab();
 	verilogCode += writeModulePortWires();
 	removeTab();
+
+	std::cout << "HI 3" << std::endl;
 
 	insertTab();
 	verilogCode += writeModuleInstantiation();
 	removeTab();
 
+	std::cout << "HI 4" << std::endl;
+
 	insertTab();
 	verilogCode += writeInputOutputConnections();
 	removeTab();
+
+	std::cout << "HI 5" << std::endl;
 
 	verilogCode += writeEndModule();
 }
@@ -294,6 +304,7 @@ std::string GraphToVerilog::writeInputOutputConnections(){
 			inputoutput += "\n";
 		} else if((*it)->type == COMPONENT_END){
 			inputoutput += ((EndComponent*)(*it))->getInputOutputConnections();
+			std::cout << (*it)->name << std::endl;
 			inputoutput += "\n";
 		} else if((*it)->type == COMPONENT_FORK){
 			inputoutput += ((ForkComponent*)(*it))->getInputOutputConnections();

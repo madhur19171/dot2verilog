@@ -167,7 +167,7 @@ std::string LSQComponent::getModuleInstantiation(std::string tabs){
 		ret +=  ".io_loadDataIn(" + port_din_1 + "), .io_loadAddrOut(" + port_address_1 + "), .io_loadEnable(" + port_ce_1 + "),\n";
 		ret += tabs + "\t";
 
-		ret += ".io_memIsReadyForLoads(1), .io_memIsReadyForStores(1), ";
+		ret += ".io_memIsReadyForLoads(1'b1), .io_memIsReadyForStores(1'b1), ";
 		ret += "\n\t" + tabs;
 	} else{
 		ret += ".io_memIsReadyForLoads(";

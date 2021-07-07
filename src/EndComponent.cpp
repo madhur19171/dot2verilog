@@ -42,6 +42,12 @@ EndComponent::EndComponent(Component& c){
 	port_dout = end_name + "_out";
 	port_valid = end_name + "_valid";
 	port_ready = end_name + "_ready";
+
+	if(out.size == 0){
+		out.size = 1;
+		out.output[0].bit_size = 1;
+	}
+
 }
 
 
@@ -96,29 +102,36 @@ void EndComponent::setInputPortBus(){
 		}
 	}
 	inputPortBus = inputPortBus.erase(inputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
-	inputPortBus += "}), ";
 
-	inputPortBus += ".e_valid_bus({";
-	//The bus will be assigned from highest input to lowest input. eg {in3, in2, in1}
-	for(int i = inputConnections.size() - 1; i >= 0; i--){
-		if(in.input[i].type == "e"){
-			inConn = inputConnections[i];
-			inputPortBus += inConn.valid + ", ";
-		}
+	if(in.size == 1){
+		inputPortBus += "})";//If no memory Inputs
+	} else{
+		inputPortBus += "}), ";//If there are memory inputs
 	}
-	inputPortBus = inputPortBus.erase(inputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
-	inputPortBus += "}), ";
 
-	inputPortBus += ".e_ready_bus({";
-	//The bus will be assigned from highest input to lowest input. eg {in3, in2, in1}
-	for(int i = inputConnections.size() - 1; i >= 0; i--){
-		if(in.input[i].type == "e"){
-			inConn = inputConnections[i];
-			inputPortBus += inConn.ready + ", ";
+	if(in.size > 1){
+		inputPortBus += ".e_valid_bus({";
+		//The bus will be assigned from highest input to lowest input. eg {in3, in2, in1}
+		for(int i = inputConnections.size() - 1; i >= 0; i--){
+			if(in.input[i].type == "e"){
+				inConn = inputConnections[i];
+				inputPortBus += inConn.valid + ", ";
+			}
 		}
+		inputPortBus = inputPortBus.erase(inputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
+		inputPortBus += "}), ";
+
+		inputPortBus += ".e_ready_bus({";
+		//The bus will be assigned from highest input to lowest input. eg {in3, in2, in1}
+		for(int i = inputConnections.size() - 1; i >= 0; i--){
+			if(in.input[i].type == "e"){
+				inConn = inputConnections[i];
+				inputPortBus += inConn.ready + ", ";
+			}
+		}
+		inputPortBus = inputPortBus.erase(inputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
+		inputPortBus += "})";
 	}
-	inputPortBus = inputPortBus.erase(inputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
-	inputPortBus += "})";
 }
 
 
@@ -161,9 +174,11 @@ std::string EndComponent::getInputOutputConnections(){
 	//First one output of end component is connected to top module IO port
 	//Which one is connected to top module is decided by the output list. The one which does not have
 	//e as a suffix in output name is the one connected to top module
-	ret += "\tassign " + port_dout + " = " + outputConnections.at(0).data + ";\n";
-	ret += "\tassign " + outputConnections.at(0).ready + " = " + port_ready + ";\n";
-	ret += "\tassign " + port_valid + " = " + outputConnections.at(0).valid + ";\n";
+	if(outputConnections.size() != 0){
+		ret += "\tassign " + port_dout + " = " + outputConnections.at(0).data + ";\n";
+		ret += "\tassign " + outputConnections.at(0).ready + " = " + port_ready + ";\n";
+		ret += "\tassign " + port_valid + " = " + outputConnections.at(0).valid + ";\n";
+	}
 
 	return ret;
 }

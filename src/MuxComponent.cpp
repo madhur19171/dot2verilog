@@ -73,12 +73,16 @@ void MuxComponent::setInputPortBus(){
 	//First create data_in bus
 	inputPortBus = ".data_in_bus({";
 
-//	//Since mux has {cond, data[N-1], data[N-2].....data[0]}
-//	inputPortBus += "{" + std::to_string(in.input[1].bit_size - in.input[0].bit_size) + "'b0, ";//Since Condition is N bit wide but Mux takes a 32 bit wide data for condition, so
-//
+	//	//Since mux has {cond, data[N-1], data[N-2].....data[0]}
+	//	inputPortBus += "{" + std::to_string(in.input[1].bit_size - in.input[0].bit_size) + "'b0, ";//Since Condition is N bit wide but Mux takes a 32 bit wide data for condition, so
+	//
 	//we need to add extra 0s to make it 32 bit wide
 	inputPortBus += "{";
 	//Condition bit
+
+	if(in.input[0].bit_size < in.input[1].bit_size)
+		inputPortBus += std::to_string(in.input[1].bit_size - in.input[0].bit_size) + "'b0, ";
+
 	inConn = inputConnections[0];
 	inputPortBus += inConn.data + "}, ";
 

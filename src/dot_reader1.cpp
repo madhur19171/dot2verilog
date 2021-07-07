@@ -14,7 +14,15 @@ DotReader::DotReader(){
 	numberOfBlocks = 0;
 }
 DotReader::DotReader(std::string file_name){
-	DotReader::fileName = file_name;
+
+	std::string temp_fn;
+
+	temp_fn = file_name;
+	if(file_name.rfind("/") != std::string::npos){
+		temp_fn = file_name.substr(file_name.rfind("/") + 1);
+	}
+
+	DotReader::fileName = temp_fn;
 	numberOfBlocks = 0;
 }
 
@@ -158,11 +166,8 @@ void DotReader::generateComponentList(){
 		Component* comp = new Component();
 		comp->index = i;
 		comp->name = nodes[i].name;
-		cout << "Generated : " << comp->name << endl;
 		comp->type = nodes[i].type;
-		cout << "Generated : " << comp->type << endl;
 		comp->bbID = nodes[i].bbId;
-		cout << "Generated : " << comp->bbID << endl;
 		comp->in = nodes[i].inputs;
 		comp->out = nodes[i].outputs;
 		comp->slots = nodes[i].slots;

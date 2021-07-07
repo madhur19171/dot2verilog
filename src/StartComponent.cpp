@@ -35,12 +35,17 @@ StartComponent::StartComponent(Component& c){
 	//local entity valid and ready signals
 
 	std::string start_name = name;
-	if(name == "start_0")
+	if(name == "start_0"){
 		start_name = "start";
 
-	port_din = start_name + "_in";
-	port_valid = start_name + "_valid";
-	port_ready = start_name + "_ready";
+		port_din = start_name + "_in";
+		port_valid = start_name + "_valid";
+		port_ready = start_name + "_ready";
+	}else {
+		port_din = start_name + "_din";
+		port_valid = start_name + "_valid_in";
+		port_ready = start_name + "_ready_in";
+	}
 }
 
 //Returns the input/output declarations for top-module
