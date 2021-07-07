@@ -8,8 +8,15 @@
 #include "GraphToVerilog.h"
 
 //Constructor
-GraphToVerilog::GraphToVerilog(DotReader dotReader){
+//GraphToVerilog::GraphToVerilog(DotReader dotReader){
+GraphToVerilog::GraphToVerilog(std::string filen){
+	//	this->dotReader = dotReader;
+
+	DotReader dotReader(filen);
+	dotReader.lineReader();
 	this->dotReader = dotReader;
+	std::cout << "Dot Read for Verilog" << std::endl;
+
 	verilogCode = "";
 	tabs = "";
 }
@@ -19,7 +26,6 @@ void GraphToVerilog::writeToFile(){
 	std::string file_n = dotReader.getFileName() + ".v";
 	std::ofstream outStream(file_n);
 	writeVerilogCode();
-	std::cout << getVerilogCode() << std::endl;
 	outStream << getVerilogCode() << std::endl;
 
 	outStream.close();
@@ -34,32 +40,23 @@ void GraphToVerilog::writeToFile(){
 void GraphToVerilog::writeVerilogCode(){
 	verilogCode += writeTopModuleName();
 
-	std::cout << "HI 1" << std::endl;
-
-
 	insertTab();
 	verilogCode += writeTopModulePorts();
 	removeTab();
-
-	std::cout << "HI 2" << std::endl;
 
 	insertTab();
 	verilogCode += writeModulePortWires();
 	removeTab();
 
-	std::cout << "HI 3" << std::endl;
 
 	insertTab();
 	verilogCode += writeModuleInstantiation();
 	removeTab();
 
-	std::cout << "HI 4" << std::endl;
 
 	insertTab();
 	verilogCode += writeInputOutputConnections();
 	removeTab();
-
-	std::cout << "HI 5" << std::endl;
 
 	verilogCode += writeEndModule();
 }
@@ -304,7 +301,6 @@ std::string GraphToVerilog::writeInputOutputConnections(){
 			inputoutput += "\n";
 		} else if((*it)->type == COMPONENT_END){
 			inputoutput += ((EndComponent*)(*it))->getInputOutputConnections();
-			std::cout << (*it)->name << std::endl;
 			inputoutput += "\n";
 		} else if((*it)->type == COMPONENT_FORK){
 			inputoutput += ((ForkComponent*)(*it))->getInputOutputConnections();

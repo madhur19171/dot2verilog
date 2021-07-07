@@ -14,7 +14,9 @@
 
 class GraphToVerilog{
 public:
-	GraphToVerilog(DotReader dotReader);
+//	GraphToVerilog(DotReader dotReader);
+	GraphToVerilog(std::string filen);
+
 
 	void writeVerilogCode();
 	void writeToFile();

@@ -95,6 +95,11 @@ Potential Tweaks:
 
 Doubtful Components:
 	1. Getelementpointer: doubtful about signed or unsigned inputs
+	
+Assumptions:
+	1. All start and end components will have IO ports in top module
+	2. Except for Store, MC and LSQ, no two components will have more than one input output connection with eachother.
+		This assumption was found wrong in mul_example. There two outputs of fork were connected to mul. Port orderings were not explicit.
 
 
 

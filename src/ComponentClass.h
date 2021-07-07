@@ -96,14 +96,6 @@ protected:
 	//This will create verilog code connecting outConn to inConn
 	std::string connectInputOutput(InputConnection inConn, OutputConnection outConn);
 
-
-	//Finds the name of io port based on input.
-	//Eg. input->in2-:32; output->in2
-	std::string getIOName(std::string _str);
-	//Finds the number of io port based on input.
-	//Eg. input->out3?:32; output->3
-	int getIONumber(std::string _str);
-
 	std::string getVerilogParameters();
 private:
 };

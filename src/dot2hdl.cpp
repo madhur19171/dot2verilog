@@ -106,33 +106,25 @@ int main( int argc, char* argv[] )
 
 		cout << "Parsing "<< input_filename[indx] << ".dot" << endl;
 
-//		filename = string(input_filename[indx]);
+		//		filename = string(input_filename[indx]);
 
 		parse_dot ( input_filename[indx] );
 
 		cout << "dot Parsed" << endl;
 
 		string filen = string(input_filename[indx]);
-		DotReader dotReader(filen);
-		dotReader.lineReader();
-		cout << "dot Read" << endl;
 
-
-		GraphToVerilog g2v(dotReader);
-
+		GraphToVerilog g2v(filen);
 
 		g2v.writeToFile();
 
-//		Graph graph(dotReader);
-//		graph.startDFS();
-
 	}
 
-//	for(int i = 0; i < components_in_netlist;i++){
-//		cout << "Index Number: " << i << endl;
-//		printNode(nodes[i]);
-//		cout << "\n" << endl;
-//	}
+	//	for(int i = 0; i < components_in_netlist;i++){
+	//		cout << "Index Number: " << i << endl;
+	//		printNode(nodes[i]);
+	//		cout << "\n" << endl;
+	//	}
 
 
 	cout << endl;
