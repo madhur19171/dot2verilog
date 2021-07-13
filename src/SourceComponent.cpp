@@ -32,13 +32,6 @@ SourceComponent::SourceComponent(Component& c){
 
 }
 
-//Overriding InputPortBus and OutputPortBus functions as
-//Sink only has input port and no output ports.
-//So setOutputPortBus() function will set outputPortBus to an empty string
-void SourceComponent::setInputPortBus(){
-	inputPortBus = "";
-}
-
 std::string SourceComponent::getModuleInstantiation(std::string tabs){
 	setInputPortBus();
 	setOutputPortBus();
@@ -64,30 +57,3 @@ std::string SourceComponent::getVerilogParameters(){
 	//Since there is no Input, DATA_IN_SIZE can be default
 	return ret;
 }
-
-
-
-
-std::string SourceComponent::getInputOutputConnections(){
-	std::string ret;
-
-	ret += "\tassign " + clk + " = clk;\n";
-	ret += "\tassign " + rst + " = rst;\n";
-
-	InputConnection inConn;
-	OutputConnection outConn;
-	Component* connectedToComponent;
-	int connectedFromPort, connectedToPort;
-	for(auto it = io.begin(); it != io.end(); it++){
-		connectedToComponent = (*it).first;
-		connectedFromPort = (*it).second.first;
-		connectedToPort = (*it).second.second;
-		inConn = connectedToComponent->inputConnections[connectedToPort];
-		outConn = outputConnections[connectedFromPort];
-		ret += connectInputOutput(inConn, outConn);
-	}
-
-	return ret;
-}
-
-

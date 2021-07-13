@@ -105,28 +105,3 @@ void BranchComponent::setInputPortBus(){
 	inputPortBus = inputPortBus.erase(inputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
 	inputPortBus += "})";
 }
-
-std::string BranchComponent::getInputOutputConnections(){
-	std::string ret;
-
-	ret += "\tassign " + clk + " = clk;\n";
-	ret += "\tassign " + rst + " = rst;\n";
-
-
-	InputConnection inConn;
-	OutputConnection outConn;
-	Component* connectedToComponent;
-	int connectedFromPort, connectedToPort;
-	for(auto it = io.begin(); it != io.end(); it++){
-		connectedToComponent = (*it).first;
-		connectedFromPort = (*it).second.first;
-		connectedToPort = (*it).second.second;
-		inConn = connectedToComponent->inputConnections[connectedToPort];
-		outConn = outputConnections[connectedFromPort];
-		ret += connectInputOutput(inConn, outConn);
-	}
-
-	return ret;
-}
-
-

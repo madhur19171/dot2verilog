@@ -90,8 +90,8 @@ Potential Tweaks:
 9. We can create a file for delays of various combinatorial circuits and pass it to the dot parser and the parser can
 	accordingly do the buffer placement for creating a design that can be run with the required clock period.
 10. Ask about handshake of Join and Buffer
-11. Ask about the special case of fork component in mel_example
-12. Ask about end_out for other dot parser
+11. Sequential Memory Access of multidimensional arrays can be implemented using adders instead of getelementpointer
+
 
 Doubtful Components:
 	1. Getelementpointer: doubtful about signed or unsigned inputs

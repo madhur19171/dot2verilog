@@ -46,6 +46,8 @@ EndComponent::EndComponent(Component& c){
 	if(out.size == 0){
 		out.size = 1;
 		out.output[0].bit_size = 1;
+		out.output[0].next_nodes_id = -1;
+		out.output[0].next_nodes_port = 0;
 	}
 
 }

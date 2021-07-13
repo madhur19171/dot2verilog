@@ -44,18 +44,17 @@ void GraphToVerilog::writeVerilogCode(){
 	verilogCode += writeTopModulePorts();
 	removeTab();
 
+
 	insertTab();
 	verilogCode += writeModulePortWires();
 	removeTab();
 
+	insertTab();
+	verilogCode += writeInputOutputConnections();
+	removeTab();
 
 	insertTab();
 	verilogCode += writeModuleInstantiation();
-	removeTab();
-
-
-	insertTab();
-	verilogCode += writeInputOutputConnections();
 	removeTab();
 
 	verilogCode += writeEndModule();
@@ -286,6 +285,11 @@ std::string GraphToVerilog::writeModuleInstantiation(){
 			moduleInstances += ((LSQComponent*)(*it))->getModuleInstantiation(tabs);
 			moduleInstances += "\n\n";
 		}
+		//Template for new Component addition
+		//		else if((*it)->type == COMPONENT_<Defined Name>){
+		//			moduleInstances += ((<Name>Component*)(*it))->getModuleInstantiation(tabs);
+		//			moduleInstances += "\n\n";
+		//		}
 	}
 
 	return moduleInstances;
@@ -422,6 +426,11 @@ std::string GraphToVerilog::writeInputOutputConnections(){
 			inputoutput += ((LSQComponent*)(*it))->getInputOutputConnections();
 			inputoutput += "\n";
 		}
+		//Template for new Component addition
+		//		else if((*it)->type == COMPONENT_<Defined Name>){
+		//			inputoutput += ((<Name>Component*)(*it))->getInputOutputConnections();
+		//			inputoutput += "\n";
+		//		}
 	}
 
 	return inputoutput;

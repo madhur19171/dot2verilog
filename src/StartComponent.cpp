@@ -61,36 +61,6 @@ std::string StartComponent::getModuleIODeclaration(std::string tabs){
 }
 
 
-std::string StartComponent::getModuleInstantiation(std::string tabs){
-	setInputPortBus();
-	setOutputPortBus();
-
-	std::string ret;
-	//Module name followed by verilog parameters followed by the Instance name
-	ret += tabs;
-	ret += moduleName + " " + getVerilogParameters() + instanceName + "\n";
-	ret += tabs + "\t";
-	ret += "(.clk(" + clk + "), .rst(" + rst + "),\n";
-	ret += tabs + "\t";
-	ret += inputPortBus + ", \n";
-	ret += tabs + "\t";
-	ret += outputPortBus + ");";
-
-	return ret;
-}
-
-std::string StartComponent::getVerilogParameters(){
-	std::string ret;
-	//This method of generating module parameters will work because Start node has
-	//only 1 input and 1 output
-	ret += "#(.INPUTS(1), .OUTPUTS(1), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
-	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
-	return ret;
-}
-
-
 std::string StartComponent::getInputOutputConnections(){
 	std::string ret;
 
@@ -118,37 +88,3 @@ std::string StartComponent::getInputOutputConnections(){
 
 	return ret;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

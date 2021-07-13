@@ -97,7 +97,6 @@ std::string MemoryContentComponent::getInputOutputConnections(){
 		}
 	}
 
-
 	InputConnection inConn;
 	OutputConnection outConn;
 	Component* connectedToComponent;
@@ -277,12 +276,12 @@ std::string MemoryContentComponent::getModuleInstantiation(std::string tabs){
 	ret += "}), ";
 
 	ret +=  ".io_Empty_Ready({";
-		for(int i = out.size - 1; i >= 0; i--){
-			if(out.output[i].type == "e")
-				ret +=  outputConnections[i].ready + ", ";
-		}
-		ret = ret.erase(ret.size() - 2, 2);
-		ret += "}));";
+	for(int i = out.size - 1; i >= 0; i--){
+		if(out.output[i].type == "e")
+			ret +=  outputConnections[i].ready + ", ";
+	}
+	ret = ret.erase(ret.size() - 2, 2);
+	ret += "}));";
 
 	return ret;
 }

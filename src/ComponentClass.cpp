@@ -219,6 +219,12 @@ Component* Component::castToSubClass(Component* component){
 		component = (Component *)obj;
 		return component;
 	}
+	//Template for new Component addition
+	//	else if(type == COMPONENT_<Defined Name>){
+	//		<Name>Component* obj = new <Name>Component(*this);
+	//		component = (Component *)obj;
+	//		return component;
+	//	}
 
 	return this;
 }
@@ -376,11 +382,31 @@ void Component::setOutputPortBus(){
 
 //These two functions will be defined individually for each component subclass
 std::string Component::getModuleInstantiation(std::string tabs){
-	return "";
+	setInputPortBus();
+	setOutputPortBus();
+
+	std::string ret;
+	//Module name followed by verilog parameters followed by the Instance name
+	ret += tabs;
+	ret += moduleName + " " + getVerilogParameters() + instanceName + "\n";
+	ret += tabs + "\t";
+	ret += "(.clk(" + clk + "), .rst(" + rst + "),\n";
+	ret += tabs + "\t";
+	ret += inputPortBus + ", \n";
+	ret += tabs + "\t";
+	ret += outputPortBus + ");";
+
+	return ret;
 }
 
 std::string Component::getVerilogParameters(){
-	return "";
+	std::string ret;
+
+	ret += "#(.INPUTS(" + std::to_string(in.size) + "), .OUTPUTS(" + std::to_string(out.size) + "), ";
+	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
+	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
+	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
+	return ret;
 }
 
 
@@ -394,7 +420,27 @@ std::string Component::connectInputOutput(InputConnection inConn, OutputConnecti
 	return ret;
 }
 
+std::string Component::getInputOutputConnections(){
+	std::string ret;
 
+	ret += "\tassign " + clk + " = clk;\n";
+	ret += "\tassign " + rst + " = rst;\n";
+
+	InputConnection inConn;
+	OutputConnection outConn;
+	Component* connectedToComponent;
+	int connectedFromPort, connectedToPort;
+	for(auto it = io.begin(); it != io.end(); it++){
+		connectedToComponent = (*it).first;
+		connectedFromPort = (*it).second.first;
+		connectedToPort = (*it).second.second;
+		inConn = connectedToComponent->inputConnections[connectedToPort];
+		outConn = outputConnections[connectedFromPort];
+		ret += connectInputOutput(inConn, outConn);
+	}
+
+	return ret;
+}
 
 
 

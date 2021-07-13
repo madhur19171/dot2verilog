@@ -84,41 +84,5 @@ std::string ConstantComponent::getModuleInstantiation(std::string tabs){
 	return ret;
 }
 
-std::string ConstantComponent::getVerilogParameters(){
-	std::string ret;
-	//This method of generating module parameters will work because Start node has
-	//only 1 input and 1 output
-	ret += "#(.INPUTS(1), .OUTPUTS(1), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
-	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
-	return ret;
-}
-
-
-std::string ConstantComponent::getInputOutputConnections(){
-	std::string ret;
-
-	ret += "\tassign " + clk + " = clk;\n";
-	ret += "\tassign " + rst + " = rst;\n";
-
-
-	InputConnection inConn;
-	OutputConnection outConn;
-	Component* connectedToComponent;
-	int connectedFromPort, connectedToPort;
-//	std::cout << name << " : " << std::endl;
-	for(auto it = io.begin(); it != io.end(); it++){
-		connectedToComponent = (*it).first;
-		connectedFromPort = (*it).second.first;
-		connectedToPort = (*it).second.second;
-		inConn = connectedToComponent->inputConnections[connectedToPort];
-		outConn = outputConnections[connectedFromPort];
-		ret += connectInputOutput(inConn, outConn);
-//		cout << "\tConnected To: " << connectedToComponent->name << "\t From: " << connectedFromPort << "\t To: " << connectedToPort << endl;
-	}
-
-	return ret;
-}
 
 

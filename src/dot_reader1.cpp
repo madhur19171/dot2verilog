@@ -43,15 +43,13 @@ int DotReader::lineReader(){
 //component connection informations and using that info, it is determined which component is connected to which other component
 void DotReader::generateConnectionMap(){
 	for(auto it = componentList.begin(); it != componentList.end(); it++){
-		//		std::vector<std::pair<Component*, std::pair<int, int>>> io;
-
-		//out_index
 		for(int i = 0; i < (*it)->out.size; i++){
 
 			std::pair<int, int> pair;
 			std::pair<Component*,  std::pair<int, int>> connection;
 
-			int out_ind = i, in_ind;
+			int out_ind = i;
+			int in_ind  = (*it)->out.output[i].next_nodes_port;
 
 			int next_node_id = (*it)->out.output[i].next_nodes_id;
 
@@ -59,14 +57,6 @@ void DotReader::generateConnectionMap(){
 				Component* nextComponent = componentMap[nodes[next_node_id].name];
 				connection.first = nextComponent;
 
-				//in_index
-				for(int j = 0; j < nextComponent->in.size; j++){
-					int prev_node_id = nextComponent->in.input[j].prev_nodes_id;
-					if(prev_node_id == (*it)->index){
-						in_ind = j;
-						break;
-					}
-				}
 				pair.first = out_ind;
 				pair.second = in_ind;
 				connection.second = pair;
@@ -100,60 +90,6 @@ void DotReader::generateConnectionMap(){
 				}
 			}
 			(*it)->io[1].second.second = sec_addr;
-		}
-
-		//Special Case for LSQ with isNextMC true
-		if((*it)->type == COMPONENT_LSQ){
-			LSQComponent* LSQ = (LSQComponent*)(*it);
-			if(LSQ->isNextMC){
-				//Finding the connected MC
-				MemoryContentComponent* connectedMC;
-				for(auto jt = LSQ->io.begin(); jt != LSQ->io.end(); jt++)
-					if(nodes[(*jt).first->index].memory == nodes[LSQ->index].memory){
-						connectedMC = (MemoryContentComponent*)(*jt).first;
-						break;
-					}
-
-
-				for(auto jt = LSQ->io.begin(); jt != LSQ->io.end(); jt++){
-					if((*jt).first == connectedMC){
-						int connectedFrom = (*jt).second.first;
-
-						if(LSQ->out.output[connectedFrom].type == "x" && LSQ->out.output[connectedFrom].info_type == "a"){
-							int sec_port;
-							for(int cc = 0; cc < connectedMC->in.size; cc++){
-								if(connectedMC->in.input[cc].prev_nodes_id == LSQ->index
-										&& connectedMC->in.input[cc].type == "l"
-												&& connectedMC->in.input[cc].info_type == "a")
-									sec_port = cc;
-							}
-							(*jt).second.second = sec_port;
-						}
-
-						if(LSQ->out.output[connectedFrom].type == "y" && LSQ->out.output[connectedFrom].info_type == "a"){
-							int sec_port;
-							for(int cc = 0; cc < connectedMC->in.size; cc++){
-								if(connectedMC->in.input[cc].prev_nodes_id == LSQ->index
-										&& connectedMC->in.input[cc].type == "s"
-												&& connectedMC->in.input[cc].info_type == "a")
-									sec_port = cc;
-							}
-							(*jt).second.second = sec_port;
-						}
-
-						if(LSQ->out.output[connectedFrom].type == "y" && LSQ->out.output[connectedFrom].info_type == "d"){
-							int sec_port;
-							for(int cc = 0; cc < connectedMC->in.size; cc++){
-								if(connectedMC->in.input[cc].prev_nodes_id == LSQ->index
-										&& connectedMC->in.input[cc].type == "s"
-												&& connectedMC->in.input[cc].info_type == "d")
-									sec_port = cc;
-							}
-							(*jt).second.second = sec_port;
-						}
-					}
-				}
-			}
 		}
 	}
 }

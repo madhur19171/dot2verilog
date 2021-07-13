@@ -33,12 +33,6 @@ SinkComponent::SinkComponent(Component& c){
 
 }
 
-//Overriding InputPortBus and OutputPortBus functions as
-//Sink only has input port and no output ports.
-//So setOutputPortBus() function will set outputPortBus to an empty string
-void SinkComponent::setOutputPortBus(){
-	outputPortBus = "";
-}
 
 std::string SinkComponent::getModuleInstantiation(std::string tabs){
 	setInputPortBus();
