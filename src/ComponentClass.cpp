@@ -229,6 +229,11 @@ Component* Component::castToSubClass(Component* component){
 	return this;
 }
 
+//Not used by usual components. Only used by
+std::string Component::getModuleIODeclaration(std::string tabs){
+	return "";
+}
+
 //Populates the inputConnection map and sets the string(name) for each port of each input
 //Eg. it gives unique names to data, ready and valid ports of a particular input
 //The name will follow the convention:

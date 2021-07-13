@@ -71,37 +71,31 @@ public:
 
 
 	Component();
+	virtual ~Component(){}
 	void printComponent();
-	int getVectorLength(std::string str);
-	std::string generateVector(std::string str);
 	std::string generateVector(int from, int to);
 	Component* castToSubClass(Component* component);
 	//Creates the port connections for individual modules like fork, join, merge...
-	std::string getModulePortDeclarations(std::string tabs);
+	virtual std::string getModulePortDeclarations(std::string tabs);
 	//Instantiates the Component and generates a verilog code to instantiate this component
-	std::string getModuleInstantiation(std::string tabs);
+	virtual std::string getModuleInstantiation(std::string tabs);
 
-	std::string getInputOutputConnections();
+	virtual std::string getInputOutputConnections();
 
-
+	virtual std::string getModuleIODeclaration(std::string tabs);
 protected:
-	std::string getDataPortVector(std::string _str);
-	std::string getAddressPortVector(std::string _str);
-
-
 	//Fills the inputConnections and outputConnections vectors with input and output ports
-	void setInputPortBus();//Connects Component Wires with component module inputs. This is called inside getModuleInstantiation
-	void setInputConnections();
-	void setOutputPortBus();//Connects Component Wires with component module outputs. This is called inside getModuleInstantiation
-	void setOutputConnections();
+	virtual void setInputPortBus();//Connects Component Wires with component module inputs. This is called inside getModuleInstantiation
+	virtual void setInputConnections();
+	virtual void setOutputPortBus();//Connects Component Wires with component module outputs. This is called inside getModuleInstantiation
+	virtual void setOutputConnections();
 
 	//This will create verilog code connecting outConn to inConn
-	std::string connectInputOutput(InputConnection inConn, OutputConnection outConn);
+	virtual std::string connectInputOutput(InputConnection inConn, OutputConnection outConn);
 
-	std::string getVerilogParameters();
+	virtual std::string getVerilogParameters();
 private:
 };
-
 
 
 //Type Component Classes (To be moved to their respective class files)
@@ -112,6 +106,7 @@ public:
 	std::string port_ready;
 
 	StartComponent(Component& c);
+	virtual ~StartComponent(){};
 	std::string getModuleIODeclaration(std::string tabs);
 	//Instantiates the Component and generates a verilog code to instantiate this component
 
@@ -127,6 +122,7 @@ public:
 	std::string port_ready;
 
 	EndComponent(Component& c);
+	virtual ~EndComponent(){}
 	std::string getModuleIODeclaration(std::string tabs);
 	//Instantiates the Component and generates a verilog code to instantiate this component
 	std::string getModuleInstantiation(std::string tabs);
@@ -146,6 +142,7 @@ private:
 class SourceComponent : public Component{
 public:
 	SourceComponent(Component& c);
+	virtual ~SourceComponent(){};
 	//Instantiates the Component and generates a verilog code to instantiate this component
 	std::string getModuleInstantiation(std::string tabs);
 
@@ -160,6 +157,7 @@ private:
 class SinkComponent : public Component{
 public:
 	SinkComponent(Component& c);
+	virtual ~SinkComponent(){};
 	//Instantiates the Component and generates a verilog code to instantiate this component
 	std::string getModuleInstantiation(std::string tabs);
 
@@ -177,6 +175,7 @@ private:
 class ConstantComponent : public Component{
 public:
 	ConstantComponent(Component& c);
+	virtual ~ConstantComponent(){};
 	//Instantiates the Component and generates a verilog code to instantiate this component
 	std::string getModuleInstantiation(std::string tabs);
 
@@ -192,7 +191,7 @@ private:
 class ForkComponent : public Component{
 public:
 	ForkComponent(Component& c);
-
+	virtual ~ForkComponent(){};
 private:
 };
 
@@ -201,6 +200,7 @@ private:
 class MuxComponent : public Component{
 public:
 	MuxComponent(Component& c);
+	virtual ~MuxComponent(){};
 	//Instantiates the Component and generates a verilog code to instantiate this component
 	std::string getModuleInstantiation(std::string tabs);
 
@@ -218,6 +218,7 @@ private:
 class BranchComponent : public Component{
 public:
 	BranchComponent(Component& c);
+	virtual ~BranchComponent(){};
 	//Instantiates the Component and generates a verilog code to instantiate this component
 	std::string getModuleInstantiation(std::string tabs);
 
@@ -233,6 +234,7 @@ private:
 class MergeComponent : public Component{
 public:
 	MergeComponent(Component& c);
+	virtual ~MergeComponent(){};
 };
 
 
@@ -240,6 +242,7 @@ public:
 class ControlMergeComponent : public Component{
 public:
 	ControlMergeComponent(Component& c);
+	virtual ~ControlMergeComponent(){};
 };
 
 
@@ -247,12 +250,14 @@ public:
 class BufferComponent : public Component{
 public:
 	BufferComponent(Component& c);
+	virtual ~BufferComponent(){};
 };
 
 //Type Component Classes (To be moved to their respective class files)
 class AddComponent : public Component{
 public:
 	AddComponent(Component& c);
+	virtual ~AddComponent(){};
 };
 
 
@@ -260,6 +265,7 @@ public:
 class SubComponent : public Component{
 public:
 	SubComponent(Component& c);
+	virtual ~SubComponent(){};
 };
 
 
@@ -267,6 +273,7 @@ public:
 class MulComponent : public Component{
 public:
 	MulComponent(Component& c);
+	virtual ~MulComponent(){};
 };
 
 
@@ -275,6 +282,7 @@ public:
 class RemComponent : public Component{
 public:
 	RemComponent(Component& c);
+	virtual ~RemComponent(){};
 };
 
 
@@ -283,12 +291,14 @@ public:
 class AndComponent : public Component{
 public:
 	AndComponent(Component& c);
+	virtual ~AndComponent(){};
 };
 
 //Type Component Classes (To be moved to their respective class files)
 class OrComponent : public Component{
 public:
 	OrComponent(Component& c);
+	virtual ~OrComponent(){};
 };
 
 
@@ -296,6 +306,7 @@ public:
 class XorComponent : public Component{
 public:
 	XorComponent(Component& c);
+	virtual ~XorComponent(){};
 };
 
 
@@ -304,6 +315,7 @@ public:
 class ShlComponent : public Component{
 public:
 	ShlComponent(Component& c);
+	virtual ~ShlComponent(){};
 };
 
 
@@ -312,6 +324,7 @@ public:
 class LshrComponent : public Component{
 public:
 	LshrComponent(Component& c);
+	virtual ~LshrComponent(){};
 };
 
 
@@ -319,6 +332,7 @@ public:
 class AshrComponent : public Component{
 public:
 	AshrComponent(Component& c);
+	virtual ~AshrComponent(){};
 };
 
 
@@ -327,6 +341,7 @@ public:
 class EqComponent : public Component{
 public:
 	EqComponent(Component& c);
+	virtual ~EqComponent(){};
 };
 
 
@@ -334,6 +349,7 @@ public:
 class NeComponent : public Component{
 public:
 	NeComponent(Component& c);
+	virtual ~NeComponent(){};
 };
 
 
@@ -341,6 +357,7 @@ public:
 class UgtComponent : public Component{
 public:
 	UgtComponent(Component& c);
+	virtual ~UgtComponent(){};
 };
 
 
@@ -348,6 +365,7 @@ public:
 class UgeComponent : public Component{
 public:
 	UgeComponent(Component& c);
+	virtual ~UgeComponent(){};
 };
 
 
@@ -355,6 +373,7 @@ public:
 class SgtComponent : public Component{
 public:
 	SgtComponent(Component& c);
+	virtual ~SgtComponent(){};
 };
 
 
@@ -362,6 +381,7 @@ public:
 class SgeComponent : public Component{
 public:
 	SgeComponent(Component& c);
+	virtual ~SgeComponent(){};
 };
 
 
@@ -370,6 +390,7 @@ public:
 class UltComponent : public Component{
 public:
 	UltComponent(Component& c);
+	virtual ~UltComponent(){};
 };
 
 
@@ -377,6 +398,7 @@ public:
 class UleComponent : public Component{
 public:
 	UleComponent(Component& c);
+	virtual ~UleComponent(){};
 };
 
 
@@ -384,6 +406,7 @@ public:
 class SltComponent : public Component{
 public:
 	SltComponent(Component& c);
+	virtual ~SltComponent(){};
 };
 
 
@@ -391,6 +414,7 @@ public:
 class SleComponent : public Component{
 public:
 	SleComponent(Component& c);
+	virtual ~SleComponent(){};
 };
 
 
@@ -398,6 +422,7 @@ public:
 class SelectComponent : public Component{
 public:
 	SelectComponent(Component& c);
+	virtual ~SelectComponent(){};
 	//Instantiates the Component and generates a verilog code to instantiate this component
 	std::string getModuleInstantiation(std::string tabs);
 
@@ -410,12 +435,14 @@ private:
 class SZextComponent : public Component{
 public:
 	SZextComponent(Component& c);
+	virtual ~SZextComponent(){};
 };
 
 //Type Component Classes (To be moved to their respective class files)
 class GetPtrComponent : public Component{
 public:
 	GetPtrComponent(Component& c);
+	virtual ~GetPtrComponent(){};
 	//Instantiates the Component and generates a verilog code to instantiate this component
 	std::string getModuleInstantiation(std::string tabs);
 
@@ -431,6 +458,7 @@ private:
 class RetComponent : public Component{
 public:
 	RetComponent(Component& c);
+	virtual ~RetComponent(){};
 };
 
 
@@ -460,6 +488,7 @@ public:
 	std::string port_din_1;
 
 	MemoryContentComponent(Component& c);
+	virtual ~MemoryContentComponent(){};
 	std::string getModuleIODeclaration(std::string tabs);
 
 	//Instantiates the Component and generates a verilog code to instantiate this component
@@ -495,6 +524,7 @@ public:
 	//LSQ is connected to is a MemCont.
 
 	LSQComponent(Component& c);
+	virtual ~LSQComponent(){};
 	std::string getModuleIODeclaration(std::string tabs);
 
 	//Instantiates the Component and generates a verilog code to instantiate this component
@@ -514,6 +544,7 @@ private:
 class LoadComponent : public Component{
 public:
 	LoadComponent(Component& c);
+	virtual ~LoadComponent(){};
 	//Instantiates the Component and generates a verilog code to instantiate this component
 	std::string getModuleInstantiation(std::string tabs);
 
@@ -532,6 +563,7 @@ private:
 class StoreComponent : public Component{
 public:
 	StoreComponent(Component& c);
+	virtual ~StoreComponent(){};
 	//Instantiates the Component and generates a verilog code to instantiate this component
 	std::string getModuleInstantiation(std::string tabs);
 
@@ -550,6 +582,7 @@ private:
 class LSQControllerComponent : public Component{
 public:
 	LSQControllerComponent(Component& c);
+	virtual ~LSQControllerComponent(){};
 	//Instantiates the Component and generates a verilog code to instantiate this component
 	std::string getModuleInstantiation(std::string tabs);
 
@@ -566,6 +599,7 @@ private:
 class FIFOComponent : public Component{
 public:
 	FIFOComponent(Component& c);
+	virtual ~FIFOComponent(){};
 	//Instantiates the Component and generates a verilog code to instantiate this component
 	std::string getModuleInstantiation(std::string tabs);
 
@@ -581,6 +615,7 @@ private:
 //class <Name>Component : public Component{
 //public:
 //	<Name>Component(Component& c);
+//	virtual ~<Name>Component(){};
 //};
 
 

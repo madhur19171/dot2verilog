@@ -111,7 +111,7 @@ void DotReader::generateComponentList(){
 		comp->op = nodes[i].component_operator;
 		comp->value = nodes[i].component_value;
 
-
+		//Cast the classes to their respective sub classes before any processing is done.
 		comp = comp->castToSubClass(comp);
 		componentList.push_back(comp);
 		componentMap[comp->name] = comp;
