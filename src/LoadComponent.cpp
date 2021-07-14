@@ -32,24 +32,6 @@ LoadComponent::LoadComponent(Component& c){
 	rst = c.rst;
 }
 
-std::string LoadComponent::getModuleInstantiation(std::string tabs){
-	setInputPortBus();
-	setOutputPortBus();
-
-	std::string ret;
-	//Module name followed by verilog parameters followed by the Instance name
-	ret += tabs;
-	ret += moduleName + " " + getVerilogParameters() + instanceName + "\n";
-	ret += tabs + "\t";
-	ret += "(.clk(" + clk + "), .rst(" + rst + "),\n";
-	ret += tabs + "\t";
-	ret += inputPortBus + ", \n";
-	ret += tabs + "\t";
-	ret += outputPortBus + ");";
-
-	return ret;
-}
-
 std::string LoadComponent::getVerilogParameters(){
 	std::string ret;
 	//This method of generating module parameters will work because Start node has
@@ -62,7 +44,7 @@ std::string LoadComponent::getVerilogParameters(){
 }
 
 
-//1 will be address, 0 will be data
+//1 will be address, 0 will be data due to this reversal, the function has to be re-written
 void LoadComponent::setInputPortBus(){
 	InputConnection inConn;
 
@@ -146,28 +128,3 @@ void LoadComponent::setOutputPortBus(){
 	outputPortBus = outputPortBus.erase(outputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
 	outputPortBus += "})";
 }
-
-
-std::string LoadComponent::getInputOutputConnections(){
-	std::string ret;
-
-	ret += "\tassign " + clk + " = clk;\n";
-	ret += "\tassign " + rst + " = rst;\n";
-
-	InputConnection inConn;
-	OutputConnection outConn;
-	Component* connectedToComponent;
-	int connectedFromPort, connectedToPort;
-	for(auto it = io.begin(); it != io.end(); it++){
-		connectedToComponent = (*it).first;
-		connectedFromPort = (*it).second.first;
-		connectedToPort = (*it).second.second;
-		inConn = connectedToComponent->inputConnections[connectedToPort];
-		outConn = outputConnections[connectedFromPort];
-		ret += connectInputOutput(inConn, outConn);
-	}
-
-	return ret;
-}
-
-

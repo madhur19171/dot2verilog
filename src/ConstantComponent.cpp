@@ -64,25 +64,3 @@ void ConstantComponent::setInputPortBus(){
 	inputPortBus = inputPortBus.erase(inputPortBus.size() - 2, 2);//This is needed to remove extra comma and space after bus is populated
 	inputPortBus += "})";
 }
-
-
-std::string ConstantComponent::getModuleInstantiation(std::string tabs){
-	setInputPortBus();
-	setOutputPortBus();
-
-	std::string ret;
-	//Module name followed by verilog parameters followed by the Instance name
-	ret += tabs;
-	ret += moduleName + " " + getVerilogParameters() + instanceName + "\n";
-	ret += tabs + "\t";
-	ret += "(.clk(" + clk + "), .rst(" + rst + "),\n";
-	ret += tabs + "\t";
-	ret += inputPortBus + ", \n";
-	ret += tabs + "\t";
-	ret += outputPortBus + ");";
-
-	return ret;
-}
-
-
-

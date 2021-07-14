@@ -33,25 +33,6 @@ MuxComponent::MuxComponent(Component& c){
 	rst = c.rst;
 }
 
-
-std::string MuxComponent::getModuleInstantiation(std::string tabs){
-	setInputPortBus();
-	setOutputPortBus();
-
-	std::string ret;
-	//Module name followed by verilog parameters followed by the Instance name
-	ret += tabs;
-	ret += moduleName + " " + getVerilogParameters() + instanceName + "\n";
-	ret += tabs + "\t";
-	ret += "(.clk(" + clk + "), .rst(" + rst + "),\n";
-	ret += tabs + "\t";
-	ret += inputPortBus + ", \n";
-	ret += tabs + "\t";
-	ret += outputPortBus + ");";
-
-	return ret;
-}
-
 //In Mux, the first input(input[0]) is always the condition. It can be 1 or more bits wide
 //The following inputs are the data to be selected
 std::string MuxComponent::getVerilogParameters(){

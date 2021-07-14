@@ -36,25 +36,6 @@ LSQControllerComponent::LSQControllerComponent(Component& c){
 	rst = c.rst;
 }
 
-
-std::string LSQControllerComponent::getModuleInstantiation(std::string tabs){
-	setInputPortBus();
-	setOutputPortBus();
-
-	std::string ret;
-	//Module name followed by verilog parameters followed by the Instance name
-	ret += tabs;
-	ret += moduleName + " " + getVerilogParameters() + instanceName + "\n";
-	ret += tabs + "\t";
-	ret += "(.clk(" + clk + "), .rst(" + rst + "),\n";
-	ret += tabs + "\t";
-	ret += inputPortBus + ", \n";
-	ret += tabs + "\t";
-	ret += outputPortBus + ");";
-
-	return ret;
-}
-
 std::string LSQControllerComponent::getVerilogParameters(){
 	std::string ret;
 	//This method of generating module parameters will work because Start node has
@@ -65,29 +46,3 @@ std::string LSQControllerComponent::getVerilogParameters(){
 	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
 	return ret;
 }
-
-
-std::string LSQControllerComponent::getInputOutputConnections(){
-	std::string ret;
-
-	ret += "\tassign " + clk + " = clk;\n";
-	ret += "\tassign " + rst + " = rst;\n";
-
-
-	InputConnection inConn;
-	OutputConnection outConn;
-	Component* connectedToComponent;
-	int connectedFromPort, connectedToPort;
-	for(auto it = io.begin(); it != io.end(); it++){
-		connectedToComponent = (*it).first;
-		connectedFromPort = (*it).second.first;
-		connectedToPort = (*it).second.second;
-		inConn = connectedToComponent->inputConnections[connectedToPort];
-		outConn = outputConnections[connectedFromPort];
-		ret += connectInputOutput(inConn, outConn);
-	}
-
-	return ret;
-}
-
-

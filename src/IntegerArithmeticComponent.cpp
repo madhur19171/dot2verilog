@@ -88,6 +88,32 @@ MulComponent::MulComponent(Component& c){
 }
 
 
+//Subclass for Entry type component
+SdivComponent::SdivComponent(Component& c){
+	index = c.index;
+	moduleName = "sdiv_op";
+	name = c.name;
+	instanceName = moduleName + "_" + name;
+	type = c.type;
+	bbID = c.bbID;
+	op = c.op;
+	in = c.in;
+	out = c.out;
+	delay = c.delay;
+	latency = c.latency;
+	II = c.II;
+	slots = c.slots;
+	transparent = c.transparent;
+	value = c.value;
+	io = c.io;
+	inputConnections = c.inputConnections;
+	outputConnections = c.outputConnections;
+
+	clk = c.clk;
+	rst = c.rst;
+}
+
+
 
 //Subclass for Entry type component
 RemComponent::RemComponent(Component& c){
@@ -595,35 +621,6 @@ void SelectComponent::setInputPortBus(){
 	inputPortBus += "})";
 }
 
-std::string SelectComponent::getModuleInstantiation(std::string tabs){
-	setInputPortBus();
-	setOutputPortBus();
-
-	std::string ret;
-	//Module name followed by verilog parameters followed by the Instance name
-	ret += tabs;
-	ret += moduleName + " " + getVerilogParameters() + instanceName + "\n";
-	ret += tabs + "\t";
-	ret += "(.clk(" + clk + "), .rst(" + rst + "),\n";
-	ret += tabs + "\t";
-	ret += inputPortBus + ", \n";
-	ret += tabs + "\t";
-	ret += outputPortBus + ");";
-
-	return ret;
-}
-
-std::string SelectComponent::getVerilogParameters(){
-
-	std::string ret;
-	//This method of generating module parameters will work because Start node has
-	//only 1 input and 1 output
-	ret += "#(.INPUTS(3), .OUTPUTS(1), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[1].bit_size == 0 ? 1 : in.input[1].bit_size) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
-	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
-	return ret;
-}
 
 //Subclass for Entry type component
 RetComponent::RetComponent(Component& c){
@@ -702,24 +699,6 @@ GetPtrComponent::GetPtrComponent(Component& c){
 
 	clk = c.clk;
 	rst = c.rst;
-}
-
-std::string GetPtrComponent::getModuleInstantiation(std::string tabs){
-	setInputPortBus();
-	setOutputPortBus();
-
-	std::string ret;
-	//Module name followed by verilog parameters followed by the Instance name
-	ret += tabs;
-	ret += moduleName + " " + getVerilogParameters() + instanceName + "\n";
-	ret += tabs + "\t";
-	ret += "(.clk(" + clk + "), .rst(" + rst + "),\n";
-	ret += tabs + "\t";
-	ret += inputPortBus + ", \n";
-	ret += tabs + "\t";
-	ret += outputPortBus + ");";
-
-	return ret;
 }
 
 std::string GetPtrComponent::getVerilogParameters(){

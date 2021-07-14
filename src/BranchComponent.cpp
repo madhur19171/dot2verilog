@@ -33,37 +33,6 @@ BranchComponent::BranchComponent(Component& c){
 	rst = c.rst;
 }
 
-
-std::string BranchComponent::getModuleInstantiation(std::string tabs){
-	setInputPortBus();
-	setOutputPortBus();
-
-	std::string ret;
-	//Module name followed by verilog parameters followed by the Instance name
-	ret += tabs;
-	ret += moduleName + " " + getVerilogParameters() + instanceName + "\n";
-	ret += tabs + "\t";
-	ret += "(.clk(" + clk + "), .rst(" + rst + "),\n";
-	ret += tabs + "\t";
-	ret += inputPortBus + ", \n";
-	ret += tabs + "\t";
-	ret += outputPortBus + ");";
-
-	return ret;
-}
-
-//In Branch, the last input(input[1]) is always the condition. It can be 1 or more bits wide
-//The following inputs are the data to be selected
-std::string BranchComponent::getVerilogParameters(){
-	std::string ret;
-	//In branch, input[0] is input data and input[1] is the condition
-	ret += "#(.INPUTS(" + std::to_string(in.size) + "), .OUTPUTS(" + std::to_string(out.size) + "), ";
-	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[0].bit_size == 0 ? 1 : in.input[0].bit_size) + "), ";
-	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
-	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
-	return ret;
-}
-
 void BranchComponent::setInputPortBus(){
 	InputConnection inConn;
 
