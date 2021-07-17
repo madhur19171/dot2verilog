@@ -68,6 +68,7 @@ typedef struct node
     int     component_type;
     string  component_operator;
     unsigned long int     component_value;
+    int latency;
     bool    component_control;
     int     slots;
     bool    trasparent;

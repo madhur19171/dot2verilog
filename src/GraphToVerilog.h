@@ -29,11 +29,20 @@ private:
 	DotReader dotReader;
 	std::string tabs = "";
 	std::string verilogCode = "";
+
+
+	std::vector<std::pair<std::string, int>> allFloatingPointComponents =
+	{{OPERATOR_FADD, 0}, {OPERATOR_FSUB, 0}, {OPERATOR_FMUL, 0}, {OPERATOR_FDIV, 0},
+	{OPERATOR_FOEQ, 0}, {OPERATOR_FONE, 0},
+	{OPERATOR_FOGT, 0}, {OPERATOR_FOGE, 0},
+	{OPERATOR_FOLT, 0}, {OPERATOR_FOLE, 0}};
+
 	std::vector<Component*> topModulePortComponents;
+
+	std::vector<Component*> floatingPointComponents;
 
 	void insertTab();
 	void removeTab();
-	void insertVerilogCode(std::string& str);
 	//Writes port list for top module
 	std::string writeTopModulePorts();
 	//Generates a list of components which interface with top module port list
@@ -46,8 +55,13 @@ private:
 	std::string writeInputOutputConnections();
 	//Writes "module <name>("
 	std::string writeTopModuleName();
+	//Defines a macro FLOATING_POINT if the design has floating point units
+	std::string writeFloatingPointDefinition();
 	//Writes "endmodule;"
 	std::string writeEndModule();
+
+	void setFloatingPointComponents();
+	std::string generateVivadoScript();
 };
 
 #endif /* GRAPHTOVERILOG_H_ */

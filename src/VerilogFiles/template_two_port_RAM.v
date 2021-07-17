@@ -47,7 +47,7 @@ module two_port_RAM
 	reg [8 * 128 : 1] token_read = 0;
 	
 	initial begin
-		if (TV_IN != "")begin
+		if (TV_IN != "" && TV_IN != "../../../../../")begin
 			wait(!rst);
 			
 			transaction_idx_read = 0;
@@ -159,7 +159,7 @@ always @(posedge clk)
 	reg [8 * 128 : 1] token_write = 0;
 initial 
 	begin
-		if (TV_OUT != "")begin
+		if (TV_OUT != "" && TV_OUT != "../../../../../")begin
 			wait(~rst);
 			
 			transaction_idx_write = 0;

@@ -33,6 +33,9 @@ BranchComponent::BranchComponent(Component& c){
 	rst = c.rst;
 }
 
+//getVerilogParameters need not be overwritten as for branch component, the data input is present in in[0]
+//and the condition is in in[1], so data_in_size is taken from in[0] by default
+
 void BranchComponent::setInputPortBus(){
 	InputConnection inConn;
 

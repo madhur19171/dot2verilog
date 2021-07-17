@@ -582,6 +582,16 @@ SelectComponent::SelectComponent(Component& c){
 	rst = c.rst;
 }
 
+//In select, in[0] is condition which is always 1 bit wide.
+std::string SelectComponent::getVerilogParameters(){
+	std::string ret;
+	ret += "#(.INPUTS(" + std::to_string(in.size) + "), .OUTPUTS(" + std::to_string(out.size) + "), ";
+	ret += ".DATA_IN_SIZE(" + std::to_string(in.input[1].bit_size == 0 ? 1 : in.input[1].bit_size) + "), ";
+	ret += ".DATA_OUT_SIZE(" + std::to_string(out.output[0].bit_size == 0 ? 1 : out.output[0].bit_size) + ")) ";
+	//0 data size will lead to negative port length in verilog code. So 0 data size has to be made 1.
+	return ret;
+}
+
 void SelectComponent::setInputPortBus(){
 	InputConnection inConn;
 

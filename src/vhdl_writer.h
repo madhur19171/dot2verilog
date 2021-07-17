@@ -13,6 +13,7 @@
 #ifndef _VHDL_WRITER_
 #define _VHDL_WRITER_
 #include <string>
+#include <vector>
 using namespace std;
 
 #define COMPONENT_GENERIC   0
@@ -138,6 +139,20 @@ using namespace std;
 #define OPERATOR_READ_LSQ		"lsq_load_op"
 #define OPERATOR_WRITE_LSQ		"lsq_store_op"
 
+#define OPERATOR_FADD			"fadd_op"
+#define OPERATOR_FSUB			"fsub_op"
+#define OPERATOR_FMUL			"fmul_op"
+#define OPERATOR_FDIV			"fdiv_op"
+
+#define OPERATOR_FOEQ			"fcmp_oeq_op"
+#define OPERATOR_FONE			"fcmp_one_op"
+
+#define OPERATOR_FOGT			"fcmp_ogt_op"
+#define OPERATOR_FOGE			"fcmp_oge_op"
+
+#define OPERATOR_FOLT			"fcmp_olt_op"
+#define OPERATOR_FOLE			"fcmp_ole_op"
+
 
 #define UNDERSCORE  "_"
 #define COLOUMN " : "
@@ -153,7 +168,7 @@ using namespace std;
 #define DEFAULT_IN NULL
 #define DEFAULT_OUT NULL
 #define DEFAULT_DELAY 0.0f
-#define DEFAULT_LATENCY 0.0f
+#define DEFAULT_LATENCY 1
 #define DEFAULT_II 1
 #define DEFAULT_SLOTS -1
 #define DEFAULT_TRANSPARENT false
@@ -172,9 +187,6 @@ public:
     void write_tb_wrapper ( string filename  );
     
 private:
-
-
-
 };
 
 

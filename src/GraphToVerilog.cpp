@@ -23,6 +23,9 @@ GraphToVerilog::GraphToVerilog(std::string filen){
 
 
 void GraphToVerilog::writeToFile(){
+
+	generateVivadoScript();
+
 	std::string file_n = dotReader.getFileName() + ".v";
 	std::ofstream outStream(file_n);
 	writeVerilogCode();
@@ -38,7 +41,11 @@ void GraphToVerilog::writeToFile(){
 //Followed by Top Module Ports Input output declarations
 //Followed by declaring wires that connect various sub components in the top module
 void GraphToVerilog::writeVerilogCode(){
+
+	verilogCode += writeFloatingPointDefinition();
+
 	verilogCode += writeTopModuleName();
+
 
 	insertTab();
 	verilogCode += writeTopModulePorts();
@@ -60,6 +67,64 @@ void GraphToVerilog::writeVerilogCode(){
 	verilogCode += writeEndModule();
 }
 
+std::string GraphToVerilog::generateVivadoScript(){
+	std::string ret = "";
+
+	setFloatingPointComponents();
+
+	std::ofstream srcTCL, verilogWrappers;
+	if(floatingPointComponents.size() != 0){
+		srcTCL.open(dotReader.getFileName() + "_floating_point_units.tcl");
+		verilogWrappers.open(dotReader.getFileName() + "_floating_point_wrappers.v");
+	}
+
+	for(auto it = allFloatingPointComponents.begin(); it != allFloatingPointComponents.end(); it++){
+		if((*it).second != 0){
+			for(auto jt = floatingPointComponents.begin(); jt != floatingPointComponents.end(); jt++){
+				if((*jt)->op == (*it).first){
+					srcTCL << ((FloatingArithmeticComponent*)(*jt))->generateVivadoTCLScript();
+					srcTCL << std::endl << std::endl;
+
+					verilogWrappers << ((FloatingArithmeticComponent*)(*jt))->generateVerilogWrapper();
+					verilogWrappers << std::endl << std::endl << std::endl << std::endl;
+					break;
+				}
+			}
+		}
+	}
+
+	if(floatingPointComponents.size() != 0){
+		srcTCL.close();
+	}
+
+	return ret;
+}
+
+void GraphToVerilog::setFloatingPointComponents(){
+	for(auto it = dotReader.getComponentList().begin(); it != dotReader.getComponentList().end(); it++){
+		if((*it)->type == COMPONENT_OPERATOR){
+			for(auto jt = allFloatingPointComponents.begin(); jt != allFloatingPointComponents.end(); jt++){
+				if((*jt).first == (*it)->op){
+					floatingPointComponents.push_back(*it);
+					(*jt).second++;
+				}
+			}
+		}
+	}
+}
+
+std::string GraphToVerilog::writeFloatingPointDefinition(){
+	std::string ret = "";
+
+	if(floatingPointComponents.size() != 0){
+
+		ret += "`ifndef FLOATING_POINT\n";
+		ret += "\t`define FLOATING_POINT\n";
+		ret += "`endif\n\n\n";
+	}
+
+	return ret;
+}
 
 //Declares the top module.
 std::string GraphToVerilog::writeTopModuleName(){
@@ -69,7 +134,6 @@ std::string GraphToVerilog::writeTopModuleName(){
 
 	unsigned long pos = filennn.rfind("_optimized");
 	if(pos != std::string::npos){
-		std::cout << "Found" << std::endl;
 		filennn = substring(filennn, 0, pos);
 	}
 
@@ -110,7 +174,7 @@ std::string GraphToVerilog::writeTopModulePorts(){
 	//Writing IO Ports:
 
 	for(auto it = topModulePortComponents.begin(); it != topModulePortComponents.end(); it++){
-			topModulePortList += (*it)->getModuleIODeclaration(tabs);
+		topModulePortList += (*it)->getModuleIODeclaration(tabs);
 	}
 
 	//Erasing this necessary to get rid of an extra "," just before closing top module port declarations
@@ -167,12 +231,6 @@ std::string GraphToVerilog::writeInputOutputConnections(){
 
 std::string GraphToVerilog::writeEndModule(){
 	return "endmodule\n";
-}
-
-//Till now, a useless function
-void GraphToVerilog::insertVerilogCode(std::string& str){
-	str = tabs + str + '\n';
-	verilogCode += str;
 }
 
 

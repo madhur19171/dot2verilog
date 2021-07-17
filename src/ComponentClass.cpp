@@ -65,16 +65,32 @@ Component* Component::castToSubClass(Component* component){
 			AddComponent* obj = new AddComponent(*this);
 			component = (Component *)obj;
 			return component;
+		}else if(op == OPERATOR_FADD){
+			FaddComponent* obj = new FaddComponent(*this);
+			component = (Component *)obj;
+			return component;
 		} else if(op == OPERATOR_SUB){
 			SubComponent* obj = new SubComponent(*this);
+			component = (Component *)obj;
+			return component;
+		} else if(op == OPERATOR_FSUB){
+			FsubComponent* obj = new FsubComponent(*this);
 			component = (Component *)obj;
 			return component;
 		} else if(op == OPERATOR_MUL){
 			MulComponent* obj = new MulComponent(*this);
 			component = (Component *)obj;
 			return component;
+		} else if(op == OPERATOR_FMUL){
+			FmulComponent* obj = new FmulComponent(*this);
+			component = (Component *)obj;
+			return component;
 		} else if(op == OPERATOR_SDIV){
 			SdivComponent* obj = new SdivComponent(*this);
+			component = (Component *)obj;
+			return component;
+		} else if(op == OPERATOR_FDIV){
+			FdivComponent* obj = new FdivComponent(*this);
 			component = (Component *)obj;
 			return component;
 		} else if(op == OPERATOR_UREM){
@@ -109,16 +125,32 @@ Component* Component::castToSubClass(Component* component){
 			EqComponent* obj = new EqComponent(*this);
 			component = (Component *)obj;
 			return component;
+		} else if(op == OPERATOR_FOEQ){
+			FoeqComponent* obj = new FoeqComponent(*this);
+			component = (Component *)obj;
+			return component;
 		} else if(op == OPERATOR_NE){
 			NeComponent* obj = new NeComponent(*this);
+			component = (Component *)obj;
+			return component;
+		} else if(op == OPERATOR_FONE){
+			FoneComponent* obj = new FoneComponent(*this);
 			component = (Component *)obj;
 			return component;
 		} else if(op == OPERATOR_UGT){
 			UgtComponent* obj = new UgtComponent(*this);
 			component = (Component *)obj;
 			return component;
+		} else if(op == OPERATOR_FOGT){
+			FogtComponent* obj = new FogtComponent(*this);
+			component = (Component *)obj;
+			return component;
 		} else if(op == OPERATOR_UGE){
 			UgeComponent* obj = new UgeComponent(*this);
+			component = (Component *)obj;
+			return component;
+		} else if(op == OPERATOR_FOGE){
+			FogeComponent* obj = new FogeComponent(*this);
 			component = (Component *)obj;
 			return component;
 		} else if(op == OPERATOR_SGT){
@@ -133,8 +165,16 @@ Component* Component::castToSubClass(Component* component){
 			UltComponent* obj = new UltComponent(*this);
 			component = (Component *)obj;
 			return component;
+		} else if(op == OPERATOR_FOLT){
+			FoltComponent* obj = new FoltComponent(*this);
+			component = (Component *)obj;
+			return component;
 		} else if(op == OPERATOR_ULE){
 			UleComponent* obj = new UleComponent(*this);
+			component = (Component *)obj;
+			return component;
+		} else if(op == OPERATOR_FOLE){
+			FoleComponent* obj = new FoleComponent(*this);
 			component = (Component *)obj;
 			return component;
 		} else if(op == OPERATOR_SLT){

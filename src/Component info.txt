@@ -91,7 +91,13 @@ Potential Tweaks:
 	accordingly do the buffer placement for creating a design that can be run with the required clock period.
 10. Ask about handshake of Join and Buffer
 11. Sequential Memory Access of multidimensional arrays can be implemented using adders instead of getelementpointer
-
+12. When we read form an array that is supposed to be of type out, it will not get read because for ready RAM, the 
+	RAM type needs to be in or inout. This is an issue with the way the testbench has been designed.
+	Vitis_HLS does not have this problem.
+13. There is a limitation on latency for floating point units for various combination of parameters. So sometimes, the latency
+	mentioned in dot file might not even be applied to our component IP. Should this problem be handled by dot generator or in verilog code?
+	Maybe a global floating point parameter file can be modified to set the max_latency of various units.
+14. We should preferably use Vivado simulator for simulation. It is very very fast as it uses multi core
 
 Doubtful Components:
 	1. Getelementpointer: doubtful about signed or unsigned inputs

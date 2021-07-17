@@ -45,7 +45,8 @@ public:
 	int bbID;
 	IN_T in;
 	OUT_T out;
-	float delay, latency;
+	float delay;
+	int latency;
 	int II;
 	int slots;
 	bool transparent;
@@ -114,6 +115,133 @@ public:
 	//Of the components it is connected to
 	std::string getInputOutputConnections();
 };
+
+
+
+
+//An Abstract class for all Floating Point Components
+class FloatingArithmeticComponent : public Component{
+public:
+	std::string dsp48_uage;
+	std::string add_sub;
+	std::string compare_operation;
+	std::string operation_type;
+	int max_latency;
+	FloatingArithmeticComponent(Component& c);
+	virtual ~FloatingArithmeticComponent(){};
+
+	//This method is necessary for all FLoating Point Components to have
+	//So this is an abstract method
+//	virtual std::string getVivadoTCLScript(std::string version, std::string operation_type, std::string add_sub, std::string compare_operation);
+	virtual std::string getVivadoTCLScript();
+	virtual std::string generateVivadoTCLScript(){
+		return "";
+	};
+
+	//Generating verilog wrapper file for floating point units
+	virtual std::string getVerilogWrapper();
+	virtual std::string generateVerilogWrapper(){
+		return "";
+	};
+protected:
+	//This is to be overwritten because all Floating point units have Latency as an additional parameter.
+	//Latency for IP and wrapper will be the latency provided by dot file
+	std::string getVerilogParameters();
+};
+
+
+class FaddComponent : public FloatingArithmeticComponent{
+public:
+	FaddComponent(Component& c);
+	virtual ~FaddComponent(){};
+	virtual std::string generateVivadoTCLScript();
+	virtual std::string generateVerilogWrapper();
+private:
+};
+
+class FsubComponent : public FloatingArithmeticComponent{
+public:
+	FsubComponent(Component& c);
+	virtual ~FsubComponent(){};
+	virtual std::string generateVivadoTCLScript();
+	virtual std::string generateVerilogWrapper();
+private:
+};
+
+class FmulComponent : public FloatingArithmeticComponent{
+public:
+	FmulComponent(Component& c);
+	virtual ~FmulComponent(){};
+	virtual std::string generateVivadoTCLScript();
+	virtual std::string generateVerilogWrapper();
+private:
+};
+
+class FdivComponent : public FloatingArithmeticComponent{
+public:
+	FdivComponent(Component& c);
+	virtual ~FdivComponent(){};
+	virtual std::string generateVivadoTCLScript();
+	virtual std::string generateVerilogWrapper();
+private:
+};
+
+class FoeqComponent : public FloatingArithmeticComponent{
+public:
+	FoeqComponent(Component& c);
+	virtual ~FoeqComponent(){};
+	virtual std::string generateVivadoTCLScript();
+	virtual std::string generateVerilogWrapper();
+private:
+};
+
+class FoneComponent : public FloatingArithmeticComponent{
+public:
+	FoneComponent(Component& c);
+	virtual ~FoneComponent(){};
+	virtual std::string generateVivadoTCLScript();
+	virtual std::string generateVerilogWrapper();
+private:
+};
+
+class FogtComponent : public FloatingArithmeticComponent{
+public:
+	FogtComponent(Component& c);
+	virtual ~FogtComponent(){};
+	virtual std::string generateVivadoTCLScript();
+	virtual std::string generateVerilogWrapper();
+private:
+};
+
+class FogeComponent : public FloatingArithmeticComponent{
+public:
+	FogeComponent(Component& c);
+	virtual ~FogeComponent(){};
+	virtual std::string generateVivadoTCLScript();
+	virtual std::string generateVerilogWrapper();
+private:
+};
+
+class FoltComponent : public FloatingArithmeticComponent{
+public:
+	FoltComponent(Component& c);
+	virtual ~FoltComponent(){};
+	virtual std::string generateVivadoTCLScript();
+	virtual std::string generateVerilogWrapper();
+private:
+};
+
+class FoleComponent : public FloatingArithmeticComponent{
+public:
+	FoleComponent(Component& c);
+	virtual ~FoleComponent(){};
+	virtual std::string generateVivadoTCLScript();
+	virtual std::string generateVerilogWrapper();
+private:
+};
+
+
+
 
 class EndComponent : public Component{
 public:
@@ -417,6 +545,7 @@ public:
 	virtual ~SelectComponent(){};
 private:
 	void setInputPortBus();
+	std::string getVerilogParameters();
 };
 
 //Type Component Classes (To be moved to their respective class files)

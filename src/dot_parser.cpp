@@ -53,7 +53,7 @@ void printNode(NODE_T node){
 			<< "\tBBID: " << node.bbId
 			<< "\tPort ID: " << node.portId;
 
-			cout << "\n\nIn Size: " << node.inputs.size;
+	cout << "\n\nIn Size: " << node.inputs.size;
 	for(int i = 0; i < node.inputs.size; i++){
 		cout << "\n\n#" << (i + 1) << "\nBit Size: " << node.inputs.input[i].bit_size
 				<< "\tPrev Node Id: " << node.inputs.input[i].prev_nodes_id
@@ -71,7 +71,7 @@ void printNode(NODE_T node){
 				<< "\tInfo Type: " << node.outputs.output[i].info_type;
 	}
 
-			cout << endl;
+	cout << endl;
 }
 
 
@@ -125,6 +125,15 @@ string get_component_value ( string parameters )
 
 	string type = get_value ( parameters );
 	return type;
+}
+
+int get_component_latency ( string parameters )
+{
+
+	parameters = string_clean( parameters );
+
+	string type = get_value ( parameters );
+	return stoi_p( type );
 }
 
 bool get_component_control (  string parameters )
@@ -712,6 +721,10 @@ void parse_components ( string v_0, string v_1 )
 				unsigned long int hex_value;
 				hex_value = strtoul( get_component_value( parameters[indx] ).c_str(), 0, 16);
 				nodes[components_in_netlist].component_value = hex_value;
+			}
+			if ( parameter.find("latency") != std::string::npos )
+			{
+				nodes[components_in_netlist].latency = get_component_latency( parameters[indx] );
 			}
 			if ( parameter.find("control") != std::string::npos )
 			{

@@ -969,3 +969,400 @@ module ret_op #(parameter INPUTS = 1,
 	);
 	
 endmodule
+
+
+
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//Floating Point Components:
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+//By this macro, floating point units will be added only when they are required by the top file
+//THis macro will or will not be defined in the top file as per the requirement
+`ifdef FLOATING_POINT
+
+//---------------------------------------------------------
+//fadd component:
+//---------------------------------------------------------
+module fadd_op #(parameter INPUTS = 2,
+		parameter OUTPUTS = 1,
+		parameter DATA_IN_SIZE = 32,
+		parameter DATA_OUT_SIZE = 32,
+		parameter LATENCY = 1)
+		(
+		input clk,
+		input rst,
+		input [INPUTS * (DATA_IN_SIZE)- 1 : 0]data_in_bus,
+		input [INPUTS - 1 : 0]valid_in_bus,
+		output [INPUTS - 1 : 0] ready_in_bus,
+		
+		output [OUTPUTS * (DATA_OUT_SIZE) - 1 : 0]data_out_bus,
+		output [OUTPUTS - 1 : 0]valid_out_bus,
+		input 	[OUTPUTS - 1 : 0] ready_out_bus
+);
+
+
+	wire join_valid;
+	wire buff_valid, oehb_valid, oehb_ready;
+	wire oehb_dataOut, oehb_datain;
+	
+	joinC #(.N(INPUTS)) fadd_fork(.valid_in(valid_in_bus), .ready_in(ready_in_bus), .valid_out(join_valid), .ready_out(oehb_ready));
+	
+	fadd_op_wrapper fadd_op_instance (.clk(clk), .reset(rst), .ce(oehb_ready), .din0(data_in_bus[0 * DATA_IN_SIZE +: DATA_IN_SIZE]), .din1(data_in_bus[1 * DATA_IN_SIZE +: DATA_IN_SIZE]), .dout(data_out_bus[0 * DATA_OUT_SIZE +: DATA_OUT_SIZE]));
+	
+	delay_buffer #(.SIZE(LATENCY)) delay_buff(.clk(clk), .rst(rst), .valid_in(join_valid), .ready_in(oehb_ready), .valid_out(buff_valid));
+	
+	OEHB #(.INPUTS(1), .OUTPUTS(1), .DATA_IN_SIZE(1), .DATA_OUT_SIZE(1)) oehb_buffer (.clk(clk), .rst(rst),
+										 .data_in_bus(1'b0), .valid_in_bus(buff_valid), .ready_in_bus(oehb_ready),
+										 .data_out_bus(oehb_dataOut), .valid_out_bus(valid_out_bus[0]), .ready_out_bus(ready_out_bus[0]));
+	
+
+
+endmodule
+
+
+
+//---------------------------------------------------------
+//fsub component:
+//---------------------------------------------------------
+module fsub_op #(parameter INPUTS = 2,
+		parameter OUTPUTS = 1,
+		parameter DATA_IN_SIZE = 32,
+		parameter DATA_OUT_SIZE = 32,
+		parameter LATENCY = 1)
+		(
+		input clk,
+		input rst,
+		input [INPUTS * (DATA_IN_SIZE)- 1 : 0]data_in_bus,
+		input [INPUTS - 1 : 0]valid_in_bus,
+		output [INPUTS - 1 : 0] ready_in_bus,
+		
+		output [OUTPUTS * (DATA_OUT_SIZE) - 1 : 0]data_out_bus,
+		output [OUTPUTS - 1 : 0]valid_out_bus,
+		input 	[OUTPUTS - 1 : 0] ready_out_bus
+);
+
+
+	wire join_valid;
+	wire buff_valid, oehb_valid, oehb_ready;
+	wire oehb_dataOut, oehb_datain;
+	
+	joinC #(.N(INPUTS)) fsub_fork(.valid_in(valid_in_bus), .ready_in(ready_in_bus), .valid_out(join_valid), .ready_out(oehb_ready));
+	
+	fsub_op_wrapper fsub_op_instance (.clk(clk), .reset(rst), .ce(oehb_ready), .din0(data_in_bus[0 * DATA_IN_SIZE +: DATA_IN_SIZE]), .din1(data_in_bus[1 * DATA_IN_SIZE +: DATA_IN_SIZE]), .dout(data_out_bus[0 * DATA_OUT_SIZE +: DATA_OUT_SIZE]));
+	
+	delay_buffer #(.SIZE(LATENCY)) delay_buff(.clk(clk), .rst(rst), .valid_in(join_valid), .ready_in(oehb_ready), .valid_out(buff_valid));
+	
+	OEHB #(.INPUTS(1), .OUTPUTS(1), .DATA_IN_SIZE(1), .DATA_OUT_SIZE(1)) oehb_buffer (.clk(clk), .rst(rst),
+										 .data_in_bus(1'b0), .valid_in_bus(buff_valid), .ready_in_bus(oehb_ready),
+										 .data_out_bus(oehb_dataOut), .valid_out_bus(valid_out_bus[0]), .ready_out_bus(ready_out_bus[0]));
+	
+
+
+endmodule
+
+
+
+//---------------------------------------------------------
+//fmul component:
+//---------------------------------------------------------
+module fmul_op #(parameter INPUTS = 2,
+		parameter OUTPUTS = 1,
+		parameter DATA_IN_SIZE = 32,
+		parameter DATA_OUT_SIZE = 32,
+		parameter LATENCY = 1)
+		(
+		input clk,
+		input rst,
+		input [INPUTS * (DATA_IN_SIZE)- 1 : 0]data_in_bus,
+		input [INPUTS - 1 : 0]valid_in_bus,
+		output [INPUTS - 1 : 0] ready_in_bus,
+		
+		output [OUTPUTS * (DATA_OUT_SIZE) - 1 : 0]data_out_bus,
+		output [OUTPUTS - 1 : 0]valid_out_bus,
+		input 	[OUTPUTS - 1 : 0] ready_out_bus
+);
+
+
+	wire join_valid;
+	wire buff_valid, oehb_valid, oehb_ready;
+	wire oehb_dataOut, oehb_datain;
+	
+	joinC #(.N(INPUTS)) fmul_fork(.valid_in(valid_in_bus), .ready_in(ready_in_bus), .valid_out(join_valid), .ready_out(oehb_ready));
+	
+	fmul_op_wrapper fmul_op_instance (.clk(clk), .reset(rst), .ce(oehb_ready), .din0(data_in_bus[0 * DATA_IN_SIZE +: DATA_IN_SIZE]), .din1(data_in_bus[1 * DATA_IN_SIZE +: DATA_IN_SIZE]), .dout(data_out_bus[0 * DATA_OUT_SIZE +: DATA_OUT_SIZE]));
+	
+	delay_buffer #(.SIZE(LATENCY)) delay_buff(.clk(clk), .rst(rst), .valid_in(join_valid), .ready_in(oehb_ready), .valid_out(buff_valid));
+	
+	OEHB #(.INPUTS(1), .OUTPUTS(1), .DATA_IN_SIZE(1), .DATA_OUT_SIZE(1)) oehb_buffer (.clk(clk), .rst(rst),
+										 .data_in_bus(1'b0), .valid_in_bus(buff_valid), .ready_in_bus(oehb_ready),
+										 .data_out_bus(oehb_dataOut), .valid_out_bus(valid_out_bus[0]), .ready_out_bus(ready_out_bus[0]));
+	
+
+
+endmodule
+
+
+
+//---------------------------------------------------------
+//fdiv component:
+//---------------------------------------------------------
+module fdiv_op #(parameter INPUTS = 2,
+		parameter OUTPUTS = 1,
+		parameter DATA_IN_SIZE = 32,
+		parameter DATA_OUT_SIZE = 32,
+		parameter LATENCY = 1)
+		(
+		input clk,
+		input rst,
+		input [INPUTS * (DATA_IN_SIZE)- 1 : 0]data_in_bus,
+		input [INPUTS - 1 : 0]valid_in_bus,
+		output [INPUTS - 1 : 0] ready_in_bus,
+		
+		output [OUTPUTS * (DATA_OUT_SIZE) - 1 : 0]data_out_bus,
+		output [OUTPUTS - 1 : 0]valid_out_bus,
+		input 	[OUTPUTS - 1 : 0] ready_out_bus
+);
+
+
+	wire join_valid;
+	wire buff_valid, oehb_valid, oehb_ready;
+	wire oehb_dataOut, oehb_datain;
+	
+	joinC #(.N(INPUTS)) fdiv_fork(.valid_in(valid_in_bus), .ready_in(ready_in_bus), .valid_out(join_valid), .ready_out(oehb_ready));
+	
+	fdiv_op_wrapper fdiv_op_instance (.clk(clk), .reset(rst), .ce(oehb_ready), .din0(data_in_bus[0 * DATA_IN_SIZE +: DATA_IN_SIZE]), .din1(data_in_bus[1 * DATA_IN_SIZE +: DATA_IN_SIZE]), .dout(data_out_bus[0 * DATA_OUT_SIZE +: DATA_OUT_SIZE]));
+	
+	delay_buffer #(.SIZE(LATENCY)) delay_buff(.clk(clk), .rst(rst), .valid_in(join_valid), .ready_in(oehb_ready), .valid_out(buff_valid));
+	
+	OEHB #(.INPUTS(1), .OUTPUTS(1), .DATA_IN_SIZE(1), .DATA_OUT_SIZE(1)) oehb_buffer (.clk(clk), .rst(rst),
+										 .data_in_bus(1'b0), .valid_in_bus(buff_valid), .ready_in_bus(oehb_ready),
+										 .data_out_bus(oehb_dataOut), .valid_out_bus(valid_out_bus[0]), .ready_out_bus(ready_out_bus[0]));
+endmodule
+
+
+
+//---------------------------------------------------------
+//foeq component:
+//---------------------------------------------------------
+module fcmp_oeq_op #(parameter INPUTS = 2,
+		parameter OUTPUTS = 1,
+		parameter DATA_IN_SIZE = 32,
+		parameter DATA_OUT_SIZE = 32,
+		parameter LATENCY = 1)
+		(
+		input clk,
+		input rst,
+		input [INPUTS * (DATA_IN_SIZE)- 1 : 0]data_in_bus,
+		input [INPUTS - 1 : 0]valid_in_bus,
+		output [INPUTS - 1 : 0] ready_in_bus,
+		
+		output [OUTPUTS * (DATA_OUT_SIZE) - 1 : 0]data_out_bus,
+		output [OUTPUTS - 1 : 0]valid_out_bus,
+		input 	[OUTPUTS - 1 : 0] ready_out_bus
+);
+
+
+	wire join_valid;
+	wire buff_valid, oehb_valid, oehb_ready;
+	wire oehb_dataOut, oehb_datain;
+	
+	joinC #(.N(INPUTS)) foeq_fork(.valid_in(valid_in_bus), .ready_in(ready_in_bus), .valid_out(join_valid), .ready_out(oehb_ready));
+	
+	fcmp_oeq_op_wrapper fcmp_oeq_op_instance (.clk(clk), .reset(rst), .ce(oehb_ready), .din0(data_in_bus[0 * DATA_IN_SIZE +: DATA_IN_SIZE]), .din1(data_in_bus[1 * DATA_IN_SIZE +: DATA_IN_SIZE]), .dout(data_out_bus[0 * DATA_OUT_SIZE +: DATA_OUT_SIZE]));
+	
+	delay_buffer #(.SIZE(LATENCY)) delay_buff(.clk(clk), .rst(rst), .valid_in(join_valid), .ready_in(oehb_ready), .valid_out(buff_valid));
+	
+	OEHB #(.INPUTS(1), .OUTPUTS(1), .DATA_IN_SIZE(1), .DATA_OUT_SIZE(1)) oehb_buffer (.clk(clk), .rst(rst),
+										 .data_in_bus(1'b0), .valid_in_bus(buff_valid), .ready_in_bus(oehb_ready),
+										 .data_out_bus(oehb_dataOut), .valid_out_bus(valid_out_bus[0]), .ready_out_bus(ready_out_bus[0]));
+endmodule
+
+
+//---------------------------------------------------------
+//fone component:
+//---------------------------------------------------------
+module fcmp_one_op #(parameter INPUTS = 2,
+		parameter OUTPUTS = 1,
+		parameter DATA_IN_SIZE = 32,
+		parameter DATA_OUT_SIZE = 32,
+		parameter LATENCY = 1)
+		(
+		input clk,
+		input rst,
+		input [INPUTS * (DATA_IN_SIZE)- 1 : 0]data_in_bus,
+		input [INPUTS - 1 : 0]valid_in_bus,
+		output [INPUTS - 1 : 0] ready_in_bus,
+		
+		output [OUTPUTS * (DATA_OUT_SIZE) - 1 : 0]data_out_bus,
+		output [OUTPUTS - 1 : 0]valid_out_bus,
+		input 	[OUTPUTS - 1 : 0] ready_out_bus
+);
+
+
+	wire join_valid;
+	wire buff_valid, oehb_valid, oehb_ready;
+	wire oehb_dataOut, oehb_datain;
+	
+	joinC #(.N(INPUTS)) fone_fork(.valid_in(valid_in_bus), .ready_in(ready_in_bus), .valid_out(join_valid), .ready_out(oehb_ready));
+	
+	fcmp_one_op_wrapper fcmp_one_op_instance (.clk(clk), .reset(rst), .ce(oehb_ready), .din0(data_in_bus[0 * DATA_IN_SIZE +: DATA_IN_SIZE]), .din1(data_in_bus[1 * DATA_IN_SIZE +: DATA_IN_SIZE]), .dout(data_out_bus[0 * DATA_OUT_SIZE +: DATA_OUT_SIZE]));
+	
+	delay_buffer #(.SIZE(LATENCY)) delay_buff(.clk(clk), .rst(rst), .valid_in(join_valid), .ready_in(oehb_ready), .valid_out(buff_valid));
+	
+	OEHB #(.INPUTS(1), .OUTPUTS(1), .DATA_IN_SIZE(1), .DATA_OUT_SIZE(1)) oehb_buffer (.clk(clk), .rst(rst),
+										 .data_in_bus(1'b0), .valid_in_bus(buff_valid), .ready_in_bus(oehb_ready),
+										 .data_out_bus(oehb_dataOut), .valid_out_bus(valid_out_bus[0]), .ready_out_bus(ready_out_bus[0]));
+endmodule
+
+
+//---------------------------------------------------------
+//fogt component:
+//---------------------------------------------------------
+module fcmp_ogt_op #(parameter INPUTS = 2,
+		parameter OUTPUTS = 1,
+		parameter DATA_IN_SIZE = 32,
+		parameter DATA_OUT_SIZE = 32,
+		parameter LATENCY = 1)
+		(
+		input clk,
+		input rst,
+		input [INPUTS * (DATA_IN_SIZE)- 1 : 0]data_in_bus,
+		input [INPUTS - 1 : 0]valid_in_bus,
+		output [INPUTS - 1 : 0] ready_in_bus,
+		
+		output [OUTPUTS * (DATA_OUT_SIZE) - 1 : 0]data_out_bus,
+		output [OUTPUTS - 1 : 0]valid_out_bus,
+		input 	[OUTPUTS - 1 : 0] ready_out_bus
+);
+
+
+	wire join_valid;
+	wire buff_valid, oehb_valid, oehb_ready;
+	wire oehb_dataOut, oehb_datain;
+	
+	joinC #(.N(INPUTS)) fogt_fork(.valid_in(valid_in_bus), .ready_in(ready_in_bus), .valid_out(join_valid), .ready_out(oehb_ready));
+	
+	fcmp_ogt_op_wrapper fcmp_ogt_op_instance (.clk(clk), .reset(rst), .ce(oehb_ready), .din0(data_in_bus[0 * DATA_IN_SIZE +: DATA_IN_SIZE]), .din1(data_in_bus[1 * DATA_IN_SIZE +: DATA_IN_SIZE]), .dout(data_out_bus[0 * DATA_OUT_SIZE +: DATA_OUT_SIZE]));
+	
+	delay_buffer #(.SIZE(LATENCY)) delay_buff(.clk(clk), .rst(rst), .valid_in(join_valid), .ready_in(oehb_ready), .valid_out(buff_valid));
+	
+	OEHB #(.INPUTS(1), .OUTPUTS(1), .DATA_IN_SIZE(1), .DATA_OUT_SIZE(1)) oehb_buffer (.clk(clk), .rst(rst),
+										 .data_in_bus(1'b0), .valid_in_bus(buff_valid), .ready_in_bus(oehb_ready),
+										 .data_out_bus(oehb_dataOut), .valid_out_bus(valid_out_bus[0]), .ready_out_bus(ready_out_bus[0]));
+endmodule
+
+
+//---------------------------------------------------------
+//foge component:
+//---------------------------------------------------------
+module fcmp_oge_op #(parameter INPUTS = 2,
+		parameter OUTPUTS = 1,
+		parameter DATA_IN_SIZE = 32,
+		parameter DATA_OUT_SIZE = 32,
+		parameter LATENCY = 1)
+		(
+		input clk,
+		input rst,
+		input [INPUTS * (DATA_IN_SIZE)- 1 : 0]data_in_bus,
+		input [INPUTS - 1 : 0]valid_in_bus,
+		output [INPUTS - 1 : 0] ready_in_bus,
+		
+		output [OUTPUTS * (DATA_OUT_SIZE) - 1 : 0]data_out_bus,
+		output [OUTPUTS - 1 : 0]valid_out_bus,
+		input 	[OUTPUTS - 1 : 0] ready_out_bus
+);
+
+
+	wire join_valid;
+	wire buff_valid, oehb_valid, oehb_ready;
+	wire oehb_dataOut, oehb_datain;
+	
+	joinC #(.N(INPUTS)) foge_fork(.valid_in(valid_in_bus), .ready_in(ready_in_bus), .valid_out(join_valid), .ready_out(oehb_ready));
+	
+	fcmp_oge_op_wrapper fcmp_oge_op_instance (.clk(clk), .reset(rst), .ce(oehb_ready), .din0(data_in_bus[0 * DATA_IN_SIZE +: DATA_IN_SIZE]), .din1(data_in_bus[1 * DATA_IN_SIZE +: DATA_IN_SIZE]), .dout(data_out_bus[0 * DATA_OUT_SIZE +: DATA_OUT_SIZE]));
+	
+	delay_buffer #(.SIZE(LATENCY)) delay_buff(.clk(clk), .rst(rst), .valid_in(join_valid), .ready_in(oehb_ready), .valid_out(buff_valid));
+	
+	OEHB #(.INPUTS(1), .OUTPUTS(1), .DATA_IN_SIZE(1), .DATA_OUT_SIZE(1)) oehb_buffer (.clk(clk), .rst(rst),
+										 .data_in_bus(1'b0), .valid_in_bus(buff_valid), .ready_in_bus(oehb_ready),
+										 .data_out_bus(oehb_dataOut), .valid_out_bus(valid_out_bus[0]), .ready_out_bus(ready_out_bus[0]));
+endmodule
+
+
+
+//---------------------------------------------------------
+//folt component:
+//---------------------------------------------------------
+module fcmp_olt_op #(parameter INPUTS = 2,
+		parameter OUTPUTS = 1,
+		parameter DATA_IN_SIZE = 32,
+		parameter DATA_OUT_SIZE = 32,
+		parameter LATENCY = 1)
+		(
+		input clk,
+		input rst,
+		input [INPUTS * (DATA_IN_SIZE)- 1 : 0]data_in_bus,
+		input [INPUTS - 1 : 0]valid_in_bus,
+		output [INPUTS - 1 : 0] ready_in_bus,
+		
+		output [OUTPUTS * (DATA_OUT_SIZE) - 1 : 0]data_out_bus,
+		output [OUTPUTS - 1 : 0]valid_out_bus,
+		input 	[OUTPUTS - 1 : 0] ready_out_bus
+);
+
+
+	wire join_valid;
+	wire buff_valid, oehb_valid, oehb_ready;
+	wire oehb_dataOut, oehb_datain;
+	
+	joinC #(.N(INPUTS)) folt_fork(.valid_in(valid_in_bus), .ready_in(ready_in_bus), .valid_out(join_valid), .ready_out(oehb_ready));
+	
+	fcmp_olt_op_wrapper fcmp_olt_op_instance (.clk(clk), .reset(rst), .ce(oehb_ready), .din0(data_in_bus[0 * DATA_IN_SIZE +: DATA_IN_SIZE]), .din1(data_in_bus[1 * DATA_IN_SIZE +: DATA_IN_SIZE]), .dout(data_out_bus[0 * DATA_OUT_SIZE +: DATA_OUT_SIZE]));
+	
+	delay_buffer #(.SIZE(LATENCY)) delay_buff(.clk(clk), .rst(rst), .valid_in(join_valid), .ready_in(oehb_ready), .valid_out(buff_valid));
+	
+	OEHB #(.INPUTS(1), .OUTPUTS(1), .DATA_IN_SIZE(1), .DATA_OUT_SIZE(1)) oehb_buffer (.clk(clk), .rst(rst),
+										 .data_in_bus(1'b0), .valid_in_bus(buff_valid), .ready_in_bus(oehb_ready),
+										 .data_out_bus(oehb_dataOut), .valid_out_bus(valid_out_bus[0]), .ready_out_bus(ready_out_bus[0]));
+endmodule
+
+
+//---------------------------------------------------------
+//fole component:
+//---------------------------------------------------------
+module fcmp_ole_op #(parameter INPUTS = 2,
+		parameter OUTPUTS = 1,
+		parameter DATA_IN_SIZE = 32,
+		parameter DATA_OUT_SIZE = 32,
+		parameter LATENCY = 1)
+		(
+		input clk,
+		input rst,
+		input [INPUTS * (DATA_IN_SIZE)- 1 : 0]data_in_bus,
+		input [INPUTS - 1 : 0]valid_in_bus,
+		output [INPUTS - 1 : 0] ready_in_bus,
+		
+		output [OUTPUTS * (DATA_OUT_SIZE) - 1 : 0]data_out_bus,
+		output [OUTPUTS - 1 : 0]valid_out_bus,
+		input 	[OUTPUTS - 1 : 0] ready_out_bus
+);
+
+
+	wire join_valid;
+	wire buff_valid, oehb_valid, oehb_ready;
+	wire oehb_dataOut, oehb_datain;
+	
+	joinC #(.N(INPUTS)) fole_fork(.valid_in(valid_in_bus), .ready_in(ready_in_bus), .valid_out(join_valid), .ready_out(oehb_ready));
+	
+	fcmp_ole_op_wrapper fcmp_ole_op_instance (.clk(clk), .reset(rst), .ce(oehb_ready), .din0(data_in_bus[0 * DATA_IN_SIZE +: DATA_IN_SIZE]), .din1(data_in_bus[1 * DATA_IN_SIZE +: DATA_IN_SIZE]), .dout(data_out_bus[0 * DATA_OUT_SIZE +: DATA_OUT_SIZE]));
+	
+	delay_buffer #(.SIZE(LATENCY)) delay_buff(.clk(clk), .rst(rst), .valid_in(join_valid), .ready_in(oehb_ready), .valid_out(buff_valid));
+	
+	OEHB #(.INPUTS(1), .OUTPUTS(1), .DATA_IN_SIZE(1), .DATA_OUT_SIZE(1)) oehb_buffer (.clk(clk), .rst(rst),
+										 .data_in_bus(1'b0), .valid_in_bus(buff_valid), .ready_in_bus(oehb_ready),
+										 .data_out_bus(oehb_dataOut), .valid_out_bus(valid_out_bus[0]), .ready_out_bus(ready_out_bus[0]));
+endmodule
+
+
+`endif

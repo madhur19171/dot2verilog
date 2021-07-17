@@ -110,6 +110,7 @@ void DotReader::generateComponentList(){
 		comp->transparent = nodes[i].trasparent;
 		comp->op = nodes[i].component_operator;
 		comp->value = nodes[i].component_value;
+		comp->latency = nodes[i].latency;
 
 		//Cast the classes to their respective sub classes before any processing is done.
 		comp = comp->castToSubClass(comp);
